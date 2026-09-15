@@ -50,7 +50,7 @@ An event receives its provisional state from the label at its peak. The primary 
 then keeps it only when the complete 20%-to-20% event support—including samples needed
 to interpolate those crossings—falls in that same state. This is a conservative but
 defensible default: an event that begins in one state and peaks in another cannot be
-unambiguously attributed to either as a pure-state transient.
+unambiguously attributed to either as a pure-state NE signal elevation episode.
 
 In this recording, 15 of 35 Active-peak and 21 of 25 Quiet-peak candidates cross a
 state boundary; six Active and two Quiet candidates are incomplete for other
@@ -98,7 +98,7 @@ a common, biologically justified frequency target is chosen.
 The full meeting agenda is [here](pi_meeting_agenda.md). The two highest-priority
 decisions are:
 
-1. Should a transient that crosses a state transition be analyzed only when fully
+1. Should an NE signal elevation episode that crosses a state transition be analyzed only when fully
    contained in one state (current primary rule), or assigned to the state at its peak?
 2. What frequency range is scientifically required for the spectral question, and is
    a faster common band acceptable when slow Quiet-Wake windows are unavailable?

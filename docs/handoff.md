@@ -2,7 +2,7 @@
 
 ## User objective and present status
 
-The user and PI want to compare NE fluorescence during Active Wake and Quiet Wake
+The user and PI want to compare the NE signal during Active Wake and Quiet Wake
 in mice. The user is gathering fully labeled MAT files. This repository is a
 standalone pilot pipeline, **not yet validated on real recordings**. It was created
 2026-09-14 at `C:\Users\yzhao\python_projects\wake-ne-analysis` from a conversation
@@ -20,10 +20,10 @@ unless the user asks. No raw laboratory recordings have been copied into this re
 - The original PI message requested NE "power frequency, amplitude, duration of
   increases and rising and decay T1/2." The PI clarified: **"We normally calculate
   the 20–80% slope."** Do not silently revert to half-time measurements.
-- The user leaned toward spectral power/frequency, not transient count per minute.
+- The user leaned toward spectral power/frequency, not NE signal elevation-episode count per minute.
   Counts here serve data adequacy; event rate is not a requested primary metric.
 - Spectra use equal-length windows. **Slopes, amplitudes and durations do not.**
-  Natural transient boundaries must survive spectral window selection.
+  Natural NE signal elevation-episode boundaries must survive spectral window selection.
 - Quiet Wake could be predominantly short, and both states have variable bout
   lengths. Do not throw all short bouts out of every analysis. Report duration
   distributions and usable fractions before choosing spectral windows/frequencies.

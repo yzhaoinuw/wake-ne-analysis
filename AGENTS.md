@@ -39,7 +39,7 @@ multiple requested changes need a body.
 
 - Final `sleep_scores`: 4 Active Wake, 5 Quiet Wake; one label per second.
 - `ne` is processed percentage delta-F/F. Use its saved rate and `start_time`.
-- Equal-length windows are for spectra only. Transients retain natural boundaries.
+- Equal-length windows are for spectra only. NE signal elevation episodes retain natural boundaries.
 - Never join disjoint bouts or bridge invalid NE to manufacture usable duration.
 - No silent input rewriting, relabeling, normalization, or inverse filtering.
 - Keep per-file functions, source audit tables, and pooled per-mouse summaries.

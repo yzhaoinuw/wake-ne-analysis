@@ -2,7 +2,7 @@
 
 ## What This Repo Is
 
-Independent, deterministic NE fluorescence analysis for labeled Active/Quiet Wake
+Independent, deterministic NE signal analysis for labeled Active/Quiet Wake
 MAT files. Outputs per-file audit tables and one-row-per-mouse descriptive statistics.
 Real recordings are pending; see [handoff](docs/handoff.md) for scientific context.
 
@@ -27,7 +27,7 @@ an interactive HTML audit report; it does not reread or modify MAT files.
 
 Module files live in `wake_ne_analysis/`. Package imports have no app/server or
 filesystem side effects. `analyze_file` loads only NE/labels/needed metadata;
-`analyze_recording` reuses an existing object. Individual spectrum, transient and
+`analyze_recording` reuses an existing object. Individual spectrum, NE signal elevation-episode and
 validation file functions are public for per-MAT use.
 
 ## User Data Expectations

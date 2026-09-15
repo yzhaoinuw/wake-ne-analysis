@@ -41,9 +41,11 @@ step only. It does not account for nonlinear control normalization, aliasing, se
 kinetics, or the full acquisition chain, and no inverse correction is performed.
 It is a diagnostic value, not an automatic frequency-band acceptance threshold.
 
-## NE transient detection
+## NE signal elevation-episode detection
 
-These choices are a **draft**, to be calibrated with real traces and PI feedback.
+An **NE signal elevation episode** is a temporary local rise and fall in the processed
+NE signal above its nearby baseline. These choices are a **draft**, to be calibrated
+with real traces and PI feedback.
 The established requirements are natural event timing and 20–80% rise/decay slopes;
 the baseline, prominence and boundary policies below were chosen for an inspectable
 first implementation, not supplied as a validated laboratory protocol.
@@ -92,7 +94,7 @@ lies in the same Active/Quiet state. Crossing events are flagged and excluded fr
 the primary state summaries, without cutting their waveforms or durations.
 
 `assignment="peak"` explicitly allows complete crossing events to contribute to the
-peak's state. That result describes transients peaking in a state, including portions
+peak's state. That result describes NE signal elevation episodes peaking in a state, including portions
 outside it. It is a sensitivity-analysis option, not equivalent to pure within-state
 kinetics. Whichever rule is used must be shared across all files being pooled.
 

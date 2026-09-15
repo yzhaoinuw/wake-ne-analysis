@@ -1,6 +1,6 @@
 # Wake NE Analysis
 
-Standalone Python analysis of processed NE fluorescence during **Active Wake**
+Standalone Python analysis of the processed NE signal during **Active Wake**
 and **Quiet Wake**. Analyze one labeled MAT file, then pool recordings into one
 dataframe row per mouse. No scoring-app imports, interface, relabeling, or input
 file modifications.
@@ -65,9 +65,9 @@ if Plotly is not already available.
 
 **The example's 120-second window and 0.025–0.1 Hz band are illustrative, not a
 validated recommendation.** Select them after inspecting the coverage reports.
-Omit `--config` (or set `"spectrum": null`) to compute transient summaries while
+Omit `--config` (or set `"spectrum": null`) to compute NE signal elevation-episode summaries while
 leaving spectral metrics explicitly unconfigured. Equal windows never constrain
-transient measurements.
+NE signal elevation-episode measurements.
 
 Installed commands `wake-ne-validate` and `wake-ne-analyze` provide the same interfaces.
 Every run needs a new output directory; previous results are not overwritten.

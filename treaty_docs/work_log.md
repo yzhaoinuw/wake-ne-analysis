@@ -2,6 +2,22 @@
 
 ## 2026-09-15
 
+### Keep PI correspondence outside the repository (Codex GPT-5; effort/tokens not reported)
+
+- Removed the PI meeting-request draft from `docs/`. The repository retains the
+  report and decision agenda, but not correspondence intended for direct sending.
+- Verification:
+  - Searched documentation for links to the removed draft; none remain.
+
+### Plain-language NE signal terminology (Codex GPT-5; effort/tokens not reported)
+
+- Adopted **NE signal elevation episode** as the human-facing term for the detected
+  local rise-and-fall feature. Documentation now uses `NE signal` for the processed
+  measurement and retains the code/API name `transient` only where it is part of a
+  stable identifier.
+- Verification:
+  - Reviewed all human-facing Markdown references to NE fluorescence/transients.
+
 ### GitHub-renderable pilot report and PI decision agenda (Codex GPT-5; effort/tokens not reported)
 
 - Prepared a static Markdown/PNG report, rather than relying on interactive browser
