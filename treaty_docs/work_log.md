@@ -1,6 +1,21 @@
 # Work Log
 
 ## 2026-09-15
+### Clarify raw-start QC and spectral interpretation (Codex GPT-5; effort/tokens not reported)
+
+- Corrected the report to distinguish raw-data review from automatic validation: the
+  initial −99.6 percentage-point recording-start excursion is finite, so it is not
+  automatically flagged by the current pipeline. It remains unmodified while more
+  files determine whether a reproducible clipping/outlier rule is warranted.
+- Added a frequency-interpretation guideline. For the first file's approximately
+  0.983 s forward–backward moving-average pass, smoothing-only retained power is
+  about 94% at 0.1 Hz, 77% at 0.2 Hz, 55% at 0.3 Hz, and 18% at 0.5 Hz. This supports
+  cautious interpretation of slow modulation through roughly 0.2 Hz, subject to the
+  more restrictive continuous-bout coverage for any selected spectral band.
+- Verification:
+  - No data, preprocessing setting, detector threshold, or spectral configuration
+    was changed.
+
 
 ### Keep PI correspondence outside the repository (Codex GPT-5; effort/tokens not reported)
 

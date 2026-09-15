@@ -16,8 +16,11 @@ NE, 10,300 s of labels, a 0.30 s duration mismatch (within the one-second tolera
 no coarse Wake labels, and no unscored seconds. The trace is processed percentage
 delta-F/F; it was not normalized, smoothed, or rewritten here.
 
-The pipeline did flag a −99.6 percentage-point first sample. It remains untouched in
-the source and is a QC question, not an analysis-side correction.
+Raw-data review identified a large recording-start excursion: the first saved NE
+sample is −99.6 percentage points and recovers over roughly the first second. It is
+finite, so the current pipeline does not automatically flag it. It remains untouched;
+its upstream cause and any clipping/outlier rule require review on additional
+recordings.
 
 ## Summary result
 
@@ -80,6 +83,24 @@ at 15 s, 52 and 28. A 15 s window meets the pilot three-cycle criterion only fro
 therefore intentionally report no spectral power or dominant-frequency result until
 a common, biologically justified frequency target is chosen.
 
+### Frequency-interpretation guideline
+
+The saved rate (10.17 Hz) gives a 5.09 Hz Nyquist limit, but that is not the useful
+physiological range of this processed signal. Upstream, the 1,000-raw-sample moving
+average spans about 0.983 s at the expected raw rate and is applied forward and
+backward. From that smoothing step alone, estimated power retention is about 94% at
+0.1 Hz, 77% at 0.2 Hz, 55% at 0.3 Hz, and 18% at 0.5 Hz. Thus this export is well
+suited to slow modulation through roughly 0.2 Hz; interpretation through about
+0.3 Hz needs caution, and primary claims above 0.3 Hz need separate validation. This
+is a processing guideline, not a universal biological band or an inverse correction.
+
+The stricter limit in this fragmented recording is continuous state coverage. A
+common 30 s window can examine 0.1–0.2 Hz only as an exploratory sensitivity (18
+Active and 6 Quiet windows); 0.02–0.1 Hz needs longer bouts and is unavailable for
+Quiet Wake here. Infraslow NE rhythms near 0.02–0.03 Hz have been reported during
+NREM [in one recent study](https://pubmed.ncbi.nlm.nih.gov/41439706), but that does
+not establish them as the Active/Quiet target.
+
 ## Judgments already made
 
 1. **Keep natural event boundaries.** Amplitude, duration, and slopes use the whole
@@ -90,8 +111,9 @@ a common, biologically justified frequency target is chosen.
    they are excluded from contained-event medians rather than deleted.
 4. **Do not force a slow spectrum.** Missing Quiet spectral estimates are more honest
    than stitching bouts or changing spectral settings by state.
-5. **Preserve data anomalies.** The early −99.6 sample is flagged for review, not
-   silently clipped or removed.
+5. **Preserve potential artifacts.** Raw-data review identified the early −99.6
+   recording-start excursion; it is not clipped or removed. A reproducible QC rule
+   awaits more files.
 
 ## Decisions requested from the PI
 

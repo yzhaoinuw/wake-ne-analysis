@@ -41,6 +41,19 @@ step only. It does not account for nonlinear control normalization, aliasing, se
 kinetics, or the full acquisition chain, and no inverse correction is performed.
 It is a diagnostic value, not an automatic frequency-band acceptance threshold.
 
+### Frequency-interpretation guideline
+
+The saved sampling rate gives a mathematical Nyquist limit, not by itself a useful
+physiological range. For the first file's expected raw rate and 1,000-sample
+forward–backward moving average (about 0.983 s per pass), smoothing-only power
+retention is about 94% at 0.1 Hz, 77% at 0.2 Hz, 55% at 0.3 Hz, and 18% at 0.5 Hz.
+Treat slow modulation through roughly 0.2 Hz as well supported by that processing
+diagnostic; interpret approximately 0.2–0.3 Hz cautiously, and do not make primary
+claims above 0.3 Hz without separate validation. This is not a biological-band
+recommendation or an inverse filtering rule. Continuous state-window coverage can
+set a more restrictive lower-frequency limit; use the saved coverage table and the
+three-cycle diagnostic before selecting a common band.
+
 ## NE signal elevation-episode detection
 
 An **NE signal elevation episode** is a temporary local rise and fall in the processed
