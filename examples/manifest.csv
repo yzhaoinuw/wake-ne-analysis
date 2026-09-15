@@ -1,0 +1,4 @@
+mouse_id,mat_path,recording_id
+mouse01,../data/mouse01_session01.mat,mouse01_session01
+mouse01,../data/mouse01_session02.mat,mouse01_session02
+mouse02,../data/mouse02_session01.mat,mouse02_session01

@@ -1,0 +1,4 @@
+# Reproduce the numerical versions used for the initial synthetic validation.
+numpy==2.3.5
+scipy==1.16.3
+pandas==2.3.3
