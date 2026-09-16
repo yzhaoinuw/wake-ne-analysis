@@ -1,6 +1,8 @@
 from copy import deepcopy
+import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -22,6 +24,15 @@ from wake_ne_analysis.spectra import compute_spectrum
 from wake_ne_analysis.transients import detect_transients
 from wake_ne_analysis.validation import usable_data_summary, smoothing_power_retention
 from wake_ne_analysis.cli import analysis_main, validation_main
+
+
+def _report_renderer_module():
+    path = Path(__file__).resolve().parents[1] / "scripts" / "render_cohort_preliminary_report_figures.py"
+    spec = importlib.util.spec_from_file_location("cohort_report_renderer", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 def recording(signal, labels, fs=10, name="r1", mouse="m1", start=0):
@@ -233,6 +244,40 @@ def test_spectral_settings_validate_resolution(args):
 def test_filter_retention_matches_forward_backward_boxcar():
     assert smoothing_power_retention(0, 10) == pytest.approx(1)
     assert smoothing_power_retention(0.1, 10) == pytest.approx(0.9361, abs=0.001)
+
+
+def test_peak_example_selection_is_seeded_and_shows_both_wake_states():
+    renderer = _report_renderer_module()
+    source = SimpleNamespace(labels=np.array([4] * 10 + [5] * 70), start_time=0.0)
+    events = pd.DataFrame(
+        [
+            {
+                "recording_id": "example",
+                "state": "quiet_wake",
+                "complete": True,
+                "crosses_state": True,
+                "recording_start_qc_excluded": False,
+                "peak_seconds": 30.0,
+                "onset20_seconds": 20.0,
+                "offset20_seconds": 40.0,
+            },
+            {
+                "recording_id": "example",
+                "state": "quiet_wake",
+                "complete": True,
+                "crosses_state": True,
+                "recording_start_qc_excluded": False,
+                "peak_seconds": 35.0,
+                "onset20_seconds": 22.0,
+                "offset20_seconds": 42.0,
+            },
+        ]
+    )
+    first = renderer.choose_peak_example(events, source, "example", seed=20260916)
+    second = renderer.choose_peak_example(events, source, "example", seed=20260916)
+    assert first.peak_seconds == second.peak_seconds
+    assert first.quiet_seconds_shown >= renderer.MIN_EXAMPLE_QUIET_SECONDS
+    assert first.active_seconds_shown >= renderer.MIN_EXAMPLE_ACTIVE_SECONDS
 
 
 def test_manifest_and_both_clis_roundtrip(tmp_path):

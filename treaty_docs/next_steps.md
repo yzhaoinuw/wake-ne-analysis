@@ -6,8 +6,10 @@
   `docs/preliminary_report.md`; its refreshed static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document
   is preserved as `docs/pilot_report.md` and is historical rather than the current
-  cohort result. Review the draft's plain-language duration/T1/2 wording with the PI
-  before treating those provisional metrics as final definitions.
+  cohort result. Its renderer uses the upstream orange Active/light-blue Quiet color
+  contract and seed `20260916` for an auditable Quiet-Wake peak example. Review the
+  draft's plain-language duration/T1/2 wording with the PI before treating those
+  provisional metrics as final definitions.
 - The 2026-09-16 proposal delivery is in
   `outputs/proposal_cohort_20260916_final_peak15_presentation.html` with PNG panels
   in `outputs/proposal_cohort_20260916_final_peak15_figures/`. The contained-event

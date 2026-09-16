@@ -2,6 +2,29 @@
 
 ## 2026-09-16
 
+### Report terminology and reproducible-figure follow-up (Codex GPT-5; effort/tokens not reported)
+
+- Defined a mouse pair in the cohort report as the two within-mouse state summaries,
+  and clarified that IQR reports the middle half of mouse-level values while Figure 1
+  retains every individual mouse. Explicitly stated that episode amplitude is peak
+  height above a local rolling baseline, not absolute NE or RMS; the same baseline
+  defines the 20%/80% slope crossings.
+- Aligned report figures with the upstream `sleep_scoring` colors: Active Wake is
+  orange (`#E69F00`) and Quiet Wake is light blue (`#56B4E9`). The peak-state plot
+  now uses a deterministically seeded, eligible Quiet-Wake peak example that visibly
+  includes and labels both wake states. The renderer records seed `20260916`, its
+  minimum displayed-state context, and has a synthetic determinism test.
+- Moved the spectral feasibility rationale into the methodology, kept a concise
+  spectral result subsection, and added appendix equations plus the forward/backward
+  moving-average retained-power table. It distinguishes smoothing attenuation from
+  the saved-rate Nyquist limit and explains why longer state-pure Quiet-Wake windows
+  would be needed below 0.20 Hz.
+- Verification:
+  - Rendered and visually inspected all three refreshed static cohort-report figures.
+  - `python -m pytest --basetemp .pytest_tmp_report_followup -p no:cacheprovider -q`:
+    26 passed.
+  - `git diff --check` passed.
+
 ### Executive cohort report draft (Codex GPT-5; effort/tokens not reported)
 
 - Renamed the historical, single-recording report to `docs/pilot_report.md` and

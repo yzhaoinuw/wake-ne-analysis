@@ -29,9 +29,12 @@ measure is useful as a feasibility check, but cannot resolve a preferred frequen
 
 ## Summary of results
 
-Values are median (interquartile range) of each mouse's within-state summary.
-`n` is the number of mice with a complete Active/Quiet pair for that metric. The
-reported p-values use the paired Wilcoxon signed-rank test described in
+Each cell gives the median of the mouse-level summaries; the parentheses give the
+interquartile range (IQR), the middle half of those mouse values. It gives a compact
+view of between-mouse spread, while Figure 1 still shows every mouse. A **mouse pair**
+is one Active-Wake summary and one Quiet-Wake summary from the *same* mouse; `n` is
+the number of mice with both summaries available for that metric. The reported
+p-values use the paired Wilcoxon signed-rank test described in
 [Appendix C](#appendix-c-statistical-test-and-interpretation). They are exploratory
 and use a two-sided threshold of 0.05.
 
@@ -92,15 +95,28 @@ episodes while keeping the boundary crossings available for audit.
 
 ![Example of peak-state attribution](assets/cohort_preliminary_report/peak_state_assignment_example.png)
 
-The orange marker is a Quiet-Wake peak. The purple lines show that the episode's
-20% and 80% crossings need not all fall inside the orange background, yet the whole
-complete episode is counted as Quiet Wake because its peak does. This is a provisional
-proposal rule, not a claim that the entire waveform is uniquely caused by that state.
+The light-blue marker is a Quiet-Wake peak, and the light-blue background explicitly
+marks the Quiet-Wake seconds around it. Orange marks Active Wake; gray is another
+state. The purple lines show that the episode's 20% and 80% crossings need not all
+fall inside the light-blue background, yet the whole complete episode is counted as
+Quiet Wake because its peak does. This is a provisional proposal rule, not a claim
+that the entire waveform is uniquely caused by that state.
+
+### Local baseline shared by amplitude, duration, and slopes
+
+Before measuring an elevation, the detector estimates the nearby low level of the
+same NE trace with a centered 60-second rolling 20th percentile. This is a local,
+slowly changing baseline rather than zero or an RMS value. The peak height above that
+baseline defines the event's amplitude. The 20% and 80% levels used for duration and
+slopes are then fractions of that **baseline-to-peak** height. Thus the baseline is
+part of every episode measurement, including rise and decay slopes. The exact
+definition is in [Appendix B](#appendix-b-ne-measurement-details).
 
 ### NE episode amplitude
 
-For each complete elevation, amplitude is the height of the peak above a local,
-slowly varying baseline. We summarize the median amplitude of all eligible events
+For each complete elevation, amplitude is the height of the peak above that local,
+slowly varying baseline. It is **not** the absolute value of the NE trace and it is
+**not** an RMS measurement. We summarize the median amplitude of all eligible events
 within each mouse and state. The local-baseline and exact amplitude definitions are
 given in [Appendix B](#appendix-b-ne-measurement-details).
 
@@ -129,11 +145,20 @@ common available band is 0.20–0.30 Hz. We report the total power in that narro
 and the frequency bin with the largest power.
 
 This measurement is intentionally separate from natural-duration elevation episodes.
-Fifteen seconds was chosen because it preserves Quiet-Wake coverage for every
-identified mouse. It is not long enough to assess slower activity below 0.20 Hz
-reliably, and the prior near-one-second smoothing makes frequencies above roughly
-0.30 Hz increasingly attenuated. Further spectral details are in
-[Appendix B](#appendix-b-ne-measurement-details).
+The 0.20–0.30 Hz band is the narrow overlap left by two constraints. At the low end,
+the three-cycle adequacy rule requires 15 seconds to assess 0.20 Hz. Going lower
+would require longer windows (for example, 20 seconds for 0.15 Hz), but Mouse 7 has
+no Quiet-Wake window that long; separate bouts are never joined to manufacture one.
+At the high end, upstream forward-and-backward near-one-second smoothing increasingly
+attenuates the stored signal above about 0.30 Hz. The later downsampling preserves a
+mathematical Nyquist limit near 5 Hz, but it cannot restore fast information removed
+by smoothing or recover the original high-rate waveform. The smoothing calculation
+and retained-power table are in [Appendix B](#appendix-b-ne-measurement-details).
+
+Fifteen seconds was therefore chosen because it is the only common state-pure setting
+that retains Quiet-Wake coverage for every identified mouse. It supports a
+high-frequency feasibility check, not a resolved slow-rhythm analysis. The coverage
+and result are shown separately below.
 
 ## Results
 
@@ -154,21 +179,21 @@ P-values are two-sided paired Wilcoxon results; see
 exploratory 0.05 threshold. The frequency panel is labelled “not tested” because all
 maxima are the lower band edge, not because it has established equality.
 
-### Why the spectral result is limited to feasibility
+### Spectral result
 
-Twenty-second windows would give a more useful lower frequency boundary (0.15 Hz),
-but Mouse 7 has no Quiet-Wake windows of that length. At 15 seconds it contributes
-three Quiet-Wake windows, allowing a common setting across identified mice. The
-coverage plot also shows why a longer-window spectrum cannot be rescued by joining
-separate bouts: that would mix state transitions and create a different analysis.
+The available window counts confirm the methodological constraint: Mouse 7 contributes
+three Quiet-Wake windows at 15 seconds and none at 20 seconds. A longer-window
+spectrum cannot be rescued by joining separate bouts, because that would cross state
+transitions and answer a different question.
 
 ![Spectral-window coverage at 15 and 20 seconds](assets/cohort_preliminary_report/spectral_window_coverage.png)
 
 **Figure 2.** Number of eligible fixed windows after the recording-start QC rule.
-The labelled `Unverified 35` file is included to document available source data, not
-as an independently identified mouse. The 15-second choice produces a 0.20–0.30 Hz
-band, but every maximum in that band is at 0.20 Hz. Thus, no preferred-frequency
-result should be presented.
+Orange denotes Active Wake and light blue Quiet Wake; bar fill distinguishes the
+15- and 20-second alternatives. The labelled `Unverified 35` file is included to
+document available source data, not as an independently identified mouse. The
+15-second choice produces a 0.20–0.30 Hz band, but every maximum in that band is at
+0.20 Hz. Thus, no preferred-frequency result should be presented.
 
 ## Interpretation for the proposal
 
@@ -204,11 +229,15 @@ validation; it is not re-estimated by the NE pipeline.
 
 ## Appendix B: NE measurement details
 
-The event detector estimates a centered 60-second 20th-percentile local baseline and
+### Local baseline and episode geometry
+
+Let `x(t)` be the processed percentage delta-F/F trace. The detector estimates a
+time-varying local baseline `b(t)` as the centered 60-second rolling 20th percentile
+of `x(t)`, then works with the baseline-subtracted trace `y(t) = x(t) - b(t)`. It
 requires at least 0.5 percentage points of prominence between a candidate peak and
-its local baseline. For a peak amplitude `A`, the detector linearly locates the four
-times at which the waveform crosses 20% and 80% of `A` on the rising and falling
-sides: `t_r20`, `t_r80`, `t_d80`, and `t_d20`.
+its local baseline. For a peak at `t_peak`, amplitude is `A = y(t_peak)`. The
+detector linearly locates the four times at which `y(t)` crosses 20% and 80% of `A`
+on the rising and falling sides: `t_r20`, `t_r80`, `t_d80`, and `t_d20`.
 
 ```text
 amplitude       = peak - local baseline
@@ -222,20 +251,57 @@ the central 20–80% portion. A T₁/₂ would instead report a time associated 
 amplitude, so it should not be substituted for either slope without a new explicit
 definition.
 
+### Spectral window and preprocessing limit
+
 For spectra, each eligible 15-second state-pure interval receives a periodogram. The
 within-mouse/state spectrum is a window-count-weighted mean, and band power is the
 integral from 0.20 to 0.30 Hz. The frequency maximum is simply the highest spectral
 bin inside that same interval. Frequency resolution is approximately `1 / 15 = 0.067`
-Hz; it is a constrained feasibility measure, not a full frequency characterization.
+Hz. The three-cycle pilot rule sets the lower feasible frequency to `3 / T`, where
+`T` is the window duration: 0.20 Hz for 15 seconds and 0.15 Hz for 20 seconds.
+
+The stored NE trace was smoothed upstream using a 1,000-sample moving average at an
+expected raw rate of approximately 1,017.25 Hz, so one pass spans about 0.983 s. The
+smoother is applied forward and backward. If `N` is 1,000 and `F_raw` is the expected
+raw sampling rate, the moving-average magnitude of one pass is:
+
+```text
+G(f) = sinc(N × f / F_raw) / sinc(f / F_raw)
+power retained after forward-and-backward smoothing = G(f)^4
+```
+
+The fourth power occurs because forward-and-backward filtering squares the amplitude
+magnitude, and power is amplitude squared. This diagnostic describes the smoothing
+step alone; it does not model sensor kinetics, control fitting, aliasing, or the rest
+of the acquisition chain, and no inverse correction is applied.
+
+| Frequency | Estimated power retained after smoothing |
+|---:|---:|
+| 0.10 Hz | 94% |
+| 0.20 Hz | 77% |
+| 0.30 Hz | 55% |
+| 0.50 Hz | 18% |
+| 1.00 Hz | approximately 0% |
+
+The factor-100 downsampling produces the roughly 10.17 Hz saved rate and removes
+access to the original high-rate waveform. Its Nyquist limit is still about 5.09 Hz,
+so Nyquist is not the reason for the 0.30 Hz ceiling. Rather, the strong smoothing
+attenuation makes higher-frequency interpretation progressively less meaningful, and
+downsampling cannot recover what that legacy smoothing removed.
+
+Together, the short Quiet-Wake bouts set the low boundary and legacy smoothing sets
+the cautious high boundary. The resulting 0.20–0.30 Hz measure is a constrained
+feasibility measure, not a full frequency characterization.
 
 ## Appendix C: Statistical test and interpretation
 
 Each statistical comparison begins with one summary per mouse in Active Wake and one
-in Quiet Wake. The two values are paired because they come from the same animal. We
-use a two-sided **Wilcoxon signed-rank test**, a nonparametric paired test that asks
-whether the ranked within-mouse differences are consistently above or below zero. It
-is appropriate here because the sample is very small and we should not assume the
-differences follow a normal distribution.
+in Quiet Wake. Together, those two values form a **mouse pair** because they come
+from the same animal; the test asks whether each mouse tends to be higher in one state
+than in the other. We use a two-sided **Wilcoxon signed-rank test**, a nonparametric
+paired test that asks whether the ranked within-mouse differences are consistently
+above or below zero. It is appropriate here because the sample is very small and we
+should not assume the differences follow a normal distribution.
 
 The p-value is the probability, under a no-systematic-difference model, of observing
 differences at least as incompatible with zero as these. A p-value below 0.05 would
@@ -259,8 +325,11 @@ python scripts/render_cohort_preliminary_report_figures.py `
   --analysis outputs/proposal_cohort_20260916_startqc_peak15 `
   --preflight outputs/proposal_cohort_20260916_startqc_preflight `
   --mat data/35_app13_groundtruth.mat `
+  --peak-example-seed 20260916 `
   --output docs/assets/cohort_preliminary_report
 ```
 
 The output directory must be new or empty when rendering, which prevents silently
-mixing figures from different analysis runs.
+mixing figures from different analysis runs. The seed chooses deterministically among
+complete, non-start-QC-excluded Quiet-Wake peak events that display at least 10 seconds
+of Quiet Wake and 5 seconds of Active Wake in the plotted context.
