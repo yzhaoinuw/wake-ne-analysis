@@ -20,6 +20,10 @@ local baseline.
   (Mann–Whitney p = 5.22 × 10⁻⁵). That calculation is **pseudoreplicated**: bouts
   within a recording, and recordings from the same mouse, are correlated. It must
   not be used to claim a biological state effect.
+- The corresponding 15-second spectral analysis likewise gives no nominal
+  recording-level band-power difference (paired Wilcoxon p = 0.570). Treating its
+  1,060 Active and 106 Quiet windows as independent gives a nominal difference
+  (Mann–Whitney p = 0.0155), but that is also pseudoreplicated and non-inferential.
 - Peak state is determined by the bout containing the peak. Its 20% and 80%
   crossings may occur outside the bout and across wake-state boundaries, as agreed
   for the primary peak-state analysis. Timing measures are therefore contextual,
@@ -42,7 +46,7 @@ recording-independence caveat are explained in [Appendix C](#appendix-c-statisti
 The next table deliberately discards the recording grouping and treats every eligible
 bout as a separate observation. It is included to show the distributional signal,
 not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
-[Appendix C](#mannwhitney-test-for-the-independent-bout-description).
+[Appendix C](#mannwhitney-tests-for-the-independent-bout-and-independent-window-descriptions).
 
 | Zero-referenced measure | Active Wake | Quiet Wake | Active bouts | Quiet bouts | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
@@ -50,6 +54,21 @@ not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
 | Duration (s) | 72.50 (18.23–342.98) | 78.28 (22.91–387.07) | 1,766 | 1,759 | 0.229 |
 | 20–80% rise slope (percentage points/s) | 0.061 (0.012–0.338) | 0.058 (0.012–0.301) | 1,766 | 1,759 | 0.213 |
 | 20–80% decay slope (percentage points/s) | 0.039 (0.009–0.126) | 0.036 (0.009–0.127) | 1,766 | 1,759 | 0.440 |
+
+The short-window spectrum is calculated separately using the same recording-level
+and deliberately independent-observation hierarchy. It uses all nine files, their
+common labelled interval, and no recording-start exclusion. Band power is the mean
+per-window spectrum within each state and file; frequency maximum is its largest
+bin in the 0.20–0.30 Hz band.
+
+| Short-window spectral measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
+|---|---:|---:|---:|---|
+| 15 s 0.20–0.30 Hz band power (percentage points²) | 0.00685 (0.00422–0.01044) | 0.00599 (0.00407–0.00931) | n = 9 | 0.570; not significant |
+| 15 s frequency maximum (Hz) | 0.20 (0.20–0.20) | 0.20 (0.20–0.20) | n = 9 | 1.000; not interpretable: 17 of 18 values are at the 0.20 Hz lower edge |
+
+| Short-window spectral measure | Active Wake | Quiet Wake | Active windows | Quiet windows | Nominal Mann–Whitney p-value |
+|---|---:|---:|---:|---:|---:|
+| 15 s 0.20–0.30 Hz band power (percentage points²) | 0.00479 (0.00200–0.01038) | 0.00653 (0.00338–0.01207) | 1,060 | 106 | 0.0155 |
 
 ## Methodology
 
@@ -124,12 +143,20 @@ relationship to the local-baseline definition are in
 
 ### Short-window spectral power and frequency maximum
 
-This raw-bout sensitivity does not re-estimate spectral power or frequency maximum.
-Those measures require fixed, state-pure windows and do not depend on the choice of a
-literal versus rolling baseline for bout peaks. The separate local-baseline cohort
-report contains the proposal's 15-second, 0.20–0.30 Hz feasibility analysis and its
-preprocessing limitation. No spectral conclusion should be inferred from the tables
-or figures in this document.
+This report recalculates the 15-second, 0.20–0.30 Hz spectrum under its own stated
+assumptions, rather than copying the cohort result. Each MAT file is limited to its
+common labelled interval, with no recording-start exclusion, and contributes separate
+non-overlapping, state-pure 15-second windows. Within a file and state, those windows
+are averaged into one spectrum; its band power and largest in-band frequency are the
+recording-level measures. The nine Active/Quiet recording pairs are then compared by
+paired Wilcoxon test.
+
+As an additional descriptive screen, every individual 15-second window is treated as
+an independent observation and compared with Mann–Whitney. That extra assumption is
+knowingly false: windows from the same recording, and recordings from the same mouse,
+are correlated. It is shown to expose the distribution and the large imbalance in
+available state windows, not to increase inferential confidence. Details and the
+frequency-limit rationale are in [Appendix B](#spectral-window-and-preprocessing-limit).
 
 ## Results
 
@@ -149,10 +176,30 @@ by peak state but may cross state boundaries.
 
 ### Spectral result
 
-No separate spectral result is reported in this zero-referenced raw-bout comparison;
-see the Methodology section above. This omission is intentional, rather than missing
-data, because adding a literal-peak baseline choice does not create a distinct
-spectral analysis.
+The nine recording-pair screen shows no nominal difference in 0.20–0.30 Hz band
+power (p = 0.570). Frequency maximum is not biologically interpretable: 17 of 18
+recording/state values select 0.20 Hz, the lower edge of the search band; the single
+remaining value is 0.30 Hz. The paired p = 1.000 should not be read as evidence that
+frequency is the same—this edge-locking means the narrow band has not resolved a
+dominant oscillation.
+
+![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison/raw_bout_recording_spectral_comparisons.png)
+
+**Figure 2.** One averaged short-window spectrum per state per MAT file. Orange is
+Active Wake; light blue is Quiet Wake. The apparent frequency maximum clustering at
+the lower band edge is a feasibility limitation, not a resolved biological frequency.
+
+Treating each spectral window as independent produces a nominal band-power difference
+(Mann–Whitney p = 0.0155), with a higher Quiet-Wake median. It is explicitly
+pseudoreplicated: 1,060 Active windows and 106 Quiet windows come from only nine
+files, and the samples are highly correlated within recordings. It cannot overturn or
+replace the paired recording-level result.
+
+![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison/raw_bout_independent_spectral_comparisons.png)
+
+**Figure 3.** Every 15-second state-pure spectral window. The point/violin display
+shows the window-count imbalance and is marked as an exploratory, non-independent
+description.
 
 ### Independent-bout exploratory description
 
@@ -165,7 +212,7 @@ the same mouse.
 
 ![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison/raw_bout_independent_metric_comparisons.png)
 
-**Figure 2.** Every eligible bout is shown as a faint point, with a violin and box
+**Figure 4.** Every eligible bout is shown as a faint point, with a violin and box
 summary. The fixed random seed controls horizontal jitter only. Mann–Whitney labels
 are deliberately marked exploratory because bout independence is knowingly false.
 
@@ -181,9 +228,10 @@ for increasing statistical confidence.
 
 The local-baseline and zero-referenced reports answer different questions. The first
 is resistant to slow recording drift; the second is the literal processed-level
-comparison. Future datasets need verified mouse/session identifiers and a
-predeclared mouse-level or hierarchical analysis before either can support a final
-biological conclusion.
+comparison. Their spectra also use different inclusion and grouping rules, so their
+spectral p-values are not interchangeable. Future datasets need verified
+mouse/session identifiers and a predeclared mouse-level or hierarchical analysis
+before either can support a final biological conclusion.
 
 ## Appendix A: Active/Quiet Wake label details
 
@@ -222,13 +270,15 @@ boundary. Those timing measures are therefore contextual peak-state quantities.
 
 ### Spectral window and preprocessing limit
 
-No spectral quantity is recalculated for this report. Fixed-window spectral power and
-frequency maximum are unchanged by the literal-peak versus local-baseline choice, so
-the corresponding 15-second 0.20–0.30 Hz feasibility result is intentionally not
-duplicated as a second result. Its constraint is included here for context: a
-15-second state-pure window has approximately 0.067 Hz resolution, and the pilot
-three-cycle rule makes 0.20 Hz its lowest feasible frequency. Longer Quiet-Wake
-windows were not available consistently.
+The raw-report spectral screen uses non-overlapping, state-pure 15-second windows
+from the common labelled interval of every MAT file, including `mouse5_day1.mat`.
+It does not exclude the first 15 seconds. A Hann-window periodogram is calculated for
+each window, and each file/state spectrum is the mean of its available windows. The
+0.20–0.30 Hz band power is the area under that mean spectrum, while frequency maximum
+is its highest bin. A 15-second window has approximately 0.067 Hz resolution and the
+pilot three-cycle rule makes 0.20 Hz the lowest feasible frequency. This run has
+1,060 Active and 106 Quiet usable windows, so the independent-window display is also
+strongly unbalanced.
 
 The saved NE trace was smoothed upstream with a 1,000-sample moving average at an
 expected raw rate of about 1,017.25 Hz, or about 0.983 seconds per pass, then filtered
@@ -255,19 +305,20 @@ mouse may not be independent. Thus a paired Wilcoxon p-value below 0.05 is a nom
 screening result, not a confirmatory mouse-level finding. A p-value above 0.05 does
 not demonstrate equivalence or absence of biology.
 
-### Mann–Whitney test for the independent-bout description
+### Mann–Whitney tests for the independent-bout and independent-window descriptions
 
-The independent-bout table compares all Active and Quiet bout values with a
-two-sided Mann–Whitney U test. This nonparametric unpaired rank test is the usual
-test for two independent samples. It is useful here only to calculate and display
-the shift between the two **observed bout distributions**.
+The independent-bout and independent-window tables compare all Active and Quiet
+values with two-sided Mann–Whitney U tests. This nonparametric unpaired rank test is
+the usual test for two independent samples. It is useful here only to calculate and
+display shifts between the two **observed bout or window distributions**.
 
-Its independence assumption is knowingly violated: multiple bouts come from the
-same recording, and multiple recordings may come from the same mouse. Consequently,
-its p-values cannot be interpreted as biological inferential p-values, regardless of
-how small they are. The table and plot are retained as an explicitly pseudoreplicated
-exploratory description. A future mouse/session-aware mixed or hierarchical model
-would be required for inferential use of all bouts.
+Its independence assumption is knowingly violated: multiple bouts and spectral
+windows come from the same recording, and multiple recordings may come from the same
+mouse. Consequently, its p-values cannot be interpreted as biological inferential
+p-values, regardless of how small they are. The tables and plots are retained as
+explicitly pseudoreplicated exploratory descriptions. A future mouse/session-aware
+mixed or hierarchical model would be required for inferential use of all bouts or
+windows.
 
 ## Reproducibility
 
@@ -283,7 +334,8 @@ python scripts/render_raw_bout_report_figures.py `
   --output docs/assets/raw_bout_recording_comparison
 ```
 
-The analysis writes `bouts.csv`, recording-level summaries, paired Wilcoxon results,
-and `independent_bout_results.csv`. Figure 2 uses seed `20260916` for its horizontal
-jitter; the seed does not select or alter observations. Output directories must be
-new or empty, preventing accidental mixing of results from different input sets.
+The analysis writes bout and spectral-window tables, recording-level summaries,
+paired Wilcoxon results, and independent-bout/window Mann–Whitney results. Figures 3
+and 4 use seed `20260916` for horizontal jitter; the seed does not select or alter
+observations. Output directories must be new or empty, preventing accidental mixing
+of results from different input sets.

@@ -8,23 +8,33 @@ analysis.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu, wilcoxon
 
+from .config import SpectrumConfig
 from .io import STATES, Recording, load_recording, runs
+from .spectra import compute_spectrum, spectral_metrics
 from .transients import crossing
 
 
 RAW_METRICS = ("raw_peak", "duration_seconds", "rise_slope", "decay_slope")
+SPECTRAL_METRICS = ("band_power", "dominant_frequency_hz")
+RAW_SPECTRUM = SpectrumConfig(window_seconds=15.0, fmin=0.2, fmax=0.3)
 
 
 def common_start_samples(recording: Recording) -> int:
     """Return the declared common-start interval without modifying either input."""
     label_covered = int(np.ceil(recording.labels.size * recording.fs))
     return min(recording.ne.size, label_covered)
+
+
+def _common_start_recording(recording: Recording) -> Recording:
+    """Return an in-memory common-duration view without changing source data."""
+    return replace(recording, ne=recording.ne[: common_start_samples(recording)])
 
 
 def _sample_labels(recording: Recording, n_samples: int) -> np.ndarray:
@@ -190,6 +200,86 @@ def independent_bout_results(bouts: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _paired_results(summaries: pd.DataFrame, metrics: tuple[str, ...]) -> pd.DataFrame:
+    """Calculate paired recording screens for specified state-summary metrics."""
+    rows = []
+    for metric in metrics:
+        active = summaries[f"active_wake_{metric}"]
+        quiet = summaries[f"quiet_wake_{metric}"]
+        paired = pd.DataFrame({"active": active, "quiet": quiet}).dropna()
+        active_median, active_lower, active_upper = _median_iqr(paired.active)
+        quiet_median, quiet_lower, quiet_upper = _median_iqr(paired.quiet)
+        p_value = np.nan
+        if len(paired) and not (paired.active - paired.quiet).eq(0).all():
+            p_value = float(wilcoxon(paired.active, paired.quiet, alternative="two-sided", method="auto").pvalue)
+        rows.append(
+            {
+                "metric": metric,
+                "n_recording_pairs": len(paired),
+                "active_median": active_median,
+                "active_iqr_lower": active_lower,
+                "active_iqr_upper": active_upper,
+                "quiet_median": quiet_median,
+                "quiet_iqr_lower": quiet_lower,
+                "quiet_iqr_upper": quiet_upper,
+                "p_value": p_value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def analyze_raw_spectra(input_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Compute the raw report's per-file and deliberately independent-window spectra."""
+    files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
+    if not files:
+        raise ValueError(f"No MAT files found in {input_dir}.")
+    spectra, windows, summaries = [], [], []
+    for path in files:
+        recording = _common_start_recording(load_recording(path, path.stem, path.stem))
+        file_spectra, file_windows = compute_spectrum(recording, RAW_SPECTRUM)
+        spectra.append(file_spectra)
+        windows.append(file_windows)
+        summary = {**recording.identity}
+        for state in STATES.values():
+            selected = file_spectra.loc[file_spectra.state == state]
+            summary[f"{state}_n_windows"] = int(selected.n_windows.iloc[0]) if len(selected) else 0
+            metrics = spectral_metrics(selected)
+            summary.update({f"{state}_{name}": value for name, value in metrics.items()})
+        summaries.append(summary)
+    spectra = pd.concat(spectra, ignore_index=True)
+    windows = pd.concat(windows, ignore_index=True)
+    summaries = pd.DataFrame(summaries).sort_values("recording_id").reset_index(drop=True)
+    return spectra, windows, summaries, _paired_results(summaries, SPECTRAL_METRICS)
+
+
+def independent_spectral_window_results(windows: pd.DataFrame) -> pd.DataFrame:
+    """Describe spectral windows while explicitly ignoring their recording hierarchy."""
+    rows = []
+    for metric in ("band_power",):
+        active = windows.loc[windows.state == "active_wake", metric].dropna()
+        quiet = windows.loc[windows.state == "quiet_wake", metric].dropna()
+        active_median, active_lower, active_upper = _median_iqr(active)
+        quiet_median, quiet_lower, quiet_upper = _median_iqr(quiet)
+        p_value = np.nan
+        if len(active) and len(quiet):
+            p_value = float(mannwhitneyu(active, quiet, alternative="two-sided", method="auto").pvalue)
+        rows.append(
+            {
+                "metric": metric,
+                "n_active_windows": len(active),
+                "n_quiet_windows": len(quiet),
+                "active_median": active_median,
+                "active_iqr_lower": active_lower,
+                "active_iqr_upper": active_upper,
+                "quiet_median": quiet_median,
+                "quiet_iqr_lower": quiet_lower,
+                "quiet_iqr_upper": quiet_upper,
+                "p_value": p_value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def analyze_directory(input_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Analyze every MAT file in a directory as a separately named recording."""
     files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
@@ -214,8 +304,15 @@ def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
         raise ValueError(f"Output directory must be new or empty: {output_dir}")
     bouts, summaries, results = analyze_directory(input_dir)
     bout_results = independent_bout_results(bouts)
+    spectra, spectral_windows, spectral_summaries, spectral_results = analyze_raw_spectra(input_dir)
+    spectral_window_results = independent_spectral_window_results(spectral_windows)
     output_dir.mkdir(parents=True, exist_ok=True)
     bouts.to_csv(output_dir / "bouts.csv", index=False)
     summaries.to_csv(output_dir / "recordings.csv", index=False)
     results.to_csv(output_dir / "paired_recording_results.csv", index=False)
     bout_results.to_csv(output_dir / "independent_bout_results.csv", index=False)
+    spectra.to_csv(output_dir / "recording_spectra.csv", index=False)
+    spectral_windows.to_csv(output_dir / "spectral_windows.csv", index=False)
+    spectral_summaries.to_csv(output_dir / "spectral_recordings.csv", index=False)
+    spectral_results.to_csv(output_dir / "paired_spectral_results.csv", index=False)
+    spectral_window_results.to_csv(output_dir / "independent_spectral_window_results.csv", index=False)

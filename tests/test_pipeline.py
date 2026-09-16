@@ -25,7 +25,9 @@ from wake_ne_analysis.transients import detect_transients
 from wake_ne_analysis.validation import usable_data_summary, smoothing_power_retention
 from wake_ne_analysis.cli import analysis_main, validation_main
 from wake_ne_analysis.raw_bouts import (
+    analyze_raw_spectra,
     analyze_raw_bouts,
+    independent_spectral_window_results,
     independent_bout_results,
     paired_recording_results,
     summarize_recordings,
@@ -333,6 +335,27 @@ def test_raw_bout_independent_screen_uses_each_eligible_bout():
     assert peak.active_median == pytest.approx(5)
     assert peak.quiet_median == pytest.approx(3)
     assert np.isfinite(peak.p_value)
+
+
+def test_raw_spectral_screen_uses_common_start_windows(tmp_path):
+    fs = 10
+    seconds = np.arange(60 * fs) / fs
+    savemat(
+        tmp_path / "spectrum.mat",
+        {
+            "ne": np.sin(2 * np.pi * 0.2 * seconds),
+            "sleep_scores": [4] * 30 + [5] * 30,
+            "ne_frequency": fs,
+        },
+    )
+    spectra, windows, summaries, paired = analyze_raw_spectra(tmp_path)
+    assert len(spectra) > 0
+    assert summaries.active_wake_n_windows.item() == 2
+    assert summaries.quiet_wake_n_windows.item() == 2
+    assert paired.n_recording_pairs.tolist() == [1, 1]
+    independent = independent_spectral_window_results(windows)
+    assert independent.n_active_windows.item() == 2
+    assert independent.n_quiet_windows.item() == 2
 
 
 def test_manifest_and_both_clis_roundtrip(tmp_path):

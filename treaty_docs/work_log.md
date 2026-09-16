@@ -2,6 +2,23 @@
 
 ## 2026-09-16
 
+### Raw-report spectral hierarchy (Codex GPT-5; effort/tokens not reported)
+
+- Added a separate spectral calculation to the raw-bout report rather than copying
+  the mouse-level cohort spectrum. It uses all nine MAT files, each file's declared
+  common labelled interval, no start exclusion, and 15-second state-pure 0.20--0.30
+  Hz windows. One spectrum per state per file is compared by paired Wilcoxon; all
+  individual windows are separately shown with a pseudoreplicated Mann--Whitney
+  description.
+- Recording-level band power is not nominally different (n = 9, p = 0.570). The
+  deliberately independent window screen has 1,060 Active and 106 Quiet windows and
+  a nominal p = 0.0155, which is not biological inference. Frequency maximum is
+  unresolved: 17 of 18 recording/state values are at the 0.20 Hz lower band edge.
+- Verification:
+  - Regenerated and visually inspected both raw-report spectral figures.
+  - `python -m pytest --basetemp .pytest_tmp_raw_spectral_v2 -p no:cacheprovider -q`:
+    30 passed.
+
 ### Independent-bout raw-bout description (Codex GPT-5; effort/tokens not reported)
 
 - Made the raw-bout report self-contained and parallel in structure to the cohort
