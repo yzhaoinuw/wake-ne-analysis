@@ -2,6 +2,12 @@
 
 ## Currently Hot
 
+- `docs/preliminary_report_raw_bout_recordings.md` is a separate, intentionally
+  exploratory zero-referenced sensitivity screen. It treats every MAT file as an
+  independent recording and reports a nominal Active-Wake raw-peak signal; do not
+  turn it into a mouse-level biological conclusion or merge it with the local-baseline
+  report. Future submissions should retain verified mouse/session metadata and run a
+  predeclared sensitivity analysis of literal versus local-baseline definitions.
 - The current executive, GitHub-renderable cohort draft is
   `docs/preliminary_report.md`; its refreshed static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document

@@ -24,6 +24,7 @@ from wake_ne_analysis.spectra import compute_spectrum
 from wake_ne_analysis.transients import detect_transients
 from wake_ne_analysis.validation import usable_data_summary, smoothing_power_retention
 from wake_ne_analysis.cli import analysis_main, validation_main
+from wake_ne_analysis.raw_bouts import analyze_raw_bouts, paired_recording_results, summarize_recordings
 
 
 def _report_renderer_module():
@@ -284,6 +285,23 @@ def test_peak_example_selection_is_seeded_and_marks_a_clear_quiet_wake_peak():
     assert first.quiet_seconds_shown >= renderer.MIN_EXAMPLE_QUIET_SECONDS
     assert first.active_seconds_shown >= renderer.MIN_EXAMPLE_ACTIVE_SECONDS
     assert first.context_peak_excess <= renderer.MAX_EXAMPLE_CONTEXT_PEAK_EXCESS
+
+
+def test_raw_bout_comparison_uses_declared_common_start_interval():
+    source = recording(
+        [0, 1, 3, 1, 0, 0, 1, 4, 1, 0, 99, 99],
+        [4, 4, 4, 4, 4, 5, 5, 5, 5, 5],
+        fs=1,
+        name="raw",
+    )
+    bouts, audit = analyze_raw_bouts(source)
+    assert audit["common_start_samples"] == 10
+    assert audit["tail_ne_seconds_not_analyzed"] == pytest.approx(2)
+    assert bouts.raw_peak.tolist() == [3.0, 4.0]
+    assert bouts.complete_shape.all()
+    summaries = summarize_recordings(bouts, pd.DataFrame([audit]))
+    results = paired_recording_results(summaries)
+    assert results.loc[results.metric == "raw_peak", "n_recording_pairs"].item() == 1
 
 
 def test_manifest_and_both_clis_roundtrip(tmp_path):

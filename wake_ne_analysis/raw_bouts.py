@@ -1,0 +1,172 @@
+"""Exploratory zero-referenced, per-state-bout NE summaries.
+
+This deliberately separate workflow uses the stored processed NE values without a
+local baseline. It treats each MAT file as an independent recording for an explicitly
+labelled preliminary sensitivity comparison; it is not the primary mouse-level event
+analysis.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy.stats import wilcoxon
+
+from .io import STATES, Recording, load_recording, runs
+from .transients import crossing
+
+
+RAW_METRICS = ("raw_peak", "duration_seconds", "rise_slope", "decay_slope")
+
+
+def common_start_samples(recording: Recording) -> int:
+    """Return the declared common-start interval without modifying either input."""
+    label_covered = int(np.ceil(recording.labels.size * recording.fs))
+    return min(recording.ne.size, label_covered)
+
+
+def _sample_labels(recording: Recording, n_samples: int) -> np.ndarray:
+    seconds = np.floor(np.arange(n_samples) / recording.fs).astype(int)
+    result = np.full(n_samples, np.nan)
+    covered = seconds < recording.labels.size
+    result[covered] = recording.labels[seconds[covered]]
+    return result
+
+
+def analyze_raw_bouts(recording: Recording) -> tuple[pd.DataFrame, dict]:
+    """Measure one zero-referenced maximum per finite Active/Quiet state segment."""
+    n_samples = common_start_samples(recording)
+    signal = recording.ne[:n_samples]
+    labels = _sample_labels(recording, n_samples)
+    rows = []
+    for state_label, state in STATES.items():
+        valid = np.isfinite(signal) & (labels == state_label)
+        for start, stop in runs(valid):
+            values = signal[start:stop]
+            peak = int(np.argmax(values))
+            raw_peak = float(values[peak])
+            complete = False
+            l20 = l80 = r80 = r20 = np.nan
+            if raw_peak > 0 and 0 < peak < len(values) - 1:
+                l20 = crossing(values, 0, peak, 0.2 * raw_peak, True)
+                l80 = crossing(values, 0, peak, 0.8 * raw_peak, True)
+                r80 = crossing(values, peak, len(values) - 1, 0.8 * raw_peak, False)
+                r20 = crossing(values, peak, len(values) - 1, 0.2 * raw_peak, False)
+                complete = bool(np.all(np.isfinite([l20, l80, r80, r20])) and l20 < l80 < r80 < r20)
+            absolute = lambda sample: recording.start_time + (start + sample) / recording.fs
+            rows.append(
+                {
+                    **recording.identity,
+                    "state": state,
+                    "bout_index": len(rows),
+                    "onset_seconds": absolute(0),
+                    "offset_seconds": absolute(len(values)),
+                    "bout_duration_seconds": len(values) / recording.fs,
+                    "peak_seconds": absolute(peak),
+                    "raw_peak": raw_peak,
+                    "rise20_seconds": absolute(l20) if np.isfinite(l20) else np.nan,
+                    "rise80_seconds": absolute(l80) if np.isfinite(l80) else np.nan,
+                    "decay80_seconds": absolute(r80) if np.isfinite(r80) else np.nan,
+                    "decay20_seconds": absolute(r20) if np.isfinite(r20) else np.nan,
+                    "complete_shape": complete,
+                    "duration_seconds": (r20 - l20) / recording.fs if complete else np.nan,
+                    "rise_slope": 0.6 * raw_peak * recording.fs / (l80 - l20) if complete else np.nan,
+                    "decay_slope": 0.6 * raw_peak * recording.fs / (r20 - r80) if complete else np.nan,
+                }
+            )
+    audit = {
+        **recording.identity,
+        "ne_samples": int(recording.ne.size),
+        "sleep_label_seconds": int(recording.labels.size),
+        "ne_duration_seconds": recording.ne.size / recording.fs,
+        "common_start_samples": n_samples,
+        "common_start_seconds": min(recording.ne.size / recording.fs, recording.labels.size),
+        "tail_ne_seconds_not_analyzed": max(0.0, recording.ne.size / recording.fs - recording.labels.size),
+        "tail_label_seconds_not_analyzed": max(0.0, recording.labels.size - recording.ne.size / recording.fs),
+    }
+    return pd.DataFrame(rows), audit
+
+
+def _median_iqr(values: pd.Series) -> tuple[float, float, float]:
+    values = values.dropna()
+    if values.empty:
+        return np.nan, np.nan, np.nan
+    return float(values.median()), float(values.quantile(0.25)), float(values.quantile(0.75))
+
+
+def summarize_recordings(bouts: pd.DataFrame, audits: pd.DataFrame) -> pd.DataFrame:
+    """Create one row per MAT file, with bout medians and IQRs within each state."""
+    summaries = []
+    for recording_id, audit in audits.set_index("recording_id").iterrows():
+        row = audit.to_dict()
+        row["recording_id"] = recording_id
+        for state in STATES.values():
+            selected = bouts.loc[(bouts.recording_id == recording_id) & (bouts.state == state)]
+            row[f"{state}_n_bouts"] = len(selected)
+            row[f"{state}_n_complete_shapes"] = int(selected.complete_shape.sum())
+            for metric in RAW_METRICS:
+                median, lower, upper = _median_iqr(selected[metric])
+                row[f"{state}_{metric}_median"] = median
+                row[f"{state}_{metric}_iqr_lower"] = lower
+                row[f"{state}_{metric}_iqr_upper"] = upper
+        summaries.append(row)
+    return pd.DataFrame(summaries).sort_values("recording_id").reset_index(drop=True)
+
+
+def paired_recording_results(summaries: pd.DataFrame) -> pd.DataFrame:
+    """Paired recording-level results; independence of files is deliberately assumed."""
+    rows = []
+    for metric in RAW_METRICS:
+        active = summaries[f"active_wake_{metric}_median"]
+        quiet = summaries[f"quiet_wake_{metric}_median"]
+        paired = pd.DataFrame({"active": active, "quiet": quiet}).dropna()
+        active_median, active_lower, active_upper = _median_iqr(paired.active)
+        quiet_median, quiet_lower, quiet_upper = _median_iqr(paired.quiet)
+        p_value = np.nan
+        if len(paired) and not (paired.active - paired.quiet).eq(0).all():
+            p_value = float(wilcoxon(paired.active, paired.quiet, alternative="two-sided", method="auto").pvalue)
+        rows.append(
+            {
+                "metric": metric,
+                "n_recording_pairs": len(paired),
+                "active_median": active_median,
+                "active_iqr_lower": active_lower,
+                "active_iqr_upper": active_upper,
+                "quiet_median": quiet_median,
+                "quiet_iqr_lower": quiet_lower,
+                "quiet_iqr_upper": quiet_upper,
+                "p_value": p_value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def analyze_directory(input_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Analyze every MAT file in a directory as a separately named recording."""
+    files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
+    if not files:
+        raise ValueError(f"No MAT files found in {input_dir}.")
+    bout_tables, audits = [], []
+    for path in files:
+        recording = load_recording(path, path.stem, path.stem)
+        bouts, audit = analyze_raw_bouts(recording)
+        bout_tables.append(bouts)
+        audits.append(audit)
+    audits = pd.DataFrame(audits)
+    bouts = pd.concat(bout_tables, ignore_index=True)
+    summaries = summarize_recordings(bouts, audits)
+    return bouts, summaries, paired_recording_results(summaries)
+
+
+def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
+    """Write auditable raw-bout tables for the separate preliminary comparison."""
+    output_dir = Path(output_dir)
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise ValueError(f"Output directory must be new or empty: {output_dir}")
+    bouts, summaries, results = analyze_directory(input_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    bouts.to_csv(output_dir / "bouts.csv", index=False)
+    summaries.to_csv(output_dir / "recordings.csv", index=False)
+    results.to_csv(output_dir / "paired_recording_results.csv", index=False)

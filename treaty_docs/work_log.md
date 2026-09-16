@@ -2,6 +2,26 @@
 
 ## 2026-09-16
 
+### Exploratory raw-bout recording sensitivity (Codex GPT-5; effort/tokens not reported)
+
+- Added a separate, explicitly non-primary zero-referenced raw-bout workflow and
+  GitHub-renderable report. It retains all nine MAT files as independently treated
+  preliminary recordings, with within-file Active/Quiet pairing. `mouse5_day1.mat`
+  now contributes through a declared common-start/minimum-duration interval; its
+  6.25-second unlabelled NE tail is not state-compared, but no source data are changed.
+- Each state bout contributes its literal processed-NE maximum. Positive peaks can
+  additionally provide within-bout zero-referenced 20%/80% duration and slopes; a
+  missing crossing affects only that metric, never file inclusion. The workflow does
+  not apply the local baseline or the prior recording-start event exclusion.
+- The nine recording-pair screen finds higher zero-referenced Active-Wake peak levels
+  (paired Wilcoxon p = 0.0117), while duration and slopes have four complete pairs and
+  are not significant. The report calls this a screening signal only because repeated
+  recordings may share a mouse and literal levels can drift over time.
+- Verification:
+  - Regenerated the all-file raw-bout tables and visually inspected the paired figure.
+  - `python -m pytest --basetemp .pytest_tmp_raw_bout -p no:cacheprovider -q`: 27 passed.
+  - `git diff --check` and `treaty validate .` passed.
+
 ### Report terminology and reproducible-figure follow-up (Codex GPT-5; effort/tokens not reported)
 
 - Defined a mouse pair in the cohort report as the two within-mouse state summaries,

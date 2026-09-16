@@ -17,6 +17,11 @@ mouse-paired results, figures, and remaining limits for proposal discussion. The
 earlier [single-recording pilot](docs/pilot_report.md) is retained as historical
 pipeline evidence.
 
+An intentionally separate [raw-bout recording comparison](docs/preliminary_report_raw_bout_recordings.md)
+uses literal stored processed-NE peaks within each state bout and treats MAT files as
+independent preliminary records. It is a clearly labelled sensitivity screen, not a
+replacement for the mouse-level local-baseline report.
+
 ## Quick start
 
 The initial implementation was tested with the existing Conda environment:
