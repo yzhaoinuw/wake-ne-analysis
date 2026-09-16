@@ -1,5 +1,53 @@
 # Metric definitions and pilot choices
 
+## Upstream Active/Quiet Wake detection
+
+This analysis package does **not** relabel sleep stages. It analyzes the final
+one-second `sleep_scores` supplied by the scoring app: 4 is Active Wake and 5 is
+Quiet Wake. Those labels are produced upstream only after ordinary coarse scoring
+(Wake/NREM/REM), sparse manual-label overlay, and optional EMG subdivision of the
+remaining Wake seconds.
+
+The upstream subdivision uses raw EMG, linearly detrended and zero-phase band-pass
+filtered from 20 Hz to `min(200 Hz, 0.45 * sampling_rate)`. A centered 0.5-second
+root-mean-square (RMS) amplitude envelope is sampled at 20 Hz. Forward-and-reverse
+filtering and centered RMS smoothing avoid a directional phase delay; the envelope
+near a state boundary can still include approximately 0.25 seconds of neighboring
+EMG.
+
+At each envelope center `t`, RMS is `sqrt(mean(EMG^2))` over approximately
+`t - 0.25 s` through `t + 0.25 s`. Squaring prevents the positive and negative EMG
+waveform from cancelling, and the square root leaves the result in the signal's
+original units. The 20 Hz envelope supplies one value every 50 ms. Its adjacent
+0.5-second windows overlap by about 0.45 seconds, so these are intentionally smooth,
+correlated amplitude estimates—not independent 50 ms behavioral labels. The 20 Hz
+grid is a practical intermediate resolution: ten envelope values span an RMS window,
+and twenty values span each final one-second sleep score. It supports the short-gap
+and within-second-occupancy rules without claiming 50 ms onset/offset precision.
+Twenty hertz is a pragmatic signal-processing choice, not a biologically validated
+Wake-activity resolution; reviewed recordings should compare its final one-second
+labels with a direct one-RMS-value-per-second alternative before the extra intermediate
+grid is treated as necessary.
+
+In automatic mode, activity is anchored to valid NREM EMG rather than to the Wake
+distribution: `threshold = NREM RMS 75th percentile + 2 × robust SD`, where robust
+SD is `1.4826 × MAD` about the NREM median. This deliberately conservative reference
+helps prevent EMG-guided Wake scoring from defining its own baseline. A configured
+numeric RMS threshold can instead provide the initial value; explicit manual
+Active/Quiet examples may refine the initial cutoff while remaining authoritative in
+the final output. Missing, flatlined, or otherwise invalid EMG in a Wake second, or
+no valid NREM reference in automatic mode, stops subdivision rather than silently
+assigning Quiet Wake.
+
+Within Wake, RMS values above threshold form candidate active bouts. Dips of at
+most 0.5 seconds are bridged, and a bout must last at least one second. A one-second
+Wake label is Active when at least ten of that second's twenty envelope values are in
+an active bout; otherwise it is Quiet. Thus the NE pipeline receives a one-label-per-
+second score despite the finer intermediate measurement. EMG amplitude is a
+recording-specific muscle-activity proxy, not a calibrated whole-body movement
+measure. Its biological performance, including the NREM reference multiplier, still
+requires review against real recordings and expert/video annotation.
+
 ## Spectral analysis
 
 Within each file, construct the intersection of finite NE samples and each wake
