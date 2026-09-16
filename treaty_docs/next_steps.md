@@ -3,12 +3,13 @@
 ## Currently Hot
 
 - `docs/preliminary_report_raw_bout_recordings.md` is a separate, intentionally
-  exploratory zero-referenced sensitivity screen. It treats every MAT file as an
-  independent recording and reports nominal raw-peak and contextual-duration signals;
-  do not turn them into mouse-level biological conclusions or merge them with the
-  local-baseline report. Future submissions should retain verified mouse/session
-  metadata and run a predeclared sensitivity analysis of literal versus local-baseline
-  definitions.
+  exploratory zero-referenced sensitivity screen. It contains both a paired,
+  per-file Wilcoxon screen and a clearly quarantined per-bout Mann--Whitney
+  description. The latter knowingly pseudoreplicates correlated bouts and is not
+  biological inference. Do not turn either screen into a mouse-level conclusion or
+  merge it with the local-baseline report. Future submissions should retain verified
+  mouse/session metadata and run a predeclared sensitivity analysis of literal versus
+  local-baseline definitions.
 - The current executive, GitHub-renderable cohort draft is
   `docs/preliminary_report.md`; its refreshed static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document

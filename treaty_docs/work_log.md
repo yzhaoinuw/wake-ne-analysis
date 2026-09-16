@@ -2,6 +2,22 @@
 
 ## 2026-09-16
 
+### Independent-bout raw-bout description (Codex GPT-5; effort/tokens not reported)
+
+- Made the raw-bout report self-contained and parallel in structure to the cohort
+  report, including label provenance, metric definitions, a deliberately blank
+  spectral-result section, and a statistical appendix.
+- Added all-bout medians, IQRs, a deterministic point/violin figure, and two-sided
+  Mann--Whitney U calculations. The raw peak distribution has a nominal p =
+  5.22e-05; duration and the 20--80% slopes do not. This is explicitly labelled a
+  pseudoreplicated distributional description because bouts share recordings and
+  animals. The paired recording-level Wilcoxon screen remains the more appropriate
+  of the two provisional tests.
+- Verification:
+  - Regenerated the nine-file analysis and visually inspected the all-bout figure.
+  - `python -m pytest --basetemp .pytest_tmp_bout_stats -p no:cacheprovider -q`:
+    29 passed.
+
 ### Exploratory raw-bout recording sensitivity (Codex GPT-5; effort/tokens not reported)
 
 - Added a separate, explicitly non-primary zero-referenced raw-bout workflow and

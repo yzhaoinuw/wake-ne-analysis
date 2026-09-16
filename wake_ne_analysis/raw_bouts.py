@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import wilcoxon
+from scipy.stats import mannwhitneyu, wilcoxon
 
 from .io import STATES, Recording, load_recording, runs
 from .transients import crossing
@@ -157,6 +157,39 @@ def paired_recording_results(summaries: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def independent_bout_results(bouts: pd.DataFrame) -> pd.DataFrame:
+    """Summarize all bouts and run an explicitly exploratory unpaired screen.
+
+    This intentionally ignores recording and mouse membership.  The resulting
+    Mann--Whitney p-values are useful for describing the available bouts, but are
+    not valid animal-level evidence and must remain labelled as pseudoreplicated.
+    """
+    rows = []
+    for metric in RAW_METRICS:
+        active = bouts.loc[bouts.state == "active_wake", metric].dropna()
+        quiet = bouts.loc[bouts.state == "quiet_wake", metric].dropna()
+        active_median, active_lower, active_upper = _median_iqr(active)
+        quiet_median, quiet_lower, quiet_upper = _median_iqr(quiet)
+        p_value = np.nan
+        if len(active) and len(quiet):
+            p_value = float(mannwhitneyu(active, quiet, alternative="two-sided", method="auto").pvalue)
+        rows.append(
+            {
+                "metric": metric,
+                "n_active_bouts": len(active),
+                "n_quiet_bouts": len(quiet),
+                "active_median": active_median,
+                "active_iqr_lower": active_lower,
+                "active_iqr_upper": active_upper,
+                "quiet_median": quiet_median,
+                "quiet_iqr_lower": quiet_lower,
+                "quiet_iqr_upper": quiet_upper,
+                "p_value": p_value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def analyze_directory(input_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Analyze every MAT file in a directory as a separately named recording."""
     files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
@@ -180,7 +213,9 @@ def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError(f"Output directory must be new or empty: {output_dir}")
     bouts, summaries, results = analyze_directory(input_dir)
+    bout_results = independent_bout_results(bouts)
     output_dir.mkdir(parents=True, exist_ok=True)
     bouts.to_csv(output_dir / "bouts.csv", index=False)
     summaries.to_csv(output_dir / "recordings.csv", index=False)
     results.to_csv(output_dir / "paired_recording_results.csv", index=False)
+    bout_results.to_csv(output_dir / "independent_bout_results.csv", index=False)

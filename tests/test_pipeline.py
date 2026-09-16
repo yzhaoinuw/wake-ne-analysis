@@ -24,7 +24,12 @@ from wake_ne_analysis.spectra import compute_spectrum
 from wake_ne_analysis.transients import detect_transients
 from wake_ne_analysis.validation import usable_data_summary, smoothing_power_retention
 from wake_ne_analysis.cli import analysis_main, validation_main
-from wake_ne_analysis.raw_bouts import analyze_raw_bouts, paired_recording_results, summarize_recordings
+from wake_ne_analysis.raw_bouts import (
+    analyze_raw_bouts,
+    independent_bout_results,
+    paired_recording_results,
+    summarize_recordings,
+)
 
 
 def _report_renderer_module():
@@ -311,6 +316,23 @@ def test_raw_bout_shape_can_cross_a_wake_state_boundary():
     assert active.complete_shape
     assert active.crosses_state_boundary
     assert active.decay20_seconds > active.offset_seconds
+
+
+def test_raw_bout_independent_screen_uses_each_eligible_bout():
+    source = recording(
+        [0, 1, 5, 1, 0, 0, 1, 3, 1, 0],
+        [4, 4, 4, 4, 4, 5, 5, 5, 5, 5],
+        fs=1,
+        name="independent",
+    )
+    bouts, _ = analyze_raw_bouts(source)
+    results = independent_bout_results(bouts)
+    peak = results.loc[results.metric == "raw_peak"].iloc[0]
+    assert peak.n_active_bouts == 1
+    assert peak.n_quiet_bouts == 1
+    assert peak.active_median == pytest.approx(5)
+    assert peak.quiet_median == pytest.approx(3)
+    assert np.isfinite(peak.p_value)
 
 
 def test_manifest_and_both_clis_roundtrip(tmp_path):
