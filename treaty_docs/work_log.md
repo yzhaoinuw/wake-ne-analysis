@@ -2,6 +2,33 @@
 
 ## 2026-09-16
 
+### Report actual score-bout durations alongside NE-event widths (Codex GPT-5; effort/tokens not reported)
+
+- Corrected the reporting omission: the reports now place literal sleep-score-bout
+  duration in their results summaries instead of requiring readers to infer it from a
+  later note. The nine-file raw screen is 4 s (IQR 2–10) Active versus 2 s (1–4)
+  Quiet when pooled by run; its paired file-median summary is 5 s (4–7) versus 2 s
+  (1.5–2). The identified four-mouse cohort's pooled-within-mouse medians are 6.0 s
+  (4.5–7.0) versus 2.0 s (1.75–2.0).
+- Retained the separate peak-assigned NE-episode width and 20–80% slopes; those are
+  intentionally different measurements and must not be substituted for score-bout
+  duration. The raw analysis now writes every literal run to `score_label_bouts.csv`
+  for direct audit.
+- Verification:
+  - Regenerated `outputs/raw_bout_recording_comparison_20260916_peak_assigned` and
+    confirmed its score-bout audit output.
+
+### Raw-bout literal-peak assignment figure (Codex GPT-5; effort/tokens not reported)
+
+- Added a deterministic raw-report trace example that makes the distinct raw-bout
+  contract visible: the selected value is the literal maximum within the outlined
+  one-state score run, with no rolling baseline, prominence threshold, or local-peak
+  detector. Its 20%/80% crossings are relative to that literal maximum and retain the
+  same allowed peak-state boundary-crossing policy as the raw analysis.
+- Verification:
+  - Rendered and visually inspected `raw_peak_assignment_example.png`.
+  - Full test/validation results are recorded with this delivery after regeneration.
+
 ### Separate score-bout geometry from peak-assigned NE timing (Codex GPT-5; effort/tokens not reported)
 
 - Direct audit of the saved one-second labels confirmed that Quiet Wake is much less

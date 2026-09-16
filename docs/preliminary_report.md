@@ -41,6 +41,21 @@ p-values use the paired Wilcoxon signed-rank test described in
 [Appendix C](#appendix-c-statistical-test-and-interpretation). They are exploratory
 and use a two-sided threshold of 0.05.
 
+### Actual sleep-score bout duration
+
+This table reports the durations visible in the sleep-score timelines: maximal runs
+of the final one-second Active- or Quiet-Wake labels. It is intentionally separate
+from NE-episode width, which is reported below and may cross score boundaries under
+the allowed peak-state rule.
+
+| Score-bout measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
+|---|---:|---:|---:|---|
+| **Pooled-within-mouse score-bout duration (s)** | **6.0 (4.5–7.0)** | **2.0 (1.75–2.0)** | n = 4 | 0.125; exploratory, low power |
+
+These values pool every literal score run within each identified mouse before taking
+the mouse-level median. They confirm that Quiet-Wake runs are shorter; they do not
+describe NE-event width or kinetics.
+
 | Peak-assigned NE measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Episode amplitude (percentage points) | 0.803 (0.760–0.870) | 0.928 (0.901–0.929) | n = 3 | 0.500; not significant |

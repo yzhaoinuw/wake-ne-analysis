@@ -8,12 +8,14 @@
   description, plus analogous recording-paired and pseudoreplicated-window spectral
   screens. Its 20%/80% widths and slopes are deliberately peak-assigned full-NE-event
   measures: their supports may cross a score boundary, so label them clearly as such
-  and never as sleep-score-bout duration. The independent-observation calculations
-  knowingly pseudoreplicate correlated bouts/windows and are not biological inference.
-  Do not turn any screen into a mouse-level conclusion or merge it with the
-  local-baseline report. Future submissions should retain verified mouse/session
-  metadata and run a predeclared sensitivity analysis of literal versus local-baseline
-  definitions.
+  and never as sleep-score-bout duration. Its trace example must retain the distinct
+  literal-maximum rule: no rolling baseline, prominence threshold, or local-peak
+  detector. The prominent score-label table is the actual run-duration result (not
+  the NE-episode-width table). The independent-observation calculations knowingly
+  pseudoreplicate correlated bouts/windows and are not biological inference. Do not
+  turn any screen into a mouse-level conclusion or merge it with the local-baseline
+  report. Future submissions should retain verified mouse/session metadata and run a
+  predeclared sensitivity analysis of literal versus local-baseline definitions.
 - The current executive, GitHub-renderable cohort draft is
   `docs/preliminary_report.md`; its refreshed static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document

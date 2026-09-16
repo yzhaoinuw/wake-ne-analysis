@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wake_ne_analysis.io import load_recording
 
 
 STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
@@ -21,6 +25,11 @@ SPECTRAL_METRICS = [
     ("band_power", "15 s 0.20–0.30 Hz band power", "percentage points²"),
     ("dominant_frequency_hz", "15 s frequency maximum", "Hz"),
 ]
+RAW_PEAK_EXAMPLE_RECORDING_ID = "part1_mouse5_day2_Mouse5_220525_2025-05-22_19-56-49-015"
+RAW_PEAK_EXAMPLE_SEED = 20260916
+MIN_EXAMPLE_QUIET_SECONDS = 10
+MIN_EXAMPLE_ACTIVE_SECONDS = 4
+MAX_EXAMPLE_CONTEXT_PEAK_EXCESS = 0.05
 
 
 def parse_args(argv=None):
@@ -32,6 +41,127 @@ def parse_args(argv=None):
 
 def _save(figure, path: Path):
     figure.write_image(path, format="png", width=1800, height=1280, scale=2)
+
+
+def _state_spans(recording, left: float, right: float):
+    """Yield clipped one-second score spans for the illustrative raw-bout trace."""
+    state = np.where(recording.labels == 4, "active_wake", np.where(recording.labels == 5, "quiet_wake", "other"))
+    start = recording.start_time + np.arange(recording.labels.size)
+    chosen = (start < right) & (start + 1 > left)
+    start, state = start[chosen], state[chosen]
+    first = 0
+    for index in range(1, len(state) + 1):
+        if index == len(state) or state[index] != state[first]:
+            yield max(left, start[first]), min(right, start[index - 1] + 1), state[first]
+            first = index
+
+
+def _seconds_in_state(recording, left: float, right: float, state_label: int) -> float:
+    start = recording.start_time + np.arange(recording.labels.size)
+    overlap = np.maximum(0, np.minimum(start + 1, right) - np.maximum(start, left))
+    return float(overlap[recording.labels == state_label].sum())
+
+
+def choose_raw_peak_example(bouts: pd.DataFrame, recording_id: str, seed: int):
+    """Choose a visible Quiet-Wake literal-bout maximum with crossing context."""
+    candidates = bouts.loc[
+        (bouts.recording_id == recording_id)
+        & (bouts.state == "quiet_wake")
+        & bouts.complete_shape
+        & bouts.crosses_state_boundary
+        & (bouts.bout_duration_seconds >= 5)
+        & (bouts.bout_duration_seconds <= 60)
+        & (bouts.duration_seconds >= 5)
+        & (bouts.duration_seconds <= 100)
+    ].copy()
+    if candidates.empty:
+        raise ValueError(f"No eligible raw-bout peak examples for {recording_id!r}.")
+    source = candidates.iloc[0]
+    recording = load_recording(Path(source.mat_path), source.mouse_id, source.recording_id)
+    candidates["display_left"] = np.minimum(candidates.rise20_seconds, candidates.onset_seconds) - 20
+    candidates["display_right"] = np.maximum(candidates.decay20_seconds, candidates.offset_seconds) + 20
+    candidates["quiet_seconds_shown"] = [
+        _seconds_in_state(recording, left, right, 5)
+        for left, right in zip(candidates.display_left, candidates.display_right)
+    ]
+    candidates["active_seconds_shown"] = [
+        _seconds_in_state(recording, left, right, 4)
+        for left, right in zip(candidates.display_left, candidates.display_right)
+    ]
+    time = recording.start_time + np.arange(recording.ne.size) / recording.fs
+    candidates["context_peak_excess"] = [
+        float(recording.ne[(time >= left) & (time <= right)].max() - peak)
+        for left, right, peak in zip(candidates.display_left, candidates.display_right, candidates.raw_peak)
+    ]
+    candidates = candidates.loc[
+        (candidates.quiet_seconds_shown >= MIN_EXAMPLE_QUIET_SECONDS)
+        & (candidates.active_seconds_shown >= MIN_EXAMPLE_ACTIVE_SECONDS)
+        & (candidates.context_peak_excess <= MAX_EXAMPLE_CONTEXT_PEAK_EXCESS)
+    ].sort_values(["peak_seconds", "onset_seconds"], kind="stable")
+    if candidates.empty:
+        raise ValueError(
+            "No raw-bout peak example has the required Active/Quiet context and a clear displayed maximum."
+        )
+    return candidates.iloc[np.random.default_rng(seed).integers(len(candidates))], recording
+
+
+def raw_peak_assignment_figure(bouts: pd.DataFrame):
+    """Show literal within-bout peak assignment without the cohort baseline detector."""
+    import plotly.graph_objects as go
+
+    chosen, recording = choose_raw_peak_example(bouts, RAW_PEAK_EXAMPLE_RECORDING_ID, RAW_PEAK_EXAMPLE_SEED)
+    left, right = float(chosen.display_left), float(chosen.display_right)
+    time = recording.start_time + np.arange(recording.ne.size) / recording.fs
+    shown = (time >= left) & (time <= right)
+    values = recording.ne[shown]
+    low, high = float(values.min()), float(values.max())
+    pad = max((high - low) * 0.08, 0.1)
+    figure = go.Figure()
+    for start, stop, state in _state_spans(recording, left, right):
+        label = STATE_NAMES.get(state) if stop - start >= 3 else None
+        kwargs = {"x0": start, "x1": stop, "fillcolor": STATE_COLORS.get(state, "#969696"), "line_width": 0, "layer": "below"}
+        if label:
+            kwargs.update(annotation_text=label, annotation_position="top left", annotation_font={"size": 11, "color": "#334e68"})
+        figure.add_vrect(**kwargs)
+    figure.add_vrect(
+        x0=chosen.onset_seconds,
+        x1=chosen.offset_seconds,
+        fillcolor="rgba(255,255,255,0)",
+        line={"color": "#05668d", "width": 2},
+        annotation_text="selected Quiet score run",
+        annotation_position="top right",
+        annotation_font={"size": 11, "color": "#05668d"},
+    )
+    figure.add_trace(go.Scatter(x=time[shown], y=values, mode="lines", name="processed NE", line={"color": "#1f2933", "width": 2}))
+    figure.add_hline(y=0, line_dash="dot", line_color="#52606d", annotation_text="zero reference", annotation_font={"size": 11, "color": "#52606d"})
+    figure.add_trace(
+        go.Scatter(
+            x=[chosen.peak_seconds], y=[chosen.raw_peak], mode="markers", name="literal within-bout maximum",
+            marker={"color": STATE_COLORS["quiet_wake"], "size": 13, "line": {"color": "white", "width": 2}},
+        )
+    )
+    figure.add_annotation(
+        x=chosen.peak_seconds, y=chosen.raw_peak, text="P = maximum in outlined score run",
+        showarrow=True, arrowhead=2, ax=0, ay=-42, bgcolor="rgba(255,255,255,0.92)",
+        bordercolor="#334e68", font={"size": 11, "color": "#334e68"},
+    )
+    for value, label in ((chosen.rise20_seconds, "rising 20%"), (chosen.rise80_seconds, "rising 80%"), (chosen.decay80_seconds, "falling 80%"), (chosen.decay20_seconds, "falling 20%")):
+        figure.add_vline(x=value, line_dash="dash", line_color="#7b3294", line_width=1.5)
+        figure.add_annotation(x=value, y=high + pad * 0.25, text=label, showarrow=False, textangle=-90, font={"size": 11, "color": "#7b3294"})
+    figure.update_layout(
+        template="plotly_white", title="Raw-bout peak assignment: literal maximum inside a Quiet-Wake score run",
+        xaxis_title="recording time (seconds)", yaxis_title="processed NE (percentage delta-F/F)",
+        yaxis_range=[low - pad, high + pad], legend={"orientation": "h", "y": -0.2}, height=600,
+        margin={"l": 80, "r": 40, "t": 95, "b": 100},
+    )
+    figure.add_annotation(
+        x=0.5, y=-0.31, xref="paper", yref="paper",
+        text=("Orange = Active Wake; light blue = Quiet Wake; gray = other state. "
+              "No rolling baseline, prominence threshold, or local-peak detector is used: P is the literal maximum in the outlined score run. "
+              "Purple crossings are relative to P and may cross score boundaries by peak-state assignment."),
+        showarrow=False, font={"size": 12, "color": "#52606d"},
+    )
+    return figure
 
 
 def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
@@ -303,6 +433,7 @@ def main(argv=None):
     spectral_window_results = pd.read_csv(args.analysis / "independent_spectral_window_results.csv")
     args.output.mkdir(parents=True, exist_ok=True)
     _save(metric_figure(recordings, results), args.output / "raw_bout_metric_comparisons.png")
+    _save(raw_peak_assignment_figure(bouts), args.output / "raw_peak_assignment_example.png")
     _save(
         independent_bout_metric_figure(bouts, bout_results),
         args.output / "raw_bout_independent_metric_comparisons.png",

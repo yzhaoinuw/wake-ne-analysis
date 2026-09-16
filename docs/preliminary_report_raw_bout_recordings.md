@@ -57,12 +57,18 @@ not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
 
 ### Score-label geometry (not an NE measurement)
 
-Across the nine source files, Active Wake occupies 26,532 labelled seconds and
-Quiet Wake 8,626 seconds (24.5% of labelled Wake time). Their numbers of maximal
-one-second label runs are nevertheless close: 2,247 Active and 2,312 Quiet. Quiet
-runs are distinctly shorter: pooled median 2 s (IQR 1–4), versus 4 s (IQR 2–10)
-for Active; 81.6% of Quiet and 59.7% of Active runs are at most 5 s. Thus a near-
-balanced run count is fragmentation, not comparable time in each state.
+This is the actual sleep-score bout duration requested by the score visualization;
+it is separate from the peak-assigned NE-episode width above.
+
+| Actual maximal score-run measure | Active Wake | Quiet Wake | Interpretation |
+|---|---:|---:|---|
+| Labelled time (s) | 26,532 | 8,626 | Quiet is 24.5% of labelled Wake time |
+| Number of score runs | 2,247 | 2,312 | Similar counts reflect fragmentation, not comparable time |
+| **Pooled score-bout duration (s)** | **4 (2–10)** | **2 (1–4)** | Actual one-second-label run duration |
+| File-median score-bout duration (s) | 5 (4–7) | 2 (1.5–2) | n = 9 paired files; Wilcoxon p = 0.00391, exploratory |
+
+Thus Quiet Wake has a near-balanced raw run count but is materially shorter and less
+prevalent in time; 81.6% of Quiet and 59.7% of Active score runs are at most 5 s.
 
 The short-window spectrum is calculated separately using the same recording-level
 and deliberately independent-observation hierarchy. It uses all nine files, their
@@ -118,6 +124,15 @@ local-baseline report, which estimates a rolling 20th-percentile baseline across
 continuous recording before detecting elevations. The two definitions are useful
 comparisons, not interchangeable estimates.
 
+![Raw-bout literal-peak assignment](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_peak_assignment_example.png)
+
+**Figure 1.** Raw-bout peak assignment. The outlined light-blue score run supplies
+its own selected peak: `P` is the largest stored processed-NE value within that run.
+There is no rolling baseline, prominence threshold, or local-peak detector in this
+workflow. Purple lines mark 20%/80% crossings relative to literal `P`; they may cross
+score boundaries because the state is assigned by the peak. This is intentionally
+different from the rolling-baseline event detector illustrated in the cohort report.
+
 ### NE episode amplitude
 
 For each finite single-state bout, amplitude is the largest stored processed NE value
@@ -165,9 +180,9 @@ state values. The zero-referenced peak and the peak-assigned NE-episode width ha
 nominal paired p-values below 0.05. They remain exploratory because the nine file
 pairs are only a temporary proxy for independent animals.
 
-![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_metric_comparisons.png)
+![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_metric_comparisons.png)
 
-**Figure 1.** File-level median raw-bout metrics. Orange is Active Wake; light blue
+**Figure 2.** File-level median raw-bout metrics. Orange is Active Wake; light blue
 is Quiet Wake. All panels contain nine recording pairs. Width and slopes are assigned
 by the state at the NE peak; their crossings may span other score states by design.
 
@@ -180,9 +195,9 @@ remaining value is 0.30 Hz. The paired p = 1.000 should not be read as evidence 
 frequency is the same—this edge-locking means the narrow band has not resolved a
 dominant oscillation.
 
-![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_recording_spectral_comparisons.png)
+![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_recording_spectral_comparisons.png)
 
-**Figure 2.** One averaged short-window spectrum per state per MAT file. Orange is
+**Figure 3.** One averaged short-window spectrum per state per MAT file. Orange is
 Active Wake; light blue is Quiet Wake. The apparent frequency maximum clustering at
 the lower band edge is a feasibility limitation, not a resolved biological frequency.
 
@@ -192,24 +207,24 @@ pseudoreplicated: 1,060 Active windows and 106 Quiet windows come from only nine
 files, and the samples are highly correlated within recordings. It cannot overturn or
 replace the paired recording-level result.
 
-![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_independent_spectral_comparisons.png)
+![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_spectral_comparisons.png)
 
-**Figure 3.** Every 15-second state-pure spectral window. The point/violin display
+**Figure 4.** Every 15-second state-pure spectral window. The point/violin display
 shows the window-count imbalance and is marked as an exploratory, non-independent
 description.
 
 ### Independent-bout exploratory description
 
-Figure 4 displays every eligible scored-bout peak and uses a two-sided Mann–Whitney
+Figure 5 displays every eligible scored-bout peak and uses a two-sided Mann–Whitney
 calculation only as a distributional screen. The peak distributions have a nominal
 difference; the peak-assigned width and slope distributions do not. The figure makes
 the large apparent sample size visible, but it must not be interpreted as thousands
 of independent animals or experimental replicates. Bouts share neural state,
 recording context, preprocessing, and often the same mouse.
 
-![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_independent_metric_comparisons.png)
+![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_metric_comparisons.png)
 
-**Figure 4.** Every eligible bout is shown as a faint point, with a violin and box
+**Figure 5.** Every eligible bout is shown as a faint point, with a violin and box
 summary. The fixed random seed controls horizontal jitter only. Mann–Whitney labels
 are deliberately marked exploratory because bout independence is knowingly false.
 
@@ -329,12 +344,12 @@ python scripts/analyze_raw_bouts.py `
 
 python scripts/render_raw_bout_report_figures.py `
   --analysis outputs/raw_bout_recording_comparison_20260916_peak_assigned `
-  --output docs/assets/raw_bout_recording_comparison_peak_assigned
+  --output docs/assets/raw_bout_recording_comparison_peak_assigned_v2
 ```
 
-The analysis writes an explicit `score_label_geometry.csv` audit in addition to
-per-bout peak-assigned NE measurements, spectral-window tables, recording-level
-summaries, paired Wilcoxon results, and independent-bout/window Mann–Whitney results.
-Figures 3 and 4 use seed `20260916` for horizontal jitter; the seed does not select
-or alter observations. Output directories must be new or empty, preventing accidental
-mixing of results from different input sets.
+The analysis writes `score_label_bouts.csv` and `score_label_geometry.csv` audits in
+addition to per-bout peak-assigned NE measurements, spectral-window tables,
+recording-level summaries, paired Wilcoxon results, and independent-bout/window
+Mann–Whitney results. Figures 4 and 5 use seed `20260916` for horizontal jitter; the
+seed does not select or alter observations. Output directories must be new or empty,
+preventing accidental mixing of results from different input sets.

@@ -323,6 +323,26 @@ def label_geometry_directory(input_dir: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def score_label_bouts_directory(input_dir: Path) -> pd.DataFrame:
+    """Return every literal maximal one-second score run for duration auditing."""
+    files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
+    rows = []
+    for path in files:
+        recording = load_recording(path, path.stem, path.stem)
+        for state_label, state in STATES.items():
+            for start, stop in runs(recording.labels == state_label):
+                rows.append(
+                    {
+                        **recording.identity,
+                        "state": state,
+                        "onset_seconds": recording.start_time + start,
+                        "offset_seconds": recording.start_time + stop,
+                        "score_bout_duration_seconds": stop - start,
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
 def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
     """Write auditable raw-bout tables for the separate preliminary comparison."""
     output_dir = Path(output_dir)
@@ -330,12 +350,14 @@ def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
         raise ValueError(f"Output directory must be new or empty: {output_dir}")
     bouts, summaries, results = analyze_directory(input_dir)
     label_geometry = label_geometry_directory(input_dir)
+    score_label_bouts = score_label_bouts_directory(input_dir)
     bout_results = independent_bout_results(bouts)
     spectra, spectral_windows, spectral_summaries, spectral_results = analyze_raw_spectra(input_dir)
     spectral_window_results = independent_spectral_window_results(spectral_windows)
     output_dir.mkdir(parents=True, exist_ok=True)
     bouts.to_csv(output_dir / "bouts.csv", index=False)
     label_geometry.to_csv(output_dir / "score_label_geometry.csv", index=False)
+    score_label_bouts.to_csv(output_dir / "score_label_bouts.csv", index=False)
     summaries.to_csv(output_dir / "recordings.csv", index=False)
     results.to_csv(output_dir / "paired_recording_results.csv", index=False)
     bout_results.to_csv(output_dir / "independent_bout_results.csv", index=False)
