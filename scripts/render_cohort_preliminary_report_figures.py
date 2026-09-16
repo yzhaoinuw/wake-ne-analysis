@@ -17,14 +17,11 @@ from wake_ne_analysis.io import load_recording
 STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
 # Keep the state colors aligned with the upstream sleep_scoring application.
 STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
-STATE_FILL_COLORS = {
-    "active_wake": "rgba(230,159,0,0.24)",
-    "quiet_wake": "rgba(86,180,233,0.28)",
-    "other": "rgba(150,150,150,0.18)",
-}
+# The scoring app renders stage colors at full opacity; use the same appearance here.
+STATE_FILL_COLORS = {**STATE_COLORS, "other": "#969696"}
 PEAK_EXAMPLE_SEED = 20260916
-MIN_EXAMPLE_QUIET_SECONDS = 10
-MIN_EXAMPLE_ACTIVE_SECONDS = 5
+MIN_EXAMPLE_QUIET_SECONDS = 20
+MAX_EXAMPLE_CONTEXT_PEAK_EXCESS = 0.05
 METRICS = [
     ("amplitude_median", "Episode amplitude", "percentage points"),
     ("duration_seconds_median", "Episode duration", "seconds"),
@@ -144,7 +141,7 @@ def coverage_figure(coverage: pd.DataFrame):
     order = ["mouse1", "mouse3", "mouse5", "mouse7", "unverified_35"]
     figure = make_subplots(rows=1, cols=2, subplot_titles=("Active Wake", "Quiet Wake"))
     for column, state in enumerate(("active_wake", "quiet_wake"), start=1):
-        for seconds, opacity, pattern in ((15, 1.0, ""), (20, 0.65, "/")):
+        for seconds, opacity, pattern in ((15, 1.0, ""), (20, 1.0, "/")):
             data = coverage.loc[(coverage.state == state) & (coverage.window_seconds == seconds)]
             values = data.set_index("mouse_id").reindex(order).n_windows.fillna(0)
             figure.add_trace(
@@ -198,7 +195,7 @@ def _seconds_in_state(recording, left: float, right: float, state_label: int) ->
 
 
 def choose_peak_example(events: pd.DataFrame, recording, recording_id: str, seed: int):
-    """Pick a seeded Quiet-Wake peak example that visibly includes both wake states."""
+    """Pick a seeded Quiet-Wake example whose marked point is visibly the local maximum."""
     candidates = events.loc[
         (events.recording_id == recording_id)
         & (events.state == "quiet_wake")
@@ -215,18 +212,23 @@ def choose_peak_example(events: pd.DataFrame, recording, recording_id: str, seed
         _seconds_in_state(recording, left, right, 5)
         for left, right in zip(candidates.display_left, candidates.display_right)
     ]
-    candidates["active_seconds_shown"] = [
-        _seconds_in_state(recording, left, right, 4)
-        for left, right in zip(candidates.display_left, candidates.display_right)
+    time = recording.start_time + np.arange(recording.ne.size) / recording.fs
+    candidates["peak_value_shown"] = [np.interp(value, time, recording.ne) for value in candidates.peak_seconds]
+    candidates["context_peak_excess"] = [
+        float(recording.ne[(time >= left) & (time <= right)].max() - peak_value)
+        for left, right, peak_value in zip(
+            candidates.display_left, candidates.display_right, candidates.peak_value_shown
+        )
     ]
     candidates = candidates.loc[
         (candidates.quiet_seconds_shown >= MIN_EXAMPLE_QUIET_SECONDS)
-        & (candidates.active_seconds_shown >= MIN_EXAMPLE_ACTIVE_SECONDS)
+        & (candidates.context_peak_excess <= MAX_EXAMPLE_CONTEXT_PEAK_EXCESS)
     ].sort_values(["peak_seconds", "onset20_seconds"], kind="stable")
     if candidates.empty:
         raise ValueError(
-            "No peak-state example shows the required Quiet- and Active-Wake context "
-            f"({MIN_EXAMPLE_QUIET_SECONDS} s Quiet; {MIN_EXAMPLE_ACTIVE_SECONDS} s Active)."
+            "No peak-state example has the required visible Quiet-Wake context and "
+            f"clear marked maximum ({MIN_EXAMPLE_QUIET_SECONDS} s Quiet; "
+            f"no more than {MAX_EXAMPLE_CONTEXT_PEAK_EXCESS} percentage points below context maximum)."
         )
     return candidates.iloc[np.random.default_rng(seed).integers(len(candidates))]
 
@@ -268,8 +270,20 @@ def peak_assignment_figure(events: pd.DataFrame, mat_path: Path, mouse_id: str, 
             y=[recording.ne[np.argmin(np.abs(time - chosen.peak_seconds))]],
             mode="markers",
             name="Quiet-Wake peak",
-            marker={"color": STATE_COLORS["quiet_wake"], "size": 11},
+            marker={"color": STATE_COLORS["quiet_wake"], "size": 13, "line": {"color": "white", "width": 2}},
         )
+    )
+    figure.add_annotation(
+        x=chosen.peak_seconds,
+        y=chosen.peak_value_shown,
+        text="selected peak",
+        showarrow=True,
+        arrowhead=2,
+        ax=0,
+        ay=-42,
+        bgcolor="rgba(255,255,255,0.92)",
+        bordercolor="#334e68",
+        font={"size": 11, "color": "#334e68"},
     )
     for value, label in (
         (chosen.onset20_seconds, "rising 20%"),

@@ -11,9 +11,11 @@
   defines the 20%/80% slope crossings.
 - Aligned report figures with the upstream `sleep_scoring` colors: Active Wake is
   orange (`#E69F00`) and Quiet Wake is light blue (`#56B4E9`). The peak-state plot
-  now uses a deterministically seeded, eligible Quiet-Wake peak example that visibly
-  includes and labels both wake states. The renderer records seed `20260916`, its
-  minimum displayed-state context, and has a synthetic determinism test.
+  now uses those opaque stage colors and a deterministically seeded, eligible
+  Quiet-Wake peak example. It requires at least 20 displayed Quiet-Wake seconds and
+  rejects a candidate if a higher NE value would make its marked point visually
+  misleading. The renderer records seed `20260916`, its eligibility criteria, and
+  has a synthetic determinism test.
 - Moved the spectral feasibility rationale into the methodology, kept a concise
   spectral result subsection, and added appendix equations plus the forward/backward
   moving-average retained-power table. It distinguishes smoothing attenuation from

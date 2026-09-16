@@ -331,5 +331,7 @@ python scripts/render_cohort_preliminary_report_figures.py `
 
 The output directory must be new or empty when rendering, which prevents silently
 mixing figures from different analysis runs. The seed chooses deterministically among
-complete, non-start-QC-excluded Quiet-Wake peak events that display at least 10 seconds
-of Quiet Wake and 5 seconds of Active Wake in the plotted context.
+complete, non-start-QC-excluded Quiet-Wake peak events that display at least 20 seconds
+of Quiet Wake and whose selected point is no more than 0.05 percentage points below
+the largest NE value in the plotted context. This makes the labelled point a clear,
+visually defensible local peak.
