@@ -43,7 +43,11 @@ def bout_table(recording):
     )
 
 
-def usable_data_summary(recording, windows=(5, 10, 20, 30, 60, 120, 180)):
+def usable_data_summary(
+    recording,
+    windows=(5, 10, 20, 30, 60, 120, 180),
+    recording_start_exclusion_seconds=0.0,
+):
     bouts, rows = bout_table(recording), []
     labels = recording.sample_labels
     for label, state in STATES.items():
@@ -54,7 +58,9 @@ def usable_data_summary(recording, windows=(5, 10, 20, 30, 60, 120, 180)):
             total, int(((labels == label) & np.isfinite(recording.ne)).sum()) / recording.fs
         )
         for seconds in windows:
-            slices = list(window_slices(recording, label, seconds))
+            slices = list(
+                window_slices(recording, label, seconds, recording_start_exclusion_seconds)
+            )
             covered = min(valid, sum(stop - start for start, stop in slices) / recording.fs)
             rows.append(
                 {
@@ -76,9 +82,19 @@ def usable_data_summary(recording, windows=(5, 10, 20, 30, 60, 120, 180)):
     return pd.DataFrame(rows)
 
 
-def validate_file(path, mouse_id, recording_id=None, windows=(5, 10, 20, 30, 60, 120, 180)):
+def validate_file(
+    path,
+    mouse_id,
+    recording_id=None,
+    windows=(5, 10, 20, 30, 60, 120, 180),
+    recording_start_exclusion_seconds=0.0,
+):
     recording = load_recording(path, mouse_id, recording_id)
-    return quality_report(recording), usable_data_summary(recording, windows), bout_table(recording)
+    return (
+        quality_report(recording),
+        usable_data_summary(recording, windows, recording_start_exclusion_seconds),
+        bout_table(recording),
+    )
 
 
 def smoothing_power_retention(frequency, saved_fs, factor=100, filter_samples=1000):

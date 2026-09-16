@@ -1,0 +1,15 @@
+{
+  "spectrum": {"window_seconds": 15, "fmin": 0.2, "fmax": 0.3, "minimum_cycles": 3},
+  "transients": {
+    "baseline_window_seconds": 60,
+    "baseline_percentile": 20,
+    "min_prominence": 0.5,
+    "noise_multiplier": 3,
+    "min_peak_distance_seconds": 1,
+    "assignment": "contained"
+  },
+  "require_fine_wake": true,
+  "preprocessing_downsample_factor": 100,
+  "preprocessing_filter_samples": 1000,
+  "recording_start_exclusion_seconds": 15
+}

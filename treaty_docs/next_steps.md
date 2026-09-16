@@ -2,30 +2,46 @@
 
 ## Currently Hot
 
-- The first real file, `data/35_app13_groundtruth.mat`, has been analyzed only as
-  `unverified_35`: it contains no embedded mouse/session/condition identifier.
-  Obtain and replace this with the explicit mapping; do not infer it from the filename.
-- Its preflight passed: fs 10.1725 Hz, no gaps/coarse Wake, 1,118 s Active and
-  753 s Quiet. Quiet has 0 eligible 120 s windows, 1 at 60 s, 6 at 30 s, and 28 at
-  15 s. A 30 s / 0.1–0.2 Hz setting is only an exploratory sensitivity for this
-  file; choose a common spectrum setting with the PI or leave slow spectra missing.
-- Review the first-file event QC. Contained-event retention is 14/35 Active and
-  2/25 Quiet candidates because 15/35 and 21/25 candidates cross a state boundary.
-  Raw-data review found a large first-second recording-start excursion (initial
-  −99.6 percentage points) that technical validation does not auto-flag because it
-  is finite. Inspect start-of-recording values across new files and agree a
-  reproducible clipping/exclusion rule only if the pattern recurs; do not alter
-  current inputs meanwhile.
-- Choose a common spectral window/band based on retained data and upstream smoothing.
-  The example 120 s / 0.025–0.1 Hz is unvalidated. If Quiet Wake is too short, retain
-  missing slow spectra instead of concatenating bouts or changing windows by state.
+- The current executive, GitHub-renderable cohort draft is
+  `docs/preliminary_report.md`; its refreshed static figures live in
+  `docs/assets/cohort_preliminary_report/`. The earlier single-recording document
+  is preserved as `docs/pilot_report.md` and is historical rather than the current
+  cohort result. Review the draft's plain-language duration/T1/2 wording with the PI
+  before treating those provisional metrics as final definitions.
+- The 2026-09-16 proposal delivery is in
+  `outputs/proposal_cohort_20260916_final_peak15_presentation.html` with PNG panels
+  in `outputs/proposal_cohort_20260916_final_peak15_figures/`. The contained-event
+  sensitivity counterpart uses the `final_contained15` names. Inputs are listed in
+  `data/proposal_cohort_eligible_manifest_20260916.csv`.
+- Nine files were audited; eight passed the analysis contracts and pool into Mouse 1,
+  3, 5, 7, and a clearly separate `unverified_35` row. The replacement
+  `35_app13_groundtruth.mat` still lacks an embedded identity, so obtain an explicit
+  mapping before any biological aggregation. `mouse5_day1.mat` has 6.25 more NE
+  seconds than labels and is excluded rather than silently truncated.
+- Three recordings have a reproducible first-second NE excursion. The final proposal
+  run applies a cohort-wide, recorded 15-second start exclusion to event eligibility
+  and spectral windows; raw, unexcluded outputs remain as a sensitivity check.
+- For files newly scored with the sibling app's automatic subdivision, retain the
+  NREM-anchored detector provenance: threshold = NREM RMS 75th percentile plus two
+  MAD-derived robust SDs, with a one-second minimum activity bout. Review this pilot
+  setting against real recordings/video before treating Active/Quiet labels as a
+  validated behavioral measure.
+- For the rapid proposal analysis, assign each complete NE signal elevation episode
+  to the state at its peak (`assignment="peak"`). Keep contained-event results and
+  crossing counts as a clearly labelled sensitivity check.
+- Cohort preflight chose the 15 s / 0.20–0.30 Hz common fallback: Mouse 7 has no
+  Quiet 20 s windows but has three at 15 s. This is an explicitly high-frequency
+  feasibility result, not the earlier slow-spectrum question. All reported PSD
+  maxima lie at 0.20 Hz, the lower band edge; do not interpret them as resolved
+  dominant frequencies. Never stitch bouts, pad data, or use state-specific settings.
 - Send PI correspondence directly, outside the repository. The static report and
   paired raw-trace boundary examples are ready to support the meeting and calibrate
   baseline/prominence if needed.
 - Confirm the PI's duration definition and whether 20–80% means secant or regression.
   Current draft uses 20%-to-20% duration and secant slopes, positive decay magnitude.
-- Compare contained-event vs peak-state summaries and inspect exclusion fractions;
-  do not hide boundary-related selection bias in short Quiet Wake.
+- Ask the PI whether 20–80% slopes replace rising/decay T₁/₂ and define episode
+  duration separately. The current 20%-to-20% duration and secant slopes remain
+  transparent provisional choices. Do not treat events or files as independent mice.
 - The GitHub-rendered report is committed and pushed to `origin/main`. Configure
   GitHub Pages from `docs/` only if a Pages URL is desired; the direct GitHub report
   link is already suitable for the meeting request.

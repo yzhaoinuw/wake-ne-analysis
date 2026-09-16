@@ -3,14 +3,14 @@
 ## User objective and present status
 
 The user and PI want to compare the NE signal during Active Wake and Quiet Wake
-in mice. The user is gathering fully labeled MAT files. This repository is a
-standalone pilot pipeline, **not yet validated on real recordings**. It was created
+in mice. The user has supplied an initial cohort of fully labeled MAT files. This
+repository is a standalone pilot pipeline, **not yet biologically validated**. It was created
 2026-09-14 at `C:\Users\yzhao\python_projects\wake-ne-analysis` from a conversation
 in `C:\Users\yzhao\python_projects\sleep_scoring`.
 
-The initial local repository has no remote or commits; work is ready for review.
 Do not create a GitHub repository, PR, release, or publish experimental results
-unless the user asks. No raw laboratory recordings have been copied into this repo.
+unless the user asks. Raw laboratory recordings are locally ignored and are never
+committed.
 
 ## Decisions already agreed with the user
 
@@ -64,9 +64,11 @@ unless the user asks. No raw laboratory recordings have been copied into this re
 - Duration is 20%-to-20% event width; slopes are 20–80% secants, positive decay
   magnitude. Confirm whether the PI instead uses regression through those samples
   or a different duration definition before scientific reporting.
-- Primary events are complete and contained in a single state; crossing candidates
-  are retained and flagged. Peak-state assignment is an explicit alternative for
-  sensitivity checks. State-boundary selection bias still needs inspection.
+- The PI selected peak-state assignment for the rapid proposal analysis: all complete
+  candidates contribute to the final Active/Quiet state at their peak, including
+  boundary-crossing support. Contained-event results remain a labelled sensitivity
+  check. Keep crossing counts visible because the result is not a pure-state kinetics
+  estimate.
 - Event medians pool all eligible events per mouse. Spectra pool equal windows.
   No group significance testing, session/circadian stratification, or uncertainty
   estimates have been added. Inputs should not mix biological conditions blindly.
@@ -74,13 +76,16 @@ unless the user asks. No raw laboratory recordings have been copied into this re
 ## Start the next session here
 
 1. Read `AGENTS.md`, `treaty_docs/next_steps.md`, then `docs/methods.md` as needed.
-2. Ask the user for the collected MAT paths and explicit mouse/session/condition
-   mapping. Use a manifest; never derive mouse identities from arbitrary filenames.
-3. Run validation first. Inspect sampling rates, duration mismatches, gaps, unsplit
-   Wake, bout lengths, and coverage of BOTH states at candidate window durations.
-4. Review real event traces and thresholds with the user/PI. A graphical event QC
-   plot is a useful next addition; current audit outputs are tables only.
-5. Choose one common spectral configuration (or declare slow spectra infeasible
-   for short Quiet Wake), run the analysis, and check event boundary sensitivity.
+2. The 2026-09-16 proposal run uses eight analyzable MAT files, pooled into four
+   identified mice plus `unverified_35`; see `treaty_docs/next_steps.md` for the
+   output locations and exclusions. Do not treat `unverified_35` as a biological
+   mouse until an explicit mapping is supplied.
+3. Resolve `mouse5_day1.mat` before any definitive analysis: it has 6.25 excess NE
+   seconds relative to its labels, so it was excluded rather than trimmed.
+4. Review the 15 s / 0.20–0.30 Hz peak-state figures as a high-frequency feasibility
+   result. Quiet coverage is sparse in Mouse 3 and Mouse 7; every PSD maximum is at
+   the 0.20 Hz band edge, so dominant-frequency values are not resolved oscillations.
+5. Ask the PI whether 20–80% slopes replace T₁/₂ and define episode duration
+   separately. The current 20%-to-20% duration is a transparent placeholder.
 6. Keep changes and decisions in the treaty docs; the initial scientific choices
    are provisional and should not be assumed settled just because tests pass.

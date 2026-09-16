@@ -83,6 +83,24 @@ def test_gaps_and_short_bouts_are_not_stitched():
     assert summary.n_windows.sum() == 0
 
 
+def test_recording_start_qc_exclusion_flags_events_and_skips_initial_windows():
+    data = recording(triangular_events((5, 5), (10, 40)), [4] * 180)
+    config = AnalysisConfig(
+        spectrum=SpectrumConfig(15, 0.2, 0.3),
+        transients=TransientConfig(assignment="peak"),
+        recording_start_exclusion_seconds=15,
+    )
+    result = analyze_recording(data, config)
+    early = result.events.loc[result.events.peak_seconds < 15]
+    assert len(early) == 1
+    assert early.recording_start_qc_excluded.iloc[0]
+    assert not early.eligible.iloc[0]
+    assert result.events.loc[result.events.peak_seconds >= 15, "eligible"].any()
+    assert result.windows.start_seconds.min() >= 15
+    coverage = usable_data_summary(data, [15], recording_start_exclusion_seconds=15)
+    assert coverage.n_windows.sum() == 11
+
+
 def test_spectrum_has_correct_power_frequency_and_offset_invariance():
     time = np.arange(3600) / 10
     config = SpectrumConfig(120, 0.025, 0.1)

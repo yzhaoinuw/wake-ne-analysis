@@ -9,11 +9,13 @@ This is a tested **pilot draft using synthetic signals**. Real MAT files are bei
 collected. Event-detection parameters and the spectral window/band must be reviewed
 against those recordings before biological conclusions are drawn.
 
-## Preliminary pilot report
+## Preliminary cohort report
 
-The first real-file, single-recording pilot is presented in a GitHub-renderable
-[preliminary report](docs/preliminary_report.md). It documents descriptive results,
-figures, and PI decisions needed before cohort-level interpretation.
+The current real-file cohort draft is presented in a GitHub-renderable
+[preliminary report](docs/preliminary_report.md). It documents the descriptive,
+mouse-paired results, figures, and remaining limits for proposal discussion. The
+earlier [single-recording pilot](docs/pilot_report.md) is retained as historical
+pipeline evidence.
 
 ## Quick start
 
@@ -55,11 +57,14 @@ include spectral-window coverage and wake-bout durations:
 
 ```powershell
 python scripts/plot_ne_results.py outputs/analysis01 `
-  --preflight outputs/preflight01 --output outputs/analysis01_report.html
+  --preflight outputs/preflight01 --output outputs/analysis01_report.html `
+  --static-dir outputs/analysis01_figures
 ```
 
 The report shows descriptive per-mouse points, candidate-versus-retained events,
-and relevant coverage/audit distributions. It does not calculate group tests.
+spectral summaries/curves, and relevant coverage/audit distributions. `--static-dir`
+also writes matching PNG panels for slides or a proposal. It does not calculate group
+tests.
 Install the optional plotting dependency with `python -m pip install -e ".[plot]"`
 if Plotly is not already available.
 

@@ -18,14 +18,18 @@ WINDOW_COLUMNS = [
 PSD_COLUMNS = ["mouse_id", "recording_id", "mat_path", "state", "frequency_hz", "psd", "n_windows"]
 
 
-def window_slices(recording, state, seconds):
+def window_slices(recording, state, seconds, recording_start_exclusion_seconds=0.0):
     if not np.isfinite(seconds) or seconds <= 0:
         raise ValueError("Window duration must be positive and finite.")
+    if not np.isfinite(recording_start_exclusion_seconds) or recording_start_exclusion_seconds < 0:
+        raise ValueError("Recording-start exclusion must be finite and nonnegative.")
     n = round(seconds * recording.fs)
     if n < 2:
         raise ValueError("Window must contain at least two samples.")
     mask = (recording.sample_labels == state) & np.isfinite(recording.ne)
+    first_allowed = int(np.ceil(recording_start_exclusion_seconds * recording.fs))
     for start, stop in runs(mask):
+        start = max(start, first_allowed)
         for left in range(start, stop - n + 1, n):
             yield left, left + n
 
@@ -40,7 +44,7 @@ def spectral_metrics(psd):
     return {"band_power": power, "dominant_frequency_hz": peak}
 
 
-def compute_spectrum(recording, config):
+def compute_spectrum(recording, config, recording_start_exclusion_seconds=0.0):
     if config.fmax >= recording.fs / 2:
         raise ValueError("Spectral fmax must be below the saved NE Nyquist frequency.")
     # Common physical-frequency grid for pooling files with slightly different fs.
@@ -60,7 +64,12 @@ def compute_spectrum(recording, config):
     windows, spectra = [], []
     for stage, state in STATES.items():
         values = []
-        for left, right in window_slices(recording, stage, config.window_seconds):
+        for left, right in window_slices(
+            recording,
+            stage,
+            config.window_seconds,
+            recording_start_exclusion_seconds,
+        ):
             f, p = periodogram(
                 recording.ne[left:right],
                 recording.fs,

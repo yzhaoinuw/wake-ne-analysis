@@ -26,6 +26,7 @@ EVENT_COLUMNS = [
     "complete",
     "crosses_state",
     "baseline_edge",
+    "recording_start_qc_excluded",
     "eligible",
 ]
 
@@ -40,8 +41,10 @@ def crossing(y, start, stop, level, rising):
     return index + (level - y[index]) / (y[index + 1] - y[index])
 
 
-def detect_transients(recording, config=None):
+def detect_transients(recording, config=None, recording_start_exclusion_seconds=0.0):
     config = config or TransientConfig()
+    if not np.isfinite(recording_start_exclusion_seconds) or recording_start_exclusion_seconds < 0:
+        raise ValueError("Recording-start exclusion must be finite and nonnegative.")
     finite = np.isfinite(recording.ne)
     differences = np.diff(recording.ne)[finite[:-1] & finite[1:]]
     noise = 0.0
@@ -77,7 +80,14 @@ def detect_transients(recording, config=None):
                 # Include both samples bracketing interpolated crossings.
                 event_labels = labels[start + int(np.floor(l20)) : start + int(np.ceil(r20)) + 1]
                 crosses = not bool(np.all(event_labels == stage))
-            eligible = complete and stage in STATES and (config.assignment == "peak" or not crosses)
+            relative_peak_seconds = (start + peak) / recording.fs
+            recording_start_qc_excluded = relative_peak_seconds < recording_start_exclusion_seconds
+            eligible = (
+                complete
+                and stage in STATES
+                and (config.assignment == "peak" or not crosses)
+                and not recording_start_qc_excluded
+            )
             absolute = lambda sample: recording.start_time + (start + sample) / recording.fs
             rows.append(
                 {
@@ -103,6 +113,7 @@ def detect_transients(recording, config=None):
                     "complete": complete,
                     "crosses_state": crosses,
                     "baseline_edge": bool(peak < size // 2 or peak >= len(y) - size // 2),
+                    "recording_start_qc_excluded": recording_start_qc_excluded,
                     "eligible": eligible,
                 }
             )

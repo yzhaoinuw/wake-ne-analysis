@@ -32,10 +32,18 @@ def analyze_recording(recording, config=None):
         raise ValueError(
             f"{recording.recording_id}: NE and label durations differ by more than one second."
         )
-    events = detect_transients(recording, config.transients)
+    events = detect_transients(
+        recording,
+        config.transients,
+        config.recording_start_exclusion_seconds,
+    )
     if config.spectrum is None:
         spectra, windows = pd.DataFrame(columns=PSD_COLUMNS), pd.DataFrame(columns=WINDOW_COLUMNS)
-        coverage = usable_data_summary(recording, [1])
+        coverage = usable_data_summary(
+            recording,
+            [1],
+            config.recording_start_exclusion_seconds,
+        )
         coverage["n_windows"] = 0
         coverage["covered_seconds"] = 0.0
         coverage["coverage_fraction"] = float("nan")
@@ -43,8 +51,16 @@ def analyze_recording(recording, config=None):
         coverage["three_cycle_frequency_hz"] = float("nan")
         quality["spectrum_status"] = "not_configured"
     else:
-        spectra, windows = compute_spectrum(recording, config.spectrum)
-        coverage = usable_data_summary(recording, [config.spectrum.window_seconds])
+        spectra, windows = compute_spectrum(
+            recording,
+            config.spectrum,
+            config.recording_start_exclusion_seconds,
+        )
+        coverage = usable_data_summary(
+            recording,
+            [config.spectrum.window_seconds],
+            config.recording_start_exclusion_seconds,
+        )
         quality["spectrum_status"] = "configured"
         quality["smoothing_only_power_retention_at_fmax"] = smoothing_power_retention(
             config.spectrum.fmax,
@@ -52,6 +68,7 @@ def analyze_recording(recording, config=None):
             config.preprocessing_downsample_factor,
             config.preprocessing_filter_samples,
         )
+    quality["recording_start_exclusion_seconds"] = config.recording_start_exclusion_seconds
     return RecordingAnalysis(
         recording.mouse_id,
         recording.recording_id,

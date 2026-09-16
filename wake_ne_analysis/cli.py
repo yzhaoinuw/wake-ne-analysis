@@ -94,17 +94,32 @@ def analysis_main(argv=None):
 def validation_main(argv=None):
     parser = _parser("Inspect MAT quality and usable spectral windows without analyzing NE events.")
     parser.add_argument("--windows", type=float, nargs="+", default=[5, 10, 20, 30, 60, 120, 180])
+    parser.add_argument(
+        "--recording-start-exclusion-seconds",
+        type=float,
+        default=0.0,
+        help="Exclude this initial duration from candidate spectral windows.",
+    )
     args = parser.parse_args(argv)
     try:
         if args.output.exists():
             raise ValueError("Output directory already exists. Choose a new run directory.")
         if any(not np.isfinite(v) or v <= 0 for v in args.windows):
             raise ValueError("Window durations must be finite and positive.")
+        if (
+            not np.isfinite(args.recording_start_exclusion_seconds)
+            or args.recording_start_exclusion_seconds < 0
+        ):
+            raise ValueError("Recording-start exclusion must be finite and nonnegative.")
         rows = read_manifest(args.manifest)
         qualities, coverage, bouts, errors = [], [], [], []
         for row in rows:
             try:
-                quality, usable, bout = validate_file(**row, windows=args.windows)
+                quality, usable, bout = validate_file(
+                    **row,
+                    windows=args.windows,
+                    recording_start_exclusion_seconds=args.recording_start_exclusion_seconds,
+                )
                 qualities.append(quality)
                 coverage.append(usable)
                 bouts.append(bout)
@@ -118,6 +133,7 @@ def validation_main(argv=None):
         }
         metadata = _metadata(args.manifest, rows)
         metadata["candidate_window_seconds"] = args.windows
+        metadata["recording_start_exclusion_seconds"] = args.recording_start_exclusion_seconds
         _write_tables(args.output, tables, metadata)
     except (ValueError, OSError) as error:
         parser.exit(2, f"Validation failed: {error}\n")

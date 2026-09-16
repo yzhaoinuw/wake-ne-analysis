@@ -23,6 +23,11 @@ def _parser() -> argparse.ArgumentParser:
         help="Optional validation output directory, or its coverage.csv table.",
     )
     parser.add_argument("--output", required=True, type=Path, help="New HTML report path.")
+    parser.add_argument(
+        "--static-dir",
+        type=Path,
+        help="New directory for PNG panels matching the interactive report.",
+    )
     parser.add_argument("--title", default="Wake NE exploratory report", help="Report title.")
     return parser
 
@@ -233,7 +238,81 @@ def event_figure(events: pd.DataFrame | None, title: str):
     return figure
 
 
-def write_report(output: Path, figures: list) -> None:
+def spectral_summary_figure(subjects: pd.DataFrame, title: str):
+    from plotly.subplots import make_subplots
+
+    figure = make_subplots(
+        rows=1,
+        cols=2,
+        subplot_titles=("Short-window band power", "Short-window dominant frequency"),
+    )
+    _add_state_points(figure, subjects, "band_power", 1, 1, "percentage points²")
+    _add_state_points(figure, subjects, "dominant_frequency_hz", 1, 2, "Hz")
+    figure.update_layout(
+        title=f"{title}: exploratory spectral summaries",
+        template="plotly_white",
+        height=440,
+        margin={"l": 65, "r": 30, "t": 80, "b": 75},
+        annotations=[
+            *figure.layout.annotations,
+            {
+                "text": "Each point is one mouse. Values are unavailable when that state has no eligible fixed windows.",
+                "xref": "paper",
+                "yref": "paper",
+                "x": 0,
+                "y": -0.18,
+                "showarrow": False,
+                "font": {"color": "#555", "size": 12},
+            },
+        ],
+    )
+    return figure
+
+
+def spectra_figure(spectra: pd.DataFrame | None, title: str):
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+
+    if spectra is None or spectra.empty:
+        return None
+    figure = make_subplots(rows=1, cols=2, subplot_titles=("Active Wake", "Quiet Wake"))
+    for column, (state, display) in enumerate(STATE_NAMES.items(), start=1):
+        subset = spectra.loc[spectra.state == state]
+        for mouse_id, curve in subset.groupby("mouse_id", sort=True):
+            curve = curve.sort_values("frequency_hz")
+            n_windows = int(curve.n_windows.iloc[0])
+            figure.add_trace(
+                go.Scatter(
+                    x=curve.frequency_hz,
+                    y=curve.psd,
+                    mode="lines+markers",
+                    name=f"{mouse_id} ({n_windows} windows)",
+                    legendgroup=f"{state}_{mouse_id}",
+                    hovertemplate=(
+                        f"{display}<br>{mouse_id}<br>frequency: %{{x:.3g}} Hz<br>"
+                        "PSD: %{y:.4g} percentage-points²/Hz<extra></extra>"
+                    ),
+                ),
+                row=1,
+                col=column,
+            )
+        figure.update_xaxes(title_text="frequency (Hz)", row=1, col=column)
+        figure.update_yaxes(title_text="PSD (percentage-points²/Hz)", row=1, col=column)
+    figure.update_layout(
+        title=f"{title}: per-mouse short-window spectra",
+        template="plotly_white",
+        height=470,
+        margin={"l": 75, "r": 30, "t": 80, "b": 60},
+    )
+    return figure
+
+
+def write_report(
+    output: Path,
+    figures: list,
+    assignment: str,
+    recording_start_exclusion_seconds: float = 0.0,
+) -> None:
     from plotly.io import to_html
 
     if output.exists():
@@ -244,16 +323,40 @@ def write_report(output: Path, figures: list) -> None:
         for i, figure in enumerate(figures)
         if figure is not None
     ]
+    event_note = (
+        "Complete NE signal elevation episodes are assigned to the final wake state at "
+        "their peak; boundary-crossing support remains visible in the audit."
+        if assignment == "peak"
+        else "Event medians use only complete episodes contained within the assigned "
+        "wake state; excluded crossing candidates remain visible."
+    )
+    qc_note = (
+        f" Candidates peaking and spectral windows starting in the first "
+        f"{recording_start_exclusion_seconds:g} seconds of each recording are excluded "
+        "under the recorded start-artifact QC rule."
+        if recording_start_exclusion_seconds > 0
+        else ""
+    )
     output.write_text(
         "<!doctype html><html><head><meta charset='utf-8'><title>Wake NE report</title>"
         "<style>body{font-family:Arial,sans-serif;margin:0 auto;max-width:1280px;padding:18px;}"
         "p{color:#444;line-height:1.45;}</style></head><body>"
-        "<p>Exploratory descriptive plots. Event medians use only complete events contained "
-        "within the assigned wake state; excluded crossing candidates remain visible.</p>"
+        f"<p>Exploratory descriptive plots. {event_note}{qc_note}</p>"
         + "\n".join(fragments)
         + "</body></html>",
         encoding="utf-8",
     )
+
+
+def write_static_figures(output: Path, figure_items: list[tuple[str, object]]) -> None:
+    if output.exists():
+        raise ValueError(f"Static figure directory already exists: {output}")
+    output.mkdir(parents=True)
+    for index, (name, figure) in enumerate(figure_items, start=1):
+        if figure is None:
+            continue
+        height = int(figure.layout.height or 700)
+        figure.write_image(output / f"{index:02d}_{name}.png", width=1800, height=height, scale=2)
 
 
 def main(argv=None) -> int:
@@ -263,15 +366,36 @@ def main(argv=None) -> int:
         if "mouse_id" not in subjects:
             raise ValueError(f"subjects table has no mouse_id column: {subjects_path}")
         events = _read_optional(args.results, "events.csv")
+        subject_spectra = _read_optional(args.results, "subject_spectra.csv")
         preflight_source = args.preflight or args.results
         coverage = _read_optional(preflight_source, "coverage.csv")
         bouts = _read_optional(preflight_source, "bouts.csv")
-        figures = [
-            summary_figure(subjects, args.title),
-            preflight_figure(coverage, bouts, args.title),
-            event_figure(events, args.title),
+        figure_items = [
+            ("subject_event_metrics", summary_figure(subjects, args.title)),
+            ("window_coverage", preflight_figure(coverage, bouts, args.title)),
+            ("event_candidates", event_figure(events, args.title)),
+            ("spectral_metrics", spectral_summary_figure(subjects, args.title)),
+            ("subject_spectra", spectra_figure(subject_spectra, args.title)),
         ]
-        write_report(args.output, figures)
+        assignment = "contained"
+        recording_start_exclusion_seconds = 0.0
+        run_path = _table_path(args.results, "run.json")
+        if run_path is not None:
+            import json
+            metadata = json.loads(run_path.read_text(encoding="utf-8"))
+            config = metadata.get("config", {})
+            assignment = config.get("transients", {}).get("assignment", assignment)
+            recording_start_exclusion_seconds = config.get(
+                "recording_start_exclusion_seconds", recording_start_exclusion_seconds
+            )
+        write_report(
+            args.output,
+            [figure for _, figure in figure_items],
+            assignment,
+            recording_start_exclusion_seconds,
+        )
+        if args.static_dir is not None:
+            write_static_figures(args.static_dir, figure_items)
     except (ImportError, OSError, ValueError, KeyError) as error:
         _parser().exit(2, f"Plotting failed: {error}\n")
     print(f"Wrote interactive report: {args.output}")

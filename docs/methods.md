@@ -146,25 +146,38 @@ Keep both crossing times so another convention can be implemented transparently.
 NE amplitude/slope units refer to the **processed percentage delta-F/F trace**;
 they are not NE concentration or direct secretion/clearance rates.
 
+## Recording-start QC for the proposal cohort
+
+Three supplied recordings begin with a large, repeatable negative-to-positive NE
+excursion during roughly the first second. In two, the saved label is Active Wake,
+so the artifact creates a complete high-amplitude candidate and contaminates the
+first fixed spectral window. The proposal configuration therefore excludes, without
+rewriting any MAT data, candidate events whose peak is in the first 15 seconds of a
+recording and spectral windows that would start there. Those candidates remain in
+`events.csv` with `recording_start_qc_excluded=true`; the configuration and output
+quality table record the exclusion. Fifteen seconds is a deliberately conservative,
+cohort-wide pilot rule that removes the affected 15-second window. The unexcluded
+run remains an inspectable sensitivity output, not deleted data.
+
 ## State boundaries and retained events
 
 The peak supplies the candidate's state. All candidates remain in `events.csv`,
-including other/unscored states. The default `assignment="contained"` includes only
-complete events whose 20%-to-20% support, including interpolation-bracketing samples,
-lies in the same Active/Quiet state. Crossing events are flagged and excluded from
-the primary state summaries, without cutting their waveforms or durations.
+including other/unscored states. For the PI-directed proposal analysis,
+`assignment="peak"` includes every complete Active/Quiet candidate in the state at
+its peak, even when its 20%-to-20% support spans another state. This answers a
+peak-state question, not a pure within-state kinetics question, and is necessary to
+avoid discarding most short-state candidates.
 
-`assignment="peak"` explicitly allows complete crossing events to contribute to the
-peak's state. That result describes NE signal elevation episodes peaking in a state, including portions
-outside it. It is a sensitivity-analysis option, not equivalent to pure within-state
-kinetics. Whichever rule is used must be shared across all files being pooled.
-
-The conservative contained rule can select longer bouts/events differently between
-states. Report retained fractions and inspect crossing counts before interpreting
-differences. `baseline_edge` flags when the baseline window extends beyond a finite
-stretch; those events remain eligible if otherwise complete. Upstream noncausal
-smoothing also mixes signal across state boundaries, even when saved sample labels
-are contained. No boundary deconvolution or guard interval is applied in this draft.
+`assignment="contained"` remains available as a sensitivity analysis: it includes
+only complete events whose 20%-to-20% support, including interpolation-bracketing
+samples, lies in the same Active/Quiet state. The contained rule can select longer
+bouts/events differently between states, so the proposal report will retain the
+crossing counts and the eligibility rule beside each summary. Whichever rule is used
+must be shared across all files being pooled. `baseline_edge` flags when the baseline
+window extends beyond a finite stretch; those events remain eligible if otherwise
+complete. Upstream noncausal smoothing also mixes signal across state boundaries,
+even when saved sample labels are contained. No boundary deconvolution or guard
+interval is applied in this draft.
 
 ## Aggregation and missingness
 

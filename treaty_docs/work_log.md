@@ -1,6 +1,78 @@
 # Work Log
 
+## 2026-09-16
+
+### Executive cohort report draft (Codex GPT-5; effort/tokens not reported)
+
+- Renamed the historical, single-recording report to `docs/pilot_report.md` and
+  created `docs/preliminary_report.md` for the current eight-recording cohort.
+  The new report presents mouse-paired medians, IQRs, sample sizes, and two-sided
+  Wilcoxon p-values without treating events, windows, files, or the unidentified
+  source as independent mice.
+- Added a reusable renderer and three static report figures: paired metric results,
+  15-versus-20-second spectral-window coverage, and a raw-trace example of the
+  PI-directed peak-state assignment. The report separates high-level methods from
+  appendix equations and explains the provisional 20%-to-20% duration, 20–80%
+  secant slopes, spectrum boundary limitation, and small-sample interpretation.
+- Verification:
+  - Rendered and visually inspected the three static cohort-report figures from the
+    QC'd peak-state output.
+  - `python -m pytest --basetemp .pytest_tmp_preliminary_report -p no:cacheprovider -q`:
+    25 passed.
+  - `git diff --check` passed.
+
+### Cohort proposal delivery with start-artifact QC (Codex GPT-5; effort/tokens not reported)
+
+- Audited all nine supplied MAT files. Eight are analyzable and pooled into Mouse 1,
+  3, 5, 7, and separately labeled `unverified_35`; embedded video metadata supplied
+  the mouse/session mapping for the named files. `mouse5_day1.mat` has a 6.25-second
+  NE/label duration mismatch and was excluded without trimming either vector.
+- Preflight selected the common 15 s / 0.20–0.30 Hz fallback because Mouse 7 has no
+  Quiet 20-second window but has three Quiet 15-second windows. Its PSD maxima all
+  occur at the 0.20 Hz lower edge, so the reported band maximum is not a resolved
+  oscillation and the spectrum is explicitly high-frequency exploratory.
+- Recurrent large recording-start excursions appeared in three files; two produced
+  artificial, complete Active-Wake candidates. Added a 15-second cohort-wide start
+  exclusion that flags, but does not delete, early candidates and excludes initial
+  spectral windows without modifying inputs. The final peak-state and contained-event
+  sensitivity reports include interactive HTML plus five PNG panels each.
+- Added the agenda question distinguishing T₁/₂, 20–80% slopes, and the separate
+  provisional 20%-to-20% duration rule.
+- Verification:
+  - Full-manifest preflight: 9 files audited, 0 structural-load errors.
+  - Eligible-manifest preflight: 8 files, 0 errors; peak-state and contained-event
+    runs each wrote five descriptive subject rows and their audit tables.
+  - Rendered and visually inspected the peak-state static metric and spectral panels.
+  - `python -m pytest --basetemp .pytest_tmp_final -p no:cacheprovider -q`: 25 passed.
+
 ## 2026-09-15
+
+### Document upstream NREM-anchored Wake subdivision (Codex GPT-5; effort/tokens not reported)
+
+- Documented the upstream Active/Quiet Wake contract used by this analysis: final
+  labels 4/5 follow EMG RMS subdivision of coarse Wake, anchored automatically to
+  the NREM RMS 75th percentile plus two MAD-derived robust standard deviations.
+  The one-second duration and multiplier remain pilot settings requiring real-data
+  review; this repository continues to analyze saved labels without relabeling them.
+- Verification:
+  - Reviewed the sibling scoring implementation; its full Python suite passed
+    (254 tests). `git diff --check` passed here; no NE input, score, or analysis
+    result was changed.
+
+### PI direction for rapid proposal analysis (Codex GPT-5; effort/tokens not reported)
+
+- The PI selected peak-state attribution for complete NE signal elevation episodes:
+  include a boundary-crossing episode in the final Active/Quiet Wake state at its
+  peak. The report must retain crossing counts and identify this as a peak-state,
+  rather than pure-state, kinetic summary.
+- The PI requested short common spectral intervals to assess whether the proposal
+  shows promise. Prepared 20 s / 0.15–0.25 Hz and 15 s / 0.20–0.30 Hz exploratory
+  configurations; cohort-wide 15 s and 20 s preflight coverage will select the
+  primary plot configuration without stitching bouts or changing settings by state.
+- Verification:
+  - No input MAT file, sleep label, or NE value was changed. The supplied first file
+    remains the sole local recording until the newly relabeled files are provided.
+
 ### Clarify raw-start QC and spectral interpretation (Codex GPT-5; effort/tokens not reported)
 
 - Corrected the report to distinguish raw-data review from automatic validation: the
@@ -15,7 +87,6 @@
 - Verification:
   - No data, preprocessing setting, detector threshold, or spectral configuration
     was changed.
-
 
 ### Keep PI correspondence outside the repository (Codex GPT-5; effort/tokens not reported)
 

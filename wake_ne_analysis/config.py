@@ -50,6 +50,7 @@ class AnalysisConfig:
     require_fine_wake: bool = True
     preprocessing_downsample_factor: int = 100
     preprocessing_filter_samples: int = 1000
+    recording_start_exclusion_seconds: float = 0.0
 
     def __post_init__(self):
         for value in (self.preprocessing_downsample_factor, self.preprocessing_filter_samples):
@@ -57,6 +58,11 @@ class AnalysisConfig:
                 raise ValueError(
                     "Preprocessing factor and filter length must be positive integers."
                 )
+        if (
+            not math.isfinite(self.recording_start_exclusion_seconds)
+            or self.recording_start_exclusion_seconds < 0
+        ):
+            raise ValueError("recording_start_exclusion_seconds must be finite and nonnegative.")
 
     def to_dict(self):
         return asdict(self)
