@@ -25,9 +25,9 @@ MIN_EXAMPLE_ACTIVE_SECONDS = 4
 MAX_EXAMPLE_CONTEXT_PEAK_EXCESS = 0.05
 METRICS = [
     ("amplitude_median", "Episode amplitude", "percentage points"),
-    ("duration_seconds_median", "Episode duration", "seconds"),
-    ("rise_slope_median", "20–80% rise slope", "percentage points/s"),
-    ("decay_slope_median", "20–80% decay slope", "percentage points/s"),
+    ("duration_seconds_median", "Peak-assigned NE-episode width", "seconds"),
+    ("rise_slope_median", "Peak-assigned 20–80% rise slope", "percentage points/s"),
+    ("decay_slope_median", "Peak-assigned 20–80% decay slope", "percentage points/s"),
     ("band_power", "15 s band power", "percentage points²"),
     ("dominant_frequency_hz", "Frequency maximum", "Hz"),
 ]
@@ -317,7 +317,7 @@ def peak_assignment_figure(events: pd.DataFrame, mat_path: Path, mouse_id: str, 
         yref="paper",
         text=(
             "Orange = Active Wake; light blue = Quiet Wake; gray = other state. "
-            "Purple lines show the crossings used for duration and 20–80% slopes."
+            "Purple lines show the crossings used for NE-episode width and 20–80% slopes."
         ),
         showarrow=False,
         font={"size": 12, "color": "#52606d"},

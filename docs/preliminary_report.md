@@ -16,9 +16,12 @@ measure is useful as a feasibility check, but cannot resolve a preferred frequen
 - The analysis preserves the supplied one-second sleep labels and pools repeated
   recordings within each mouse. Events and recordings are not treated as independent
   biological samples.
-- The event measurements (amplitude, duration, rising slope, and decay slope) each
-  have three complete mouse pairs. The 15-second spectral power measure has four.
-  No comparison reached the exploratory two-sided significance threshold of 0.05.
+- The peak-assigned event measurements (amplitude, NE-episode width, rising slope,
+  and decay slope) each have three complete mouse pairs. The 15-second spectral power
+  measure has four. No comparison reached the exploratory two-sided significance
+  threshold of 0.05. Episode width and slopes are peak-assigned full-event measures,
+  not score-bout durations; their crossing support is allowed to leave the peak's
+  scored state.
 - The frequency maximum is not tested: every mouse's maximum was 0.20 Hz, exactly
   the lower edge of the preselected 0.20–0.30 Hz band. That pattern says the band is
   descending from below 0.20 Hz; it does **not** identify a 0.20 Hz rhythm.
@@ -38,18 +41,24 @@ p-values use the paired Wilcoxon signed-rank test described in
 [Appendix C](#appendix-c-statistical-test-and-interpretation). They are exploratory
 and use a two-sided threshold of 0.05.
 
-| NE measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
+| Peak-assigned NE measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Episode amplitude (percentage points) | 0.803 (0.760–0.870) | 0.928 (0.901–0.929) | n = 3 | 0.500; not significant |
-| Episode duration (s) | 9.05 (6.40–9.47) | 8.65 (6.86–10.23) | n = 3 | 0.500; not significant |
-| 20–80% rise slope (percentage points/s) | 0.237 (0.204–0.378) | 0.342 (0.275–0.368) | n = 3 | 1.000; not significant |
-| 20–80% decay slope (percentage points/s) | 0.184 (0.157–0.277) | 0.159 (0.155–0.262) | n = 3 | 0.750; not significant |
+| Peak-assigned 20%-to-20% NE-episode width (s)† | 9.05 (6.40–9.47) | 8.65 (6.86–10.23) | n = 3 | 0.500; contextual peak-state screen |
+| Peak-assigned 20–80% NE rise slope (percentage points/s)† | 0.237 (0.204–0.378) | 0.342 (0.275–0.368) | n = 3 | 1.000; contextual peak-state screen |
+| Peak-assigned 20–80% NE decay slope (percentage points/s)† | 0.184 (0.157–0.277) | 0.159 (0.155–0.262) | n = 3 | 0.750; contextual peak-state screen |
 | 15 s spectral power, 0.20–0.30 Hz (percentage points²) | 0.0061 (0.0035–0.0105) | 0.0058 (0.0036–0.0094) | n = 4 | 0.625; not significant |
 | Frequency maximum in that band (Hz) | 0.20 (0.20–0.20) | 0.20 (0.20–0.20) | n = 4 | Not tested; every value is the lower band edge |
 
 The result is not evidence that the two wake states are biologically identical. With
 only three or four paired mouse estimates, it is an absence of a reliable difference
 in this preliminary cohort.
+
+†The event is assigned by the saved score at its peak. Across all eight audited files,
+333/865 (38%) retained Active-peak events and 232/297 (78%) retained Quiet-peak events
+have 20%/80% support that crosses at least one score-state boundary. This is allowed
+by the peak-state rule: these are valid measurements of the full NE elevation
+associated with a peak, not estimates of labelled score-bout duration.
 
 ## Methodology
 
@@ -66,6 +75,16 @@ activity calls are removed so the final labels remain one-second, stable bouts.
 This NE analysis only consumes those saved final labels; it does not relabel sleep
 stages or change the EMG threshold. The threshold formula and the one-second
 implementation details are in [Appendix A](#appendix-a-activequiet-wake-label-details).
+
+### Score-label geometry (not an NE measurement)
+
+The eight audited files contain 20,898 Active-Wake seconds and 5,547 Quiet-Wake
+seconds: Quiet Wake is 21.0% of this labelled Wake time. Their numbers of maximal
+one-second score runs are nevertheless close (1,508 Active; 1,554 Quiet), because
+Quiet Wake is fragmented. The pooled Quiet-Wake run duration is 2 s (IQR 1–4),
+versus 4 s (IQR 2–12.25) for Active Wake; 82.8% of Quiet and 56.4% of Active runs
+last at most 5 s. These are properties of the supplied sleep labels, not NE-event
+durations and not independent observations.
 
 ### Recordings, grouping, and quality control
 
@@ -93,7 +112,12 @@ assigned to whichever wake state contains its **peak**, even if its shoulders cr
 one or more sleep-label boundaries. This avoids discarding most usable short-state
 episodes while keeping the boundary crossings available for audit.
 
-![Example of peak-state attribution](assets/cohort_preliminary_report/peak_state_assignment_example.png)
+This is the specified peak-state question. In the retained eight-file audit, 38% of
+Active-peak and 78% of Quiet-peak events cross a score-state boundary before all
+20%/80% crossings are reached. That crossing is allowed: width and slopes describe
+the full NE event assigned by its peak, and neither is a sleep-score-bout duration.
+
+![Example of peak-state attribution](assets/cohort_preliminary_report_context_fixed/peak_state_assignment_example.png)
 
 The light-blue marker is a Quiet-Wake peak, and the light-blue background explicitly
 marks the Quiet-Wake seconds around it. Orange marks Active Wake; gray is another
@@ -129,21 +153,25 @@ slowly varying baseline. It is **not** the absolute value of the NE trace and it
 within each mouse and state. The local-baseline and exact amplitude definitions are
 given in [Appendix B](#appendix-b-ne-measurement-details).
 
-### NE episode duration
+### Peak-assigned NE-episode width, not wake-bout duration
 
-Duration is the elapsed time from the rising 20%-of-amplitude crossing to the falling
-20% crossing. It is deliberately a broad, reproducible duration measure that is less
-sensitive to a noisy peak than a peak-width measure. This 20%-to-20% definition is
-currently provisional; the PI's original note also mentioned rising and decay
-half-times, which are different measures.
+The 20%-to-20% width is the elapsed time from the rising 20%-of-amplitude crossing to
+the falling 20% crossing. It is a broad, reproducible measurement of a complete NE
+elevation around a peak; it is **not** the duration of the Active- or Quiet-Wake
+score run containing that peak. Peak assignment deliberately permits boundary
+crossing, so this is a contextual peak-state metric of the full NE event. The PI's
+original note also mentioned rising and decay half-times, which are different
+measures.
 
 ### Rising and decay slopes
 
 The rising slope describes how quickly the central part of an elevation rises: the
 amplitude change from 20% to 80%, divided by the time taken. The decay slope applies
 the same idea to the falling side and is reported as a positive magnitude, so larger
-values mean a faster fall. These are **20–80% secant slopes**, not half-times
-(T₁/₂). The distinction and exact definitions are in [Appendix B](#appendix-b-ne-measurement-details).
+values mean a faster fall. These are valid **20–80% secant slopes** of the full,
+baseline-referenced NE event, not half-times (T₁/₂). Under peak assignment, they are
+contextual peak-state measures of the full event; a Quiet-peak event can have much of
+its rise or decay in another score state, as allowed by the definition.
 
 ### Short-window spectral power and frequency maximum
 
@@ -173,14 +201,15 @@ and result are shown separately below.
 
 ### Paired mouse summaries
 
-None of the four elevation measures or the narrow-band power measure showed a
-statistically significant Active-versus-Quiet Wake difference. Figure 1 shows every
+None of the peak-assigned elevation measures or the narrow-band power measure showed
+a statistically significant Active-versus-Quiet Wake difference. The width and slope
+panels use the agreed peak-state definition for full NE events. Figure 1 shows every
 paired mouse estimate rather than hiding the small sample behind a bar chart. Mouse 7
 has valid spectral windows but no detected complete elevations under the provisional
 event definition, so it is absent from the event-measure panels and contributes only
 to the spectral comparison.
 
-![Paired summaries for all reported metrics](assets/cohort_preliminary_report/cohort_metric_comparisons.png)
+![Paired summaries for all reported metrics](assets/cohort_preliminary_report_context_fixed/cohort_metric_comparisons.png)
 
 **Figure 1.** Each line connects the same identified mouse across wake states.
 P-values are two-sided paired Wilcoxon results; see
@@ -195,7 +224,7 @@ three Quiet-Wake windows at 15 seconds and none at 20 seconds. A longer-window
 spectrum cannot be rescued by joining separate bouts, because that would cross state
 transitions and answer a different question.
 
-![Spectral-window coverage at 15 and 20 seconds](assets/cohort_preliminary_report/spectral_window_coverage.png)
+![Spectral-window coverage at 15 and 20 seconds](assets/cohort_preliminary_report_context_fixed/spectral_window_coverage.png)
 
 **Figure 2.** Number of eligible fixed windows after the recording-start QC rule.
 Orange denotes Active Wake and light blue Quiet Wake; bar fill distinguishes the
@@ -210,7 +239,8 @@ The positive result is feasibility: the available sleep labels can be consumed w
 relabeling, complete NE elevations can be audited and peak-assigned, and the cohort
 supports paired mouse-level summaries. The biological comparison itself is currently
 negative and underpowered: no measured property provides a reliable Active-versus-
-Quiet Wake difference.
+Quiet Wake difference. Width and slope results should be described as peak-assigned
+full-event measures, rather than as sleep-score-bout measurements.
 
 The clearest next scientific steps are to verify the identity of `unverified_35`,
 resolve the duration/T₁/₂ versus 20–80%-slope definition with the PI, and obtain
@@ -352,7 +382,7 @@ python scripts/render_cohort_preliminary_report_figures.py `
   --preflight outputs/proposal_cohort_20260916_startqc_preflight `
   --mat data/35_app13_groundtruth.mat `
   --peak-example-seed 20260916 `
-  --output docs/assets/cohort_preliminary_report
+  --output docs/assets/cohort_preliminary_report_context_fixed
 ```
 
 The output directory must be new or empty when rendering, which prevents silently

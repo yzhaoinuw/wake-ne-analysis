@@ -21,6 +21,9 @@ from .spectra import compute_spectrum, spectral_metrics
 from .transients import crossing
 
 
+# Peak-state attribution deliberately permits timing crossings to leave the score
+# run. These therefore describe the full NE elevation around its labelled peak, not
+# the duration of a one-second sleep-score run.
 RAW_METRICS = ("raw_peak", "duration_seconds", "rise_slope", "decay_slope")
 SPECTRAL_METRICS = ("band_power", "dominant_frequency_hz")
 RAW_SPECTRUM = SpectrumConfig(window_seconds=15.0, fmin=0.2, fmax=0.3)
@@ -297,17 +300,42 @@ def analyze_directory(input_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.D
     return bouts, summaries, paired_recording_results(summaries)
 
 
+def label_geometry_directory(input_dir: Path) -> pd.DataFrame:
+    """Audit literal one-second score runs separately from NE measurements."""
+    files = sorted(Path(input_dir).glob("*.mat"), key=lambda path: path.name.casefold())
+    rows = []
+    for path in files:
+        recording = load_recording(path, path.stem, path.stem)
+        for state_label, state in STATES.items():
+            durations = np.array([stop - start for start, stop in runs(recording.labels == state_label)])
+            rows.append(
+                {
+                    **recording.identity,
+                    "state": state,
+                    "n_score_bouts": len(durations),
+                    "labelled_seconds": int(durations.sum()),
+                    "bout_duration_median_seconds": float(np.median(durations)) if len(durations) else np.nan,
+                    "bout_duration_iqr_lower_seconds": float(np.quantile(durations, 0.25)) if len(durations) else np.nan,
+                    "bout_duration_iqr_upper_seconds": float(np.quantile(durations, 0.75)) if len(durations) else np.nan,
+                    "bouts_at_most_five_seconds": int((durations <= 5).sum()),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
 def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
     """Write auditable raw-bout tables for the separate preliminary comparison."""
     output_dir = Path(output_dir)
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError(f"Output directory must be new or empty: {output_dir}")
     bouts, summaries, results = analyze_directory(input_dir)
+    label_geometry = label_geometry_directory(input_dir)
     bout_results = independent_bout_results(bouts)
     spectra, spectral_windows, spectral_summaries, spectral_results = analyze_raw_spectra(input_dir)
     spectral_window_results = independent_spectral_window_results(spectral_windows)
     output_dir.mkdir(parents=True, exist_ok=True)
     bouts.to_csv(output_dir / "bouts.csv", index=False)
+    label_geometry.to_csv(output_dir / "score_label_geometry.csv", index=False)
     summaries.to_csv(output_dir / "recordings.csv", index=False)
     results.to_csv(output_dir / "paired_recording_results.csv", index=False)
     bout_results.to_csv(output_dir / "independent_bout_results.csv", index=False)

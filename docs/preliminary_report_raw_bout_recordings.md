@@ -12,9 +12,9 @@ local baseline.
   unlabelled NE in one file are outside the state comparison; no input was edited or
   shifted.
 - With one median per state per file, zero-referenced peak NE is higher in Active
-  Wake (paired Wilcoxon p = 0.0117). Duration also differs nominally (p = 0.0195);
-  20–80% rise and decay slopes do not. These are **recording-level screening
-  results**, not independent-mouse evidence.
+  Wake (paired Wilcoxon p = 0.0117). Peak-assigned NE-episode width also differs
+  nominally (p = 0.0195); 20–80% rise and decay slopes do not. These are
+  **recording-level screening results**, not independent-mouse evidence.
 - As a deliberately more permissive description, treating every eligible Wake bout
   as an independent observation gives a nominal Active/Quiet peak difference
   (Mann–Whitney p = 5.22 × 10⁻⁵). That calculation is **pseudoreplicated**: bouts
@@ -24,10 +24,10 @@ local baseline.
   recording-level band-power difference (paired Wilcoxon p = 0.570). Treating its
   1,060 Active and 106 Quiet windows as independent gives a nominal difference
   (Mann–Whitney p = 0.0155), but that is also pseudoreplicated and non-inferential.
-- Peak state is determined by the bout containing the peak. Its 20% and 80%
-  crossings may occur outside the bout and across wake-state boundaries, as agreed
-  for the primary peak-state analysis. Timing measures are therefore contextual,
-  not pure within-state kinetics.
+- The score-label geometry and the NE measurement are kept distinct below. Peak-state
+  assignment intentionally allows 20%/80% support to cross score boundaries: width
+  and slopes describe the full NE elevation around the labelled peak, not the duration
+  of that peak's sleep-score run.
 
 ## Summary of results
 
@@ -36,24 +36,33 @@ state per MAT file, then compares those matched recording summaries. Orange deno
 Active Wake and light blue Quiet Wake. The paired Wilcoxon test and its
 recording-independence caveat are explained in [Appendix C](#appendix-c-statistical-test-and-interpretation).
 
-| Zero-referenced measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
+| Zero-referenced NE measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Peak processed NE (percentage delta-F/F) | 1.833 (1.044–2.661) | 1.651 (0.927–2.510) | n = 9 | 0.0117; nominal recording-level signal |
-| Duration (s) | 177.92 (37.94–403.57) | 183.52 (40.23–406.87) | n = 9 | 0.0195; nominal recording-level difference |
-| 20–80% rise slope (percentage points/s) | 0.040 (0.035–0.062) | 0.039 (0.026–0.075) | n = 9 | 0.301; not significant |
-| 20–80% decay slope (percentage points/s) | 0.028 (0.010–0.047) | 0.022 (0.013–0.035) | n = 9 | 1.000; not significant |
+| Peak-assigned 20%-to-20% NE-episode width (s) | 177.92 (37.94–403.57) | 183.52 (40.23–406.87) | n = 9 | 0.0195; contextual peak-state screen |
+| Peak-assigned 20–80% NE rise slope (percentage points/s) | 0.040 (0.035–0.062) | 0.039 (0.026–0.075) | n = 9 | 0.301; contextual peak-state screen |
+| Peak-assigned 20–80% NE decay slope (percentage points/s) | 0.028 (0.010–0.047) | 0.022 (0.013–0.035) | n = 9 | 1.000; contextual peak-state screen |
 
 The next table deliberately discards the recording grouping and treats every eligible
 bout as a separate observation. It is included to show the distributional signal,
 not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
 [Appendix C](#mannwhitney-tests-for-the-independent-bout-and-independent-window-descriptions).
 
-| Zero-referenced measure | Active Wake | Quiet Wake | Active bouts | Quiet bouts | Nominal Mann–Whitney p-value |
+| Zero-referenced NE measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
 | Peak processed NE (percentage delta-F/F) | 1.583 (0.812–2.750) | 1.452 (0.630–2.510) | 2,246 | 2,311 | 5.22 × 10⁻⁵ |
-| Duration (s) | 72.50 (18.23–342.98) | 78.28 (22.91–387.07) | 1,766 | 1,759 | 0.229 |
-| 20–80% rise slope (percentage points/s) | 0.061 (0.012–0.338) | 0.058 (0.012–0.301) | 1,766 | 1,759 | 0.213 |
-| 20–80% decay slope (percentage points/s) | 0.039 (0.009–0.126) | 0.036 (0.009–0.127) | 1,766 | 1,759 | 0.440 |
+| Peak-assigned 20%-to-20% NE-episode width (s) | 72.50 (18.23–342.98) | 78.28 (22.91–387.07) | 1,766 | 1,759 | 0.229 |
+| Peak-assigned 20–80% NE rise slope (percentage points/s) | 0.061 (0.012–0.338) | 0.058 (0.012–0.301) | 1,766 | 1,759 | 0.213 |
+| Peak-assigned 20–80% NE decay slope (percentage points/s) | 0.039 (0.009–0.126) | 0.036 (0.009–0.127) | 1,766 | 1,759 | 0.440 |
+
+### Score-label geometry (not an NE measurement)
+
+Across the nine source files, Active Wake occupies 26,532 labelled seconds and
+Quiet Wake 8,626 seconds (24.5% of labelled Wake time). Their numbers of maximal
+one-second label runs are nevertheless close: 2,247 Active and 2,312 Quiet. Quiet
+runs are distinctly shorter: pooled median 2 s (IQR 1–4), versus 4 s (IQR 2–10)
+for Active; 81.6% of Quiet and 59.7% of Active runs are at most 5 s. Thus a near-
+balanced run count is fragmentation, not comparable time in each state.
 
 The short-window spectrum is calculated separately using the same recording-level
 and deliberately independent-observation hierarchy. It uses all nine files, their
@@ -99,15 +108,7 @@ tail is not. No trace is concatenated across invalid samples, and no labels or N
 values are rewritten. Unlike the local-baseline cohort report, this sensitivity keeps
 all labelled common-start bouts, including known recording-start excursions.
 
-### Assigning an NE elevation episode to wake state
-
-Here an "episode" begins with a labelled Wake bout. The maximum stored NE value in
-that bout selects the peak and supplies its Active/Quiet assignment. The 20% and 80%
-supports are then sought on the surrounding continuous finite NE trace, rather than
-being forced to remain in the bout. Thus a peak in Active Wake remains an Active-Wake
-observation even when its rise or decay crosses into Quiet Wake, and vice versa.
-
-### Local baseline shared by amplitude, duration, and slopes
+### Measuring a zero-referenced peak in each scored bout
 
 This sensitivity intentionally uses **no new rolling local baseline**. Its reference
 is the existing zero of the processed percentage delta-F/F trace, after upstream
@@ -115,8 +116,7 @@ control fitting, smoothing, and downsampling. The analysis therefore asks whethe
 literal processed values differ across labelled Wake bouts. This differs from the
 local-baseline report, which estimates a rolling 20th-percentile baseline across the
 continuous recording before detecting elevations. The two definitions are useful
-comparisons, not interchangeable estimates; formulas are in
-[Appendix B](#appendix-b-ne-measurement-details).
+comparisons, not interchangeable estimates.
 
 ### NE episode amplitude
 
@@ -125,21 +125,18 @@ in that bout. It is neither raw fluorescence nor an RMS measurement. It is a
 zero-referenced percentage delta-F/F peak and retains any residual slow drift that
 survived upstream processing.
 
-### NE episode duration
+### Peak-assigned NE-episode width and slopes
 
-For a positive peak, duration is the time from the nearest rising 20% crossing to the
-nearest falling 20% crossing, with both thresholds defined relative to the literal
-peak value. A missing required crossing yields a missing duration rather than a
-manufactured boundary. Because crossings may leave the peak's state bout, this is a
-contextual peak-state duration.
+For a positive peak, the NE-episode width is the time from its nearest rising 20%
+crossing to its nearest falling 20% crossing, both relative to the literal peak. The
+20–80% rise and decay slopes are positive secants through the central portion of that
+same full NE elevation. A missing crossing yields a missing timing measurement rather
+than a manufactured boundary.
 
-### Rising and decay slopes
-
-Rise and decay are the 20–80% secant slopes, reported as positive magnitudes. They
-describe the central portion of the literal peak shape, whereas duration includes the
-broader 20%-to-20% span. These are not half-times (T₁/₂); the formulas and the
-relationship to the local-baseline definition are in
-[Appendix B](#appendix-b-ne-measurement-details).
+As specified for this peak-state screen, the crossings are found in the surrounding
+continuous finite NE trace and may leave the peak's score run. This is allowed: the
+peak determines Active/Quiet assignment. Accordingly, width and slopes are
+peak-assigned contextual NE metrics, **not** sleep-score-bout durations.
 
 ### Short-window spectral power and frequency maximum
 
@@ -160,19 +157,19 @@ frequency-limit rationale are in [Appendix B](#spectral-window-and-preprocessing
 
 ## Results
 
-### Paired mouse summaries
+### Paired recording summaries
 
 For this document, the paired summaries are **recording pairs**, not mouse pairs:
 each point in Figure 1 is a file-level median across bouts, and a line joins its two
-state values. The zero-referenced peak and contextual duration have nominal paired
-p-values below 0.05. They remain exploratory because the nine file pairs are only a
-temporary proxy for independent animals.
+state values. The zero-referenced peak and the peak-assigned NE-episode width have
+nominal paired p-values below 0.05. They remain exploratory because the nine file
+pairs are only a temporary proxy for independent animals.
 
-![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison/raw_bout_metric_comparisons.png)
+![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_metric_comparisons.png)
 
 **Figure 1.** File-level median raw-bout metrics. Orange is Active Wake; light blue
-is Quiet Wake. All panels contain nine recording pairs. Timing support is attributed
-by peak state but may cross state boundaries.
+is Quiet Wake. All panels contain nine recording pairs. Width and slopes are assigned
+by the state at the NE peak; their crossings may span other score states by design.
 
 ### Spectral result
 
@@ -183,7 +180,7 @@ remaining value is 0.30 Hz. The paired p = 1.000 should not be read as evidence 
 frequency is the same—this edge-locking means the narrow band has not resolved a
 dominant oscillation.
 
-![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison/raw_bout_recording_spectral_comparisons.png)
+![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_recording_spectral_comparisons.png)
 
 **Figure 2.** One averaged short-window spectrum per state per MAT file. Orange is
 Active Wake; light blue is Quiet Wake. The apparent frequency maximum clustering at
@@ -195,7 +192,7 @@ pseudoreplicated: 1,060 Active windows and 106 Quiet windows come from only nine
 files, and the samples are highly correlated within recordings. It cannot overturn or
 replace the paired recording-level result.
 
-![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison/raw_bout_independent_spectral_comparisons.png)
+![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_independent_spectral_comparisons.png)
 
 **Figure 3.** Every 15-second state-pure spectral window. The point/violin display
 shows the window-count imbalance and is marked as an exploratory, non-independent
@@ -203,14 +200,14 @@ description.
 
 ### Independent-bout exploratory description
 
-Figure 2 displays every eligible bout and uses a two-sided Mann–Whitney calculation
-only as a distributional screen. The peak distributions have a nominal difference;
-duration and slopes do not. The figure makes the large apparent sample size visible,
-but it must not be interpreted as thousands of independent animals or experimental
-replicates. Bouts share neural state, recording context, preprocessing, and often
-the same mouse.
+Figure 4 displays every eligible scored-bout peak and uses a two-sided Mann–Whitney
+calculation only as a distributional screen. The peak distributions have a nominal
+difference; the peak-assigned width and slope distributions do not. The figure makes
+the large apparent sample size visible, but it must not be interpreted as thousands
+of independent animals or experimental replicates. Bouts share neural state,
+recording context, preprocessing, and often the same mouse.
 
-![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison/raw_bout_independent_metric_comparisons.png)
+![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned/raw_bout_independent_metric_comparisons.png)
 
 **Figure 4.** Every eligible bout is shown as a faint point, with a violin and box
 summary. The fixed random seed controls horizontal jitter only. Mann–Whitney labels
@@ -218,8 +215,9 @@ are deliberately marked exploratory because bout independence is knowingly false
 
 ## Interpretation for the proposal
 
-This sensitivity provides a simple, visible signal: literal processed NE peaks tend
-to be higher during Active Wake whether the screen is summarized by file or by bout.
+This sensitivity provides a simple, visible signal: literal processed NE peaks
+selected from Active-Wake-labelled bouts tend to be higher whether the screen is
+summarized by file or by bout.
 The recording-paired result is the more defensible of the two within this report,
 because it retains the Active/Quiet pairing inside a file. Neither result establishes
 an independent-mouse state effect. The bout-level display is useful for diagnosing
@@ -244,29 +242,29 @@ at least one second. A one-second Wake label is Active when at least ten of its 
 RMS values fall in an active interval; otherwise it is Quiet. The final result passed
 to this analysis is still only one label per second, and is never relabelled here.
 
-## Appendix B: NE measurement details
+## Appendix B: Peak-assigned NE geometry, spectral window, and preprocessing limit
 
-### Local baseline and episode geometry
+### Peak-assigned NE geometry
 
 Let `x(t)` be the stored processed percentage delta-F/F trace and let `P` be its
 literal maximum in one finite, single-state Wake bout. There is no new baseline
 subtraction. When `P > 0`, find the nearest rising and falling crossings in the
 continuous finite trace at `0.2P` and `0.8P`, denoted `t_r20`, `t_r80`, `t_d80`, and
-`t_d20`. The bout containing `P` determines the state; the support may cross a state
-boundary but never an invalid NE gap.
+`t_d20`. The bout containing `P` determines the state; as specified by peak-state
+assignment, the support may cross a score-state boundary but never an invalid NE gap.
 
 ```text
-zero-referenced amplitude = P
-duration                  = t_d20 - t_r20
-rise slope                = 0.60 × P / (t_r80 - t_r20)
-decay slope               = 0.60 × P / (t_d20 - t_d80)
+zero-referenced peak       = P
+NE-episode width           = t_d20 - t_r20
+rise slope                 = 0.60 × P / (t_r80 - t_r20)
+decay slope                = 0.60 × P / (t_d20 - t_d80)
 ```
 
-The formula measures thresholds relative to zero on the processed trace. It is not
-equivalent to the primary report's local-baseline event amplitude. A missing required
-crossing produces a missing timing value. In this run, 1,624 of 1,766 complete
-Active-Wake supports and 1,696 of 1,759 Quiet-Wake supports cross at least one state
-boundary. Those timing measures are therefore contextual peak-state quantities.
+The formulas measure the full elevation associated with its labelled peak and are not
+equivalent to a sleep-score-bout duration. In this run, 1,624 of 1,766 complete
+Active-peak supports and 1,696 of 1,759 Quiet-peak supports cross at least one score
+boundary; that high rate is expected under the allowed peak-state rule and must stay
+visible when interpreting the contextual width and slopes.
 
 ### Spectral window and preprocessing limit
 
@@ -327,15 +325,16 @@ The raw-bout tables and figures were generated with:
 ```powershell
 python scripts/analyze_raw_bouts.py `
   --input-dir data `
-  --output outputs/raw_bout_recording_comparison_20260916
+  --output outputs/raw_bout_recording_comparison_20260916_peak_assigned
 
 python scripts/render_raw_bout_report_figures.py `
-  --analysis outputs/raw_bout_recording_comparison_20260916 `
-  --output docs/assets/raw_bout_recording_comparison
+  --analysis outputs/raw_bout_recording_comparison_20260916_peak_assigned `
+  --output docs/assets/raw_bout_recording_comparison_peak_assigned
 ```
 
-The analysis writes bout and spectral-window tables, recording-level summaries,
-paired Wilcoxon results, and independent-bout/window Mann–Whitney results. Figures 3
-and 4 use seed `20260916` for horizontal jitter; the seed does not select or alter
-observations. Output directories must be new or empty, preventing accidental mixing
-of results from different input sets.
+The analysis writes an explicit `score_label_geometry.csv` audit in addition to
+per-bout peak-assigned NE measurements, spectral-window tables, recording-level
+summaries, paired Wilcoxon results, and independent-bout/window Mann–Whitney results.
+Figures 3 and 4 use seed `20260916` for horizontal jitter; the seed does not select
+or alter observations. Output directories must be new or empty, preventing accidental
+mixing of results from different input sets.

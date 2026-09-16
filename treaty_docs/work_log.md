@@ -2,6 +2,31 @@
 
 ## 2026-09-16
 
+### Separate score-bout geometry from peak-assigned NE timing (Codex GPT-5; effort/tokens not reported)
+
+- Direct audit of the saved one-second labels confirmed that Quiet Wake is much less
+  prevalent and shorter despite a nearly balanced count of maximal label runs. Across
+  the eight audited cohort files it has 5,547 of 26,445 labelled Wake seconds (21.0%),
+  a pooled 2 s run median versus 4 s for Active, and 1,554 runs versus 1,508 Active;
+  fragmentation, not comparable time, explains the count. The nine-file raw screen
+  similarly has 8,626 Quiet versus 26,532 Active labelled seconds.
+- The peak-state contract deliberately allows 20%/80% support to cross score
+  boundaries, so retained the raw-bout width and slope comparisons after clarifying
+  the interpretation. Their complete supports cross a saved score boundary in
+  1,624/1,766 Active (92%) and 1,696/1,759 Quiet (96%) cases; the report now calls
+  them full NE events assigned by their peaks, never score-bout durations. The raw
+  output writes a separate `score_label_geometry.csv` audit.
+- Kept the cohort report's PI-directed peak assignment and relabelled its width and
+  slopes as contextual, peak-associated full-episode measures rather than score-bout
+  duration. Its audit has crossing support in 333/865 Active (38%) and 232/297 Quiet
+  (78%) retained events, as allowed by the peak-state definition.
+- Verification:
+  - Regenerated the explicit score-label audit and peak-assigned raw-bout figure set.
+  - Regenerated and visually inspected the relabelled raw-bout and cohort figure sets.
+  - `python -m pytest --basetemp .pytest_tmp_duration_terminology -p no:cacheprovider -q`:
+    30 passed.
+  - `git diff --check` passed.
+
 ### Raw-report spectral hierarchy (Codex GPT-5; effort/tokens not reported)
 
 - Added a separate spectral calculation to the raw-bout report rather than copying

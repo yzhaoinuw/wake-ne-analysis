@@ -6,21 +6,28 @@
   exploratory zero-referenced sensitivity screen. It contains both a paired,
   per-file Wilcoxon screen and a clearly quarantined per-bout Mann--Whitney
   description, plus analogous recording-paired and pseudoreplicated-window spectral
-  screens. The independent-observation calculations knowingly pseudoreplicate
-  correlated bouts/windows and are not biological inference. Do not turn any screen
-  into a mouse-level conclusion or merge it with the local-baseline report. Future
-  submissions should retain verified mouse/session metadata and run a predeclared
-  sensitivity analysis of literal versus local-baseline definitions.
+  screens. Its 20%/80% widths and slopes are deliberately peak-assigned full-NE-event
+  measures: their supports may cross a score boundary, so label them clearly as such
+  and never as sleep-score-bout duration. The independent-observation calculations
+  knowingly pseudoreplicate correlated bouts/windows and are not biological inference.
+  Do not turn any screen into a mouse-level conclusion or merge it with the
+  local-baseline report. Future submissions should retain verified mouse/session
+  metadata and run a predeclared sensitivity analysis of literal versus local-baseline
+  definitions.
 - The current executive, GitHub-renderable cohort draft is
   `docs/preliminary_report.md`; its refreshed static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document
   is preserved as `docs/pilot_report.md` and is historical rather than the current
   cohort result. Its renderer uses the upstream orange Active/light-blue Quiet color
-  contract and seed `20260916` for an auditable Quiet-Wake peak example. Review the
-  draft's plain-language duration/T1/2 wording with the PI before treating those
-  provisional metrics as final definitions. Also inspect representative traces and
-  declare a sensitivity analysis before accepting the 60-second rolling-baseline
-  width or 20th-percentile level as a final event-detector definition.
+  contract and seed `20260916` for an auditable Quiet-Wake peak example. The report
+  now separates actual score-bout geometry from peak-assigned NE-event width/slopes.
+  Crossing is explicitly allowed by the peak-state contract (38% of retained Active
+  and 78% of retained Quiet events cross a score boundary), so those timing metrics
+  describe full NE events assigned by their peaks, not score-bout duration. Review
+  the draft's 20--80% secant/T1/2 definition with the PI before treating it as a final
+  kinetic metric. Also inspect representative traces and declare a sensitivity
+  analysis before accepting the 60-second rolling-baseline width or 20th-percentile
+  level as a final event-detector definition.
 - The 2026-09-16 proposal delivery is in
   `outputs/proposal_cohort_20260916_final_peak15_presentation.html` with PNG panels
   in `outputs/proposal_cohort_20260916_final_peak15_figures/`. The contained-event

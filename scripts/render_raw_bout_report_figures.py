@@ -13,9 +13,9 @@ STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
 STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
 METRICS = [
     ("raw_peak", "Zero-referenced peak", "processed NE (percentage delta-F/F)"),
-    ("duration_seconds", "Zero-referenced duration", "seconds"),
-    ("rise_slope", "Zero-referenced 20–80% rise", "percentage points/s"),
-    ("decay_slope", "Zero-referenced 20–80% decay", "percentage points/s"),
+    ("duration_seconds", "Peak-assigned NE-episode width", "seconds"),
+    ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
+    ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
 ]
 SPECTRAL_METRICS = [
     ("band_power", "15 s 0.20–0.30 Hz band power", "percentage points²"),
@@ -62,12 +62,11 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
             )
         p_text = "not tested" if pd.isna(result.p_value) else f"p = {result.p_value:.3g}"
         significance = "" if pd.isna(result.p_value) else (" (significant)" if result.p_value < 0.05 else " (not significant)")
-        axis_id = index + 1
         figure.add_annotation(
             x=0.5,
             y=0.98,
-            xref="x domain" if index == 0 else f"x{axis_id} domain",
-            yref="y domain" if index == 0 else f"y{axis_id} domain",
+            xref="x domain" if index == 0 else f"x{index + 1} domain",
+            yref="y domain" if index == 0 else f"y{index + 1} domain",
             text=f"Recording-paired Wilcoxon, n = {len(paired)}, {p_text}{significance}",
             showarrow=False,
             bgcolor="rgba(255,255,255,0.86)",
