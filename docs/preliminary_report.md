@@ -110,7 +110,16 @@ slowly changing baseline rather than zero or an RMS value. The peak height above
 baseline defines the event's amplitude. The 20% and 80% levels used for duration and
 slopes are then fractions of that **baseline-to-peak** height. Thus the baseline is
 part of every episode measurement, including rise and decay slopes. The exact
-definition is in [Appendix B](#appendix-b-ne-measurement-details).
+definition and processing order are in [Appendix B](#appendix-b-ne-measurement-details).
+
+Operationally, the baseline is calculated first across each continuous finite NE
+stretch, without splitting or resetting it at Active/Quiet Wake boundaries. Peaks are
+then detected in that baseline-subtracted trace, and the sleep label at the peak is
+looked up afterward. Thus this is not “one peak per wake bout,” and a peak can be a
+local maximum of baseline-subtracted NE even when another raw-NE bump elsewhere is
+higher. The shared baseline keeps the event definition the same across states, but it
+also means its 60-second neighborhood can include other sleep states. That is a
+deliberate, reviewable pilot choice.
 
 ### NE episode amplitude
 
@@ -239,6 +248,15 @@ its local baseline. For a peak at `t_peak`, amplitude is `A = y(t_peak)`. The
 detector linearly locates the four times at which `y(t)` crosses 20% and 80% of `A`
 on the rising and falling sides: `t_r20`, `t_r80`, `t_d80`, and `t_d20`.
 
+The implementation runs this sequence independently on each continuous finite NE
+stretch: (1) compute `b(t)` across the whole stretch, using roughly 30 seconds on
+either side of an interior sample; (2) compute `y(t)`; (3) identify local maxima in
+`y(t)`; and only then (4) assign the peak's saved sleep label. The rolling baseline
+is not recomputed within Active or Quiet Wake, and it is not reset at a state boundary.
+At the finite stretch's ends, nearest available values extend the rolling operation.
+This offline centered operation intentionally uses neighboring time on both sides; it
+is not a causal real-time baseline.
+
 ```text
 amplitude       = peak - local baseline
 duration        = t_d20 - t_r20
@@ -250,6 +268,14 @@ The duration includes the broad lower portions of the elevation; the slopes use 
 the central 20–80% portion. A T₁/₂ would instead report a time associated with 50%
 amplitude, so it should not be substituted for either slope without a new explicit
 definition.
+
+The 60-second width and 20th percentile are **provisional detector settings**, not a
+literature-derived laboratory standard and not values calibrated against ground truth
+in this cohort. They were chosen as an inspectable starting point: 60 seconds is much
+slower than the seconds-to-tens-of-seconds elevations under study, and the 20th
+percentile estimates a local lower envelope that sustained elevations should not pull
+up as strongly as a mean or median. The team should review representative traces and
+run a declared sensitivity analysis before treating either number as final.
 
 ### Spectral window and preprocessing limit
 
@@ -331,7 +357,8 @@ python scripts/render_cohort_preliminary_report_figures.py `
 
 The output directory must be new or empty when rendering, which prevents silently
 mixing figures from different analysis runs. The seed chooses deterministically among
-complete, non-start-QC-excluded Quiet-Wake peak events that display at least 20 seconds
-of Quiet Wake and whose selected point is no more than 0.05 percentage points below
-the largest NE value in the plotted context. This makes the labelled point a clear,
-visually defensible local peak.
+complete, non-start-QC-excluded Quiet-Wake peak events that display at least 10 seconds
+of Quiet Wake and 4 seconds of Active Wake, and whose selected point is no more than
+0.05 percentage points below the largest NE value in the plotted context. This makes
+the labelled point a clear, visually defensible local peak while showing both wake
+states.

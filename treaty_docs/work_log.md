@@ -12,18 +12,24 @@
 - Aligned report figures with the upstream `sleep_scoring` colors: Active Wake is
   orange (`#E69F00`) and Quiet Wake is light blue (`#56B4E9`). The peak-state plot
   now uses those opaque stage colors and a deterministically seeded, eligible
-  Quiet-Wake peak example. It requires at least 20 displayed Quiet-Wake seconds and
-  rejects a candidate if a higher NE value would make its marked point visually
-  misleading. The renderer records seed `20260916`, its eligibility criteria, and
-  has a synthetic determinism test.
+  Quiet-Wake peak example. It requires at least 10 displayed Quiet-Wake seconds, 4
+  displayed Active-Wake seconds, and rejects a candidate if a higher NE value would
+  make its marked point visually misleading. The renderer records seed `20260916`,
+  its eligibility criteria, and has a synthetic determinism test.
 - Moved the spectral feasibility rationale into the methodology, kept a concise
   spectral result subsection, and added appendix equations plus the forward/backward
   moving-average retained-power table. It distinguishes smoothing attenuation from
   the saved-rate Nyquist limit and explains why longer state-pure Quiet-Wake windows
   would be needed below 0.20 Hz.
+- Disclosed the detector's ordering and limitations in the report: the centered
+  60-second rolling 20th-percentile baseline is computed over each continuous finite
+  NE stretch before peaks are found, never reset at Active/Quiet boundaries, and then
+  used to assign the saved state at each peak. The 60-second/20th-percentile settings
+  are now explicitly described as unvalidated pilot heuristics requiring trace review
+  and a declared sensitivity analysis.
 - Verification:
   - Rendered and visually inspected all three refreshed static cohort-report figures.
-  - `python -m pytest --basetemp .pytest_tmp_report_followup -p no:cacheprovider -q`:
+  - `python -m pytest --basetemp .pytest_tmp_baseline_disclosure -p no:cacheprovider -q`:
     26 passed.
   - `git diff --check` passed.
 

@@ -9,7 +9,9 @@
   cohort result. Its renderer uses the upstream orange Active/light-blue Quiet color
   contract and seed `20260916` for an auditable Quiet-Wake peak example. Review the
   draft's plain-language duration/T1/2 wording with the PI before treating those
-  provisional metrics as final definitions.
+  provisional metrics as final definitions. Also inspect representative traces and
+  declare a sensitivity analysis before accepting the 60-second rolling-baseline
+  width or 20th-percentile level as a final event-detector definition.
 - The 2026-09-16 proposal delivery is in
   `outputs/proposal_cohort_20260916_final_peak15_presentation.html` with PNG panels
   in `outputs/proposal_cohort_20260916_final_peak15_figures/`. The contained-event

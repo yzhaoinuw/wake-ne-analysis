@@ -282,6 +282,7 @@ def test_peak_example_selection_is_seeded_and_marks_a_clear_quiet_wake_peak():
     second = renderer.choose_peak_example(events, source, "example", seed=20260916)
     assert first.peak_seconds == second.peak_seconds
     assert first.quiet_seconds_shown >= renderer.MIN_EXAMPLE_QUIET_SECONDS
+    assert first.active_seconds_shown >= renderer.MIN_EXAMPLE_ACTIVE_SECONDS
     assert first.context_peak_excess <= renderer.MAX_EXAMPLE_CONTEXT_PEAK_EXCESS
 
 

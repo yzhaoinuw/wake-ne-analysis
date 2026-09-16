@@ -20,7 +20,8 @@ STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
 # The scoring app renders stage colors at full opacity; use the same appearance here.
 STATE_FILL_COLORS = {**STATE_COLORS, "other": "#969696"}
 PEAK_EXAMPLE_SEED = 20260916
-MIN_EXAMPLE_QUIET_SECONDS = 20
+MIN_EXAMPLE_QUIET_SECONDS = 10
+MIN_EXAMPLE_ACTIVE_SECONDS = 4
 MAX_EXAMPLE_CONTEXT_PEAK_EXCESS = 0.05
 METRICS = [
     ("amplitude_median", "Episode amplitude", "percentage points"),
@@ -195,7 +196,7 @@ def _seconds_in_state(recording, left: float, right: float, state_label: int) ->
 
 
 def choose_peak_example(events: pd.DataFrame, recording, recording_id: str, seed: int):
-    """Pick a seeded Quiet-Wake example whose marked point is visibly the local maximum."""
+    """Pick a seeded Quiet-Wake example with visible Active-Wake context and clear peak."""
     candidates = events.loc[
         (events.recording_id == recording_id)
         & (events.state == "quiet_wake")
@@ -212,6 +213,10 @@ def choose_peak_example(events: pd.DataFrame, recording, recording_id: str, seed
         _seconds_in_state(recording, left, right, 5)
         for left, right in zip(candidates.display_left, candidates.display_right)
     ]
+    candidates["active_seconds_shown"] = [
+        _seconds_in_state(recording, left, right, 4)
+        for left, right in zip(candidates.display_left, candidates.display_right)
+    ]
     time = recording.start_time + np.arange(recording.ne.size) / recording.fs
     candidates["peak_value_shown"] = [np.interp(value, time, recording.ne) for value in candidates.peak_seconds]
     candidates["context_peak_excess"] = [
@@ -222,12 +227,14 @@ def choose_peak_example(events: pd.DataFrame, recording, recording_id: str, seed
     ]
     candidates = candidates.loc[
         (candidates.quiet_seconds_shown >= MIN_EXAMPLE_QUIET_SECONDS)
+        & (candidates.active_seconds_shown >= MIN_EXAMPLE_ACTIVE_SECONDS)
         & (candidates.context_peak_excess <= MAX_EXAMPLE_CONTEXT_PEAK_EXCESS)
     ].sort_values(["peak_seconds", "onset20_seconds"], kind="stable")
     if candidates.empty:
         raise ValueError(
-            "No peak-state example has the required visible Quiet-Wake context and "
+            "No peak-state example has the required visible Active/Quiet-Wake context and "
             f"clear marked maximum ({MIN_EXAMPLE_QUIET_SECONDS} s Quiet; "
+            f"{MIN_EXAMPLE_ACTIVE_SECONDS} s Active; "
             f"no more than {MAX_EXAMPLE_CONTEXT_PEAK_EXCESS} percentage points below context maximum)."
         )
     return candidates.iloc[np.random.default_rng(seed).integers(len(candidates))]
