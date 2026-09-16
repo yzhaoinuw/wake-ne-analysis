@@ -36,41 +36,55 @@ def _sample_labels(recording: Recording, n_samples: int) -> np.ndarray:
 
 
 def analyze_raw_bouts(recording: Recording) -> tuple[pd.DataFrame, dict]:
-    """Measure one zero-referenced maximum per finite Active/Quiet state segment."""
+    """Measure a state-bout peak, then trace its zero-referenced shape across states."""
     n_samples = common_start_samples(recording)
     signal = recording.ne[:n_samples]
     labels = _sample_labels(recording, n_samples)
+    finite_stretches = runs(np.isfinite(signal))
     rows = []
     for state_label, state in STATES.items():
         valid = np.isfinite(signal) & (labels == state_label)
         for start, stop in runs(valid):
             values = signal[start:stop]
             peak = int(np.argmax(values))
+            absolute_peak = start + peak
             raw_peak = float(values[peak])
             complete = False
             l20 = l80 = r80 = r20 = np.nan
-            if raw_peak > 0 and 0 < peak < len(values) - 1:
-                l20 = crossing(values, 0, peak, 0.2 * raw_peak, True)
-                l80 = crossing(values, 0, peak, 0.8 * raw_peak, True)
-                r80 = crossing(values, peak, len(values) - 1, 0.8 * raw_peak, False)
-                r20 = crossing(values, peak, len(values) - 1, 0.2 * raw_peak, False)
+            crossing_state_boundary = False
+            stretch_start, stretch_stop = next(
+                (left, right) for left, right in finite_stretches if left <= absolute_peak < right
+            )
+            stretch = signal[stretch_start:stretch_stop]
+            stretch_peak = absolute_peak - stretch_start
+            if raw_peak > 0 and 0 < stretch_peak < len(stretch) - 1:
+                l20 = crossing(stretch, 0, stretch_peak, 0.2 * raw_peak, True)
+                l80 = crossing(stretch, 0, stretch_peak, 0.8 * raw_peak, True)
+                r80 = crossing(stretch, stretch_peak, len(stretch) - 1, 0.8 * raw_peak, False)
+                r20 = crossing(stretch, stretch_peak, len(stretch) - 1, 0.2 * raw_peak, False)
                 complete = bool(np.all(np.isfinite([l20, l80, r80, r20])) and l20 < l80 < r80 < r20)
-            absolute = lambda sample: recording.start_time + (start + sample) / recording.fs
+                if complete:
+                    support = labels[
+                        stretch_start + int(np.floor(l20)) : stretch_start + int(np.ceil(r20)) + 1
+                    ]
+                    crossing_state_boundary = not bool(np.all(support == state_label))
+            absolute = lambda sample: recording.start_time + sample / recording.fs
             rows.append(
                 {
                     **recording.identity,
                     "state": state,
                     "bout_index": len(rows),
-                    "onset_seconds": absolute(0),
-                    "offset_seconds": absolute(len(values)),
+                    "onset_seconds": absolute(start),
+                    "offset_seconds": absolute(stop),
                     "bout_duration_seconds": len(values) / recording.fs,
-                    "peak_seconds": absolute(peak),
+                    "peak_seconds": absolute(absolute_peak),
                     "raw_peak": raw_peak,
-                    "rise20_seconds": absolute(l20) if np.isfinite(l20) else np.nan,
-                    "rise80_seconds": absolute(l80) if np.isfinite(l80) else np.nan,
-                    "decay80_seconds": absolute(r80) if np.isfinite(r80) else np.nan,
-                    "decay20_seconds": absolute(r20) if np.isfinite(r20) else np.nan,
+                    "rise20_seconds": absolute(stretch_start + l20) if np.isfinite(l20) else np.nan,
+                    "rise80_seconds": absolute(stretch_start + l80) if np.isfinite(l80) else np.nan,
+                    "decay80_seconds": absolute(stretch_start + r80) if np.isfinite(r80) else np.nan,
+                    "decay20_seconds": absolute(stretch_start + r20) if np.isfinite(r20) else np.nan,
                     "complete_shape": complete,
+                    "crosses_state_boundary": crossing_state_boundary,
                     "duration_seconds": (r20 - l20) / recording.fs if complete else np.nan,
                     "rise_slope": 0.6 * raw_peak * recording.fs / (l80 - l20) if complete else np.nan,
                     "decay_slope": 0.6 * raw_peak * recording.fs / (r20 - r80) if complete else np.nan,

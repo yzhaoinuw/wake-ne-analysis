@@ -304,6 +304,15 @@ def test_raw_bout_comparison_uses_declared_common_start_interval():
     assert results.loc[results.metric == "raw_peak", "n_recording_pairs"].item() == 1
 
 
+def test_raw_bout_shape_can_cross_a_wake_state_boundary():
+    source = recording([0, 1, 5, 4, 1, 0], [4, 4, 4, 5, 5, 5], fs=1, name="crossing")
+    bouts, _ = analyze_raw_bouts(source)
+    active = bouts.loc[bouts.state == "active_wake"].iloc[0]
+    assert active.complete_shape
+    assert active.crosses_state_boundary
+    assert active.decay20_seconds > active.offset_seconds
+
+
 def test_manifest_and_both_clis_roundtrip(tmp_path):
     path = tmp_path / "labeled.mat"
     savemat(path, {"ne": triangular_events(), "sleep_scores": [4] * 180, "ne_frequency": 10})

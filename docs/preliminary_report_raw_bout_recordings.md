@@ -20,9 +20,10 @@ of recording pairs but is not a valid mouse-level biological inference.
 - The **zero-referenced peak** is significantly higher in Active Wake than Quiet Wake
   in the nine recording pairs (two-sided paired Wilcoxon p = 0.0117). This is an
   exploratory recording-level signal, not a mouse-level result.
-- Zero-referenced duration and 20–80% slopes are available for only four complete
-  recording pairs, and none differs significantly. Their sparse availability is a
-  property of the literal, no-baseline crossing definition—not an excluded file.
+- Once a bout peak is assigned to its state, its 20%/80% crossings may occur outside
+  that bout, as in the primary peak-state analysis. All nine recordings therefore
+  provide timing pairs. Zero-referenced duration differs nominally (p = 0.0195),
+  while rise and decay slopes do not.
 - Unlike the local-baseline report, this analysis retains all labelled common-start
   bouts, including the previously documented recording-start excursions. That makes
   the sensitivity transparent, but it also leaves those artifacts able to influence
@@ -39,13 +40,13 @@ recordings may share a mouse; see [Appendix B](#appendix-b-recording-level-stati
 | Zero-referenced measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Peak processed NE (percentage delta-F/F) | 1.833 (1.044–2.661) | 1.651 (0.927–2.510) | n = 9 | 0.0117; significant exploratory recording-level signal |
-| Duration (s) | 6.60 (5.23–7.06) | 1.35 (0.91–1.97) | n = 4 | 0.125; not significant |
-| 20–80% rise slope (percentage points/s) | 0.438 (0.363–0.498) | 0.501 (0.388–0.520) | n = 4 | 0.875; not significant |
-| 20–80% decay slope (percentage points/s) | 0.254 (0.171–0.394) | 0.504 (0.340–0.652) | n = 4 | 0.625; not significant |
+| Duration (s) | 177.92 (37.94–403.57) | 183.52 (40.23–406.87) | n = 9 | 0.0195; significant exploratory recording-level difference |
+| 20–80% rise slope (percentage points/s) | 0.040 (0.035–0.062) | 0.039 (0.026–0.075) | n = 9 | 0.301; not significant |
+| 20–80% decay slope (percentage points/s) | 0.028 (0.010–0.047) | 0.022 (0.013–0.035) | n = 9 | 1.000; not significant |
 
-The significant peak result is compatible with higher stored processed NE levels in
-Active Wake in this file-level screen. It does **not** establish a state effect across
-independent mice, and it does not adjudicate between the zero-referenced and
+The significant peak and duration results are compatible with an Active/Quiet
+difference in this file-level screen. They do **not** establish a state effect across
+independent mice, and they do not adjudicate between the zero-referenced and
 local-baseline definitions.
 
 ## Methodology
@@ -81,39 +82,44 @@ not assumed proven.
 
 ### Literal duration and 20–80% slopes
 
-For a bout whose literal peak is positive, the detector searches *within that same
-bout* backward and forward from the peak for the nearest 20% and 80% crossings of the
-zero-referenced peak value. It then calculates duration from the rising 20% to the
-falling 20% crossing and rise/decay slopes through the middle 20–80% range.
+For a bout whose literal peak is positive, the detector searches backward and forward
+from that peak across the entire continuous finite NE trace for the nearest 20% and
+80% crossings of the zero-referenced peak value. The peak's bout supplies the state
+assignment, but the crossings may occur outside that bout and across sleep-state
+boundaries. It then calculates duration from the rising 20% to the falling 20%
+crossing and rise/decay slopes through the middle 20–80% range.
 
-If a bout's peak is non-positive, is at a bout edge, or lacks any of the required
-within-bout crossings, its duration and slopes are missing for that metric. Its peak
-is still retained. Bouts are never joined across a sleep-state boundary or an invalid
-NE sample. Exact formulas are in [Appendix A](#appendix-a-zero-referenced-bout-metrics).
+If a bout's peak is non-positive or the surrounding finite trace lacks a required
+crossing, its duration and slopes are missing for that metric. Its peak is still
+retained. The NE trace is never bridged across an invalid sample, but the crossing
+support is intentionally allowed across sleep-state boundaries. Exact formulas are in
+[Appendix A](#appendix-a-zero-referenced-bout-metrics).
 
 ### How this differs from the local-baseline report
 
 The primary [local-baseline report](preliminary_report.md) first estimates a rolling
 20th-percentile baseline across continuous NE, detects baseline-subtracted elevations,
 and assigns each event to the state at its peak. This sensitivity instead begins with
-the state bouts, uses their literal stored NE maxima, and confines all crossing searches
-to the same bout. The two approaches answer related but different questions and should
-not be pooled or presented as interchangeable estimates.
+the state bouts and uses their literal stored NE maxima, but follows the same
+peak-state attribution principle: crossing support can extend across state boundaries.
+The two approaches answer related but different questions and should not be pooled or
+presented as interchangeable estimates.
 
 ## Results
 
 ### Recording-paired raw-bout summaries
 
-The zero-referenced peak is higher in Active Wake in the nine-file screen. The plot
-shows every file-level median; each line joins Active and Quiet summaries from the
-same MAT file. The apparent p-value is conditional on treating those nine files as
-independent recordings, which is the explicitly temporary simplification here.
+The zero-referenced peak and duration differ nominally in the nine-file screen. The
+plot shows every file-level median; each line joins Active and Quiet summaries from
+the same MAT file. The apparent p-values are conditional on treating those nine files
+as independent recordings, which is the explicitly temporary simplification here.
 
 ![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison/raw_bout_metric_comparisons.png)
 
 **Figure 1.** Each point is a file-level median across bouts. Orange is Active Wake;
-light blue is Quiet Wake. Duration and slope panels include only records with complete
-zero-referenced crossings in both states; the peak panel includes all nine files.
+light blue is Quiet Wake. All panels include nine recording pairs. The duration and
+slope support is attributed by the bout containing the peak, but is not constrained to
+remain in that state.
 
 ### Interpretation for the proposal
 
@@ -131,10 +137,12 @@ mouse-level analysis of both definitions.
 
 ## Appendix A: Zero-referenced bout metrics
 
-Let `x(t)` be the stored processed percentage delta-F/F trace inside one finite,
-single-state Wake bout. Let `P = max(x(t))` be that bout's literal peak. There is no
-new baseline subtraction. When `P > 0`, locate within the bout the nearest rise and
-fall crossings at `0.2P` and `0.8P`, named `t_r20`, `t_r80`, `t_d80`, and `t_d20`.
+Let `x(t)` be the stored processed percentage delta-F/F trace and let `P` be the
+literal maximum within one finite, single-state Wake bout. There is no new baseline
+subtraction. When `P > 0`, locate the nearest rise and fall crossings in the
+continuous finite trace at `0.2P` and `0.8P`, named `t_r20`, `t_r80`, `t_d80`, and
+`t_d20`. The bout containing `P` supplies the Active/Quiet assignment; crossing
+support is allowed to cross state boundaries.
 
 ```text
 zero-referenced peak = P
@@ -146,7 +154,10 @@ decay slope          = 0.60 × P / (t_d20 - t_d80)
 The formula is deliberately literal: it measures thresholds relative to zero on the
 processed trace. It is not equivalent to a conventional peak-above-baseline event
 amplitude. The crossing-based metrics are set to missing, rather than fabricated, when
-the required within-bout shape does not exist.
+the required shape does not exist before the finite trace ends. In this run, 1,624 of
+1,766 complete Active-Wake supports and 1,696 of 1,759 Quiet-Wake supports cross at
+least one state boundary, so these timing metrics are contextual peak-state measures,
+not pure within-state kinetics.
 
 ## Appendix B: Recording-level statistics and limitation
 
