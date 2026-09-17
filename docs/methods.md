@@ -8,45 +8,27 @@ Quiet Wake. Those labels are produced upstream only after ordinary coarse scorin
 (Wake/NREM/REM), sparse manual-label overlay, and optional EMG subdivision of the
 remaining Wake seconds.
 
-The upstream subdivision uses raw EMG, linearly detrended and zero-phase band-pass
-filtered from 20 Hz to `min(200 Hz, 0.45 * sampling_rate)`. A centered 0.5-second
-root-mean-square (RMS) amplitude envelope is sampled at 20 Hz. Forward-and-reverse
-filtering and centered RMS smoothing avoid a directional phase delay; the envelope
-near a state boundary can still include approximately 0.25 seconds of neighboring
-EMG.
+The default upstream subdivision linearly detrends raw EMG, applies a zero-phase
+20 Hz to `min(200 Hz, 0.45 * sampling_rate)` band-pass filter, then calculates one
+true RMS value for each final one-second score interval:
+`sqrt(mean(filtered_EMG^2))`. This is not the ordinary EMG mean, whose positive and
+negative waveform values cancel. A score is invalid if its EMG contains missing,
+flatlined, or otherwise unusable signal; the app stops subdivision rather than
+silently calling it Quiet Wake.
 
-At each envelope center `t`, RMS is `sqrt(mean(EMG^2))` over approximately
-`t - 0.25 s` through `t + 0.25 s`. Squaring prevents the positive and negative EMG
-waveform from cancelling, and the square root leaves the result in the signal's
-original units. The 20 Hz envelope supplies one value every 50 ms. Its adjacent
-0.5-second windows overlap by about 0.45 seconds, so these are intentionally smooth,
-correlated amplitude estimates—not independent 50 ms behavioral labels. The 20 Hz
-grid is a practical intermediate resolution: ten envelope values span an RMS window,
-and twenty values span each final one-second sleep score. It supports the short-gap
-and within-second-occupancy rules without claiming 50 ms onset/offset precision.
-Twenty hertz is a pragmatic signal-processing choice, not a biologically validated
-Wake-activity resolution; reviewed recordings should compare its final one-second
-labels with a direct one-RMS-value-per-second alternative before the extra intermediate
-grid is treated as necessary.
+Within each recording, unlabelled Wake seconds are ranked by that one-second RMS.
+The highest-ranked seconds are labeled Active until the final recording targets 80%
+Active Wake and 20% Quiet Wake. This is a relative within-recording split, not an
+absolute movement-intensity threshold. Explicit manual Active/Quiet labels remain
+authoritative. If they make the target impossible, the app keeps them and reports the
+achieved ratio in its usual prediction confirmation.
 
-In automatic mode, activity is anchored to valid NREM EMG rather than to the Wake
-distribution: `threshold = NREM RMS 75th percentile + 2 × robust SD`, where robust
-SD is `1.4826 × MAD` about the NREM median. This deliberately conservative reference
-helps prevent EMG-guided Wake scoring from defining its own baseline. A configured
-numeric RMS threshold can instead provide the initial value; explicit manual
-Active/Quiet examples may refine the initial cutoff while remaining authoritative in
-the final output. Missing, flatlined, or otherwise invalid EMG in a Wake second, or
-no valid NREM reference in automatic mode, stops subdivision rather than silently
-assigning Quiet Wake.
-
-Within Wake, RMS values above threshold form candidate active bouts. Dips of at
-most 0.5 seconds are bridged, and a bout must last at least one second. A one-second
-Wake label is Active when at least ten of that second's twenty envelope values are in
-an active bout; otherwise it is Quiet. Thus the NE pipeline receives a one-label-per-
-second score despite the finer intermediate measurement. EMG amplitude is a
-recording-specific muscle-activity proxy, not a calibrated whole-body movement
-measure. Its biological performance, including the NREM reference multiplier, still
-requires review against real recordings and expert/video annotation.
+The prior NREM-anchored 20 Hz envelope method remains a parked comparison option. It
+uses a centered 0.5-second RMS envelope, a threshold from the NREM RMS 75th percentile
+plus two MAD-derived robust standard deviations, short-gap bridging, and one-second
+occupancy. It is not the default labeling rule. Both methods treat EMG amplitude as a
+recording-specific muscle-activity proxy, not a calibrated whole-body movement measure,
+and require review against real recordings and expert/video annotation.
 
 ## Spectral analysis
 
