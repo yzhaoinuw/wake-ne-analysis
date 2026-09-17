@@ -5,11 +5,10 @@ EEG+NE follow-up. Both runs used the same fixed 4,800-second balanced sample.
 
 ## Question
 
-Each point is one final-labelled second from the ten available recordings. PCA,
-t-SNE, and UMAP are fit without the sleep-stage labels; labels are added only for
-colouring. The purpose is to compare whether the same physiological observations
-show similar state organization under a linear projection (PCA) and two nonlinear
-neighbourhood projections (t-SNE and UMAP).
+Each point is one final-labelled second from the ten available recordings. t-SNE and
+UMAP are fit without the sleep-stage labels; labels are added only for colouring. The
+purpose is to compare whether the same physiological observations show similar state
+organization under two nonlinear neighbourhood projections.
 
 ## Features
 
@@ -35,7 +34,7 @@ uses exactly this same sample.
 
 Suggested caption for each method-specific figure:
 
-> Label-coloured [PCA/t-SNE/UMAP] embedding of the same balanced sample of
+> Label-coloured [t-SNE/UMAP] embedding of the same balanced sample of
 > one-second EEG + EMG + NE observations. The sample contains 1,000 NREM, 1,000 REM,
 > 800 MA, 1,000 Active Wake, and 1,000 Quiet Wake seconds, capped at 100 seconds per
 > available state per recording. Labels were not used to fit the embedding.
@@ -47,12 +46,11 @@ MA `#FFFF00`, Active Wake `#E69F00`, and Quiet Wake `#56B4E9`.
 
 | Method | Settings |
 |---|---|
-| PCA | Two components, full singular-value decomposition. |
-| t-SNE | Two dimensions; perplexity 30; PCA initialization; automatic learning rate; 1,000 iterations; seed `20260917`; Barnes-Hut optimization. |
+| t-SNE | Two dimensions; perplexity 30; deterministic initialization; automatic learning rate; 1,000 iterations; seed `20260917`; Barnes-Hut optimization. |
 | UMAP | Two dimensions; Euclidean distance; 30 neighbours; `min_dist=0.2`; 200 epochs; seed `20260917`; one worker for reproducibility. |
 
-PCA axes report variance explained. t-SNE and UMAP axes are unitless learned layout
-coordinates: their origin, direction, and rotation have no physiological meaning.
+t-SNE and UMAP axes are unitless learned layout coordinates: their origin, direction,
+and rotation have no physiological meaning.
 
 ## Results
 
@@ -68,14 +66,6 @@ UMAP. The joint maps also show a conspicuous Active-Wake region, including the l
 lower-right UMAP arc. Quiet Wake is not an equally discrete region: it broadly
 overlaps NREM, MA, and parts of Active Wake.
 
-PCA is not useful as a state display for this sample. PC1 and PC2 explain 51.8% and
-47.5% of its variance, respectively, because a few robust-scaled feature extremes
-set the axes. The most extreme displayed row is Quiet Wake, second 202 from the
-Mouse 7 archive (delta −441, theta −581 in robust-scaled units); several MA rows
-from the second Mouse 1 part have EMG values above 200. These finite rows were not
-silently removed or clipped. PCA should therefore remain a feature-QC diagnostic
-until a reviewed artifact/display rule is predeclared.
-
 ### Fairer EEG + NE follow-up
 
 ![EEG + NE t-SNE](assets/embedding_comparison/eeg_ne_4800/tsne.png)
@@ -89,19 +79,15 @@ another and with MA; the joint Active-Wake arc does not persist. Thus these init
 EEG+NE views do not provide a visually distinct Active-versus-Quiet cluster beyond
 the EMG-related separation in the joint panel.
 
-The EEG+NE PCA is even more dominated by the same extreme Quiet-Wake EEG second:
-PC1 explains 98.5% of its variance. This reinforces the need to treat PCA as QC here
-rather than evidence about state geometry.
-
 ## Interpretation caveat
 
 The Active/Quiet Wake subdivision was created from a closely related one-second EMG
 RMS quantity. Consequently, including EMG RMS in the joint embedding naturally
-makes some Active-versus-Quiet separation likely. A split in the joint PCA, t-SNE,
-or UMAP panel therefore cannot independently establish that those labels are
-physiologically distinct; it primarily locates the EMG-defined states in the joint
-EEG/EMG/NE space. Likewise, nonlinear embeddings can emphasize local neighborhoods
-and should not be read as distances, cluster sizes, or statistical evidence.
+makes some Active-versus-Quiet separation likely. A split in the joint t-SNE or UMAP
+panel therefore cannot independently establish that those labels are physiologically
+distinct; it primarily locates the EMG-defined states in the joint EEG/EMG/NE space.
+Likewise, nonlinear embeddings can emphasize local neighborhoods and should not be
+read as distances, cluster sizes, or statistical evidence.
 
 ## Fairer follow-up
 

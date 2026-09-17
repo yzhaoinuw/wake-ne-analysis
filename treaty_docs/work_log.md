@@ -2,6 +2,15 @@
 
 ## 2026-09-17
 
+### Remove PCA from presentation-facing cluster report (Codex GPT-5; effort/tokens not reported)
+
+- Removed PCA methods, captions, and results discussion from
+  `docs/cluster_visualization_report.md`. The report now presents only the t-SNE and
+  UMAP comparisons; PCA remains outside that report as an optional local QC tool.
+- Verification:
+  - Confirmed the presentation report has no remaining PCA/principal-component
+    mentions.
+
 ### Complete joint and EEG+NE embedding comparison (Codex GPT-5; effort/tokens not reported)
 
 - Ran separate PCA, t-SNE, and UMAP figures on the fixed 4,800-point balanced sample
