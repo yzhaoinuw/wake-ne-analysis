@@ -15,11 +15,11 @@ The previous real-file cohort draft and its companion raw-bout sensitivity repor
 preserved in [docs/archived](docs/archived/). The earlier
 [single-recording pilot](docs/pilot_report.md) is also historical pipeline evidence.
 
-The next recording-level report will use the mean saved NE value within each labelled
-bout, literal score-bout duration and count, contextual peak-assigned slopes, and
-short-window spectra. It will describe every MAT file as a recording while retaining
-mouse/session identity as a non-independence caveat. It is pending the complete
-11-file input set.
+The current [ten-recording report](docs/preliminary_recording_report.md) uses the
+mean saved NE value within each labelled bout, literal score-bout duration and count,
+contextual peak-assigned slopes, and short-window spectra. It describes every MAT
+file as a recording while retaining mouse/session identity as a non-independence
+caveat.
 
 ## Quick start
 

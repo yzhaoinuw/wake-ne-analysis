@@ -9,10 +9,12 @@
   score-bout count in the recording-paired table/figure. The deliberately pooled
   bout table/figure omits mean NE because different recordings can have different
   signal baselines. Width, 20--80% slopes, and short-window spectral measures keep
-  their existing definitions and qualifications. Only 10 MAT files are currently in
-  `data/`, despite the requested 11-file refresh; do not publish the completed
-  ten-file smoke run as the new report. Obtain or identify the missing MAT file,
-  then regenerate the report and figures from all 11 files.
+  their existing definitions and qualifications. The user confirmed that the current
+  input set is 10 MAT files, and the published report is
+  `docs/preliminary_recording_report.md` with figures in
+  `docs/assets/recording_report_20260917/`. Do not convert its recording-level or
+  pooled-bout screens into independent-animal inference; regenerate only when a
+  deliberately revised input set or grouping design is supplied.
 
 - `docs/archived/preliminary_report_raw_bout_recordings_20260916.md` is the archived,
   intentionally

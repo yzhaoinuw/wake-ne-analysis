@@ -2,6 +2,21 @@
 
 ## 2026-09-17
 
+### Publish refreshed ten-recording report after input-count confirmation (Codex GPT-5; effort/tokens not reported)
+
+- The user confirmed that the intended refreshed input set is 10 MAT files, not 11.
+  Published `docs/preliminary_recording_report.md` and its static figures from a new
+  ten-file run. The current report retains the need for verified mouse/session
+  metadata before biological inference.
+- The recording-level mean-NE screen is null (paired Wilcoxon p = 0.557). Actual
+  score-bout duration remains shorter in Quiet Wake (4 s versus 2 s file-median
+  summaries; p = 0.00391), while score-bout count has no nominal paired difference
+  (p = 0.164). Frequency maxima are all band-edge constrained.
+- Verification:
+  - Regenerated `outputs/recording_report_20260917` from all 10 available MAT files.
+  - Rendered and visually inspected the five report figures in
+    `docs/assets/recording_report_20260917/`.
+
 ### Archive prior reports and prepare the recording-level refresh (Codex GPT-5; effort/tokens not reported)
 
 - Moved the two 2026-09-16 cohort reports to `docs/archived/` without deleting
