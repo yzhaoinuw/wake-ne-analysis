@@ -1,4 +1,4 @@
-"""Exploratory zero-referenced, per-state-bout NE summaries.
+"""Exploratory per-state-bout NE summaries.
 
 This deliberately separate workflow uses the stored processed NE values without a
 local baseline. It treats each MAT file as an independent recording for an explicitly
@@ -24,7 +24,19 @@ from .transients import crossing
 # Peak-state attribution deliberately permits timing crossings to leave the score
 # run. These therefore describe the full NE elevation around its labelled peak, not
 # the duration of a one-second sleep-score run.
-RAW_METRICS = ("raw_peak", "duration_seconds", "rise_slope", "decay_slope")
+# ``raw_peak`` remains in the audit table because it anchors the deliberately
+# peak-assigned episode width and slopes.  It is not a reported comparison metric:
+# the recording-level signal measure is the mean saved NE value in each score run.
+RAW_METRICS = ("raw_bout_mean", "duration_seconds", "rise_slope", "decay_slope")
+INDEPENDENT_BOUT_METRICS = ("duration_seconds", "rise_slope", "decay_slope")
+RECORDING_METRICS = (
+    "raw_bout_mean",
+    "score_bout_duration_seconds",
+    "score_bout_count",
+    "duration_seconds",
+    "rise_slope",
+    "decay_slope",
+)
 SPECTRAL_METRICS = ("band_power", "dominant_frequency_hz")
 RAW_SPECTRUM = SpectrumConfig(window_seconds=15.0, fmin=0.2, fmax=0.3)
 
@@ -49,7 +61,7 @@ def _sample_labels(recording: Recording, n_samples: int) -> np.ndarray:
 
 
 def analyze_raw_bouts(recording: Recording) -> tuple[pd.DataFrame, dict]:
-    """Measure a state-bout peak, then trace its zero-referenced shape across states."""
+    """Measure each score-run mean and its peak-anchored NE-event shape."""
     n_samples = common_start_samples(recording)
     signal = recording.ne[:n_samples]
     labels = _sample_labels(recording, n_samples)
@@ -92,6 +104,7 @@ def analyze_raw_bouts(recording: Recording) -> tuple[pd.DataFrame, dict]:
                     "bout_duration_seconds": len(values) / recording.fs,
                     "peak_seconds": absolute(absolute_peak),
                     "raw_peak": raw_peak,
+                    "raw_bout_mean": float(np.mean(values)),
                     "rise20_seconds": absolute(stretch_start + l20) if np.isfinite(l20) else np.nan,
                     "rise80_seconds": absolute(stretch_start + l80) if np.isfinite(l80) else np.nan,
                     "decay80_seconds": absolute(stretch_start + r80) if np.isfinite(r80) else np.nan,
@@ -145,7 +158,12 @@ def summarize_recordings(bouts: pd.DataFrame, audits: pd.DataFrame) -> pd.DataFr
 def paired_recording_results(summaries: pd.DataFrame) -> pd.DataFrame:
     """Paired recording-level results; independence of files is deliberately assumed."""
     rows = []
-    for metric in RAW_METRICS:
+    for metric in RECORDING_METRICS:
+        if (
+            f"active_wake_{metric}_median" not in summaries
+            or f"quiet_wake_{metric}_median" not in summaries
+        ):
+            continue
         active = summaries[f"active_wake_{metric}_median"]
         quiet = summaries[f"quiet_wake_{metric}_median"]
         paired = pd.DataFrame({"active": active, "quiet": quiet}).dropna()
@@ -178,7 +196,7 @@ def independent_bout_results(bouts: pd.DataFrame) -> pd.DataFrame:
     not valid animal-level evidence and must remain labelled as pseudoreplicated.
     """
     rows = []
-    for metric in RAW_METRICS:
+    for metric in INDEPENDENT_BOUT_METRICS:
         active = bouts.loc[bouts.state == "active_wake", metric].dropna()
         quiet = bouts.loc[bouts.state == "quiet_wake", metric].dropna()
         active_median, active_lower, active_upper = _median_iqr(active)
@@ -343,14 +361,39 @@ def score_label_bouts_directory(input_dir: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def add_score_bout_metrics(
+    summaries: pd.DataFrame, label_geometry: pd.DataFrame
+) -> pd.DataFrame:
+    """Add literal score-run duration and count to recording-level summaries.
+
+    These values are intentionally derived from every saved one-second score run,
+    rather than from the NE-valid runs used for the raw-mean and shape metrics.
+    """
+    result = summaries.copy()
+    for state in STATES.values():
+        selected = label_geometry.loc[
+            label_geometry.state == state,
+            ["recording_id", "n_score_bouts", "bout_duration_median_seconds"],
+        ].set_index("recording_id")
+        result[f"{state}_score_bout_count_median"] = result.recording_id.map(
+            selected.n_score_bouts
+        )
+        result[f"{state}_score_bout_duration_seconds_median"] = result.recording_id.map(
+            selected.bout_duration_median_seconds
+        )
+    return result
+
+
 def write_directory_analysis(input_dir: Path, output_dir: Path) -> None:
     """Write auditable raw-bout tables for the separate preliminary comparison."""
     output_dir = Path(output_dir)
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError(f"Output directory must be new or empty: {output_dir}")
-    bouts, summaries, results = analyze_directory(input_dir)
+    bouts, summaries, _ = analyze_directory(input_dir)
     label_geometry = label_geometry_directory(input_dir)
     score_label_bouts = score_label_bouts_directory(input_dir)
+    summaries = add_score_bout_metrics(summaries, label_geometry)
+    results = paired_recording_results(summaries)
     bout_results = independent_bout_results(bouts)
     spectra, spectral_windows, spectral_summaries, spectral_results = analyze_raw_spectra(input_dir)
     spectral_window_results = independent_spectral_window_results(spectral_windows)

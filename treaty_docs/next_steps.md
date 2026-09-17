@@ -2,7 +2,20 @@
 
 ## Currently Hot
 
-- `docs/preliminary_report_raw_bout_recordings.md` is a separate, intentionally
+- **2026-09-17 recording-level refresh:** the two 2026-09-16 cohort reports are now
+  archived under `docs/archived/`; their section structure is the template for the
+  replacement. The raw-bout workflow now reports the mean saved processed-NE value
+  within each labelled score bout (not its peak), actual score-bout duration, and
+  score-bout count in the recording-paired table/figure. The deliberately pooled
+  bout table/figure omits mean NE because different recordings can have different
+  signal baselines. Width, 20--80% slopes, and short-window spectral measures keep
+  their existing definitions and qualifications. Only 10 MAT files are currently in
+  `data/`, despite the requested 11-file refresh; do not publish the completed
+  ten-file smoke run as the new report. Obtain or identify the missing MAT file,
+  then regenerate the report and figures from all 11 files.
+
+- `docs/archived/preliminary_report_raw_bout_recordings_20260916.md` is the archived,
+  intentionally
   exploratory zero-referenced sensitivity screen. It contains both a paired,
   per-file Wilcoxon screen and a clearly quarantined per-bout Mann--Whitney
   description, plus analogous recording-paired and pseudoreplicated-window spectral
@@ -16,8 +29,8 @@
   turn any screen into a mouse-level conclusion or merge it with the local-baseline
   report. Future submissions should retain verified mouse/session metadata and run a
   predeclared sensitivity analysis of literal versus local-baseline definitions.
-- The current executive, GitHub-renderable cohort draft is
-  `docs/preliminary_report.md`; its refreshed static figures live in
+- The archived executive, GitHub-renderable cohort draft is
+  `docs/archived/preliminary_report_20260916.md`; its static figures live in
   `docs/assets/cohort_preliminary_report/`. The earlier single-recording document
   is preserved as `docs/pilot_report.md` and is historical rather than the current
   cohort result. Its renderer uses the upstream orange Active/light-blue Quiet color

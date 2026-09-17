@@ -1,5 +1,28 @@
 # Work Log
 
+## 2026-09-17
+
+### Archive prior reports and prepare the recording-level refresh (Codex GPT-5; effort/tokens not reported)
+
+- Moved the two 2026-09-16 cohort reports to `docs/archived/` without deleting
+  their Git history. Their report structure remains the template for the refreshed
+  recording-level document.
+- Replaced the reported literal within-bout processed-NE peak with the arithmetic
+  mean of saved NE samples in each labelled bout. The literal maximum remains only
+  as the internal anchor for the unchanged peak-assigned width and 20--80% slope
+  measurements. Added actual score-bout duration and score-bout count to the
+  recording-paired results table and figure. The pooled-bout results deliberately
+  omit mean NE; duration and contextual shape metrics remain.
+- The updated pipeline treats each MAT file as a paired Active/Quiet recording for
+  descriptive summaries. Any repeated mouse/session contribution remains correlated
+  and is not independent biological replication.
+- Verification:
+  - `python -m pytest --basetemp .pytest_refresh -p no:cacheprovider -q`: 30 passed.
+  - Rendered and visually inspected the revised recording and pooled-bout figures.
+  - Only 10 MAT files were present in `data/`; a ten-file smoke run completed, but
+    no replacement report was published because the requested 11-file input set is
+    incomplete.
+
 ## 2026-09-16
 
 ### Report actual score-bout durations alongside NE-event widths (Codex GPT-5; effort/tokens not reported)

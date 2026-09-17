@@ -117,7 +117,7 @@ Active-peak and 78% of Quiet-peak events cross a score-state boundary before all
 20%/80% crossings are reached. That crossing is allowed: width and slopes describe
 the full NE event assigned by its peak, and neither is a sleep-score-bout duration.
 
-![Example of peak-state attribution](assets/cohort_preliminary_report_context_fixed/peak_state_assignment_example.png)
+![Example of peak-state attribution](../assets/cohort_preliminary_report_context_fixed/peak_state_assignment_example.png)
 
 The light-blue marker is a Quiet-Wake peak, and the light-blue background explicitly
 marks the Quiet-Wake seconds around it. Orange marks Active Wake; gray is another
@@ -209,7 +209,7 @@ has valid spectral windows but no detected complete elevations under the provisi
 event definition, so it is absent from the event-measure panels and contributes only
 to the spectral comparison.
 
-![Paired summaries for all reported metrics](assets/cohort_preliminary_report_context_fixed/cohort_metric_comparisons.png)
+![Paired summaries for all reported metrics](../assets/cohort_preliminary_report_context_fixed/cohort_metric_comparisons.png)
 
 **Figure 1.** Each line connects the same identified mouse across wake states.
 P-values are two-sided paired Wilcoxon results; see
@@ -224,7 +224,7 @@ three Quiet-Wake windows at 15 seconds and none at 20 seconds. A longer-window
 spectrum cannot be rescued by joining separate bouts, because that would cross state
 transitions and answer a different question.
 
-![Spectral-window coverage at 15 and 20 seconds](assets/cohort_preliminary_report_context_fixed/spectral_window_coverage.png)
+![Spectral-window coverage at 15 and 20 seconds](../assets/cohort_preliminary_report_context_fixed/spectral_window_coverage.png)
 
 **Figure 2.** Number of eligible fixed windows after the recording-start QC rule.
 Orange denotes Active Wake and light blue Quiet Wake; bar fill distinguishes the

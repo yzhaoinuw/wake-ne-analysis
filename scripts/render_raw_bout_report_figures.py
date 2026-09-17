@@ -1,4 +1,4 @@
-"""Render figures for the exploratory zero-referenced raw-bout report."""
+"""Render figures for the exploratory recording-level raw-bout report."""
 
 from __future__ import annotations
 
@@ -15,8 +15,15 @@ from wake_ne_analysis.io import load_recording
 
 STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
 STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
-METRICS = [
-    ("raw_peak", "Zero-referenced peak", "processed NE (percentage delta-F/F)"),
+RECORDING_METRICS = [
+    ("raw_bout_mean", "Mean NE within score bout", "processed NE (percentage delta-F/F)"),
+    ("score_bout_duration_seconds", "Actual score-bout duration", "seconds"),
+    ("score_bout_count", "Number of score bouts", "count"),
+    ("duration_seconds", "Peak-assigned NE-episode width", "seconds"),
+    ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
+    ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
+]
+INDEPENDENT_BOUT_METRICS = [
     ("duration_seconds", "Peak-assigned NE-episode width", "seconds"),
     ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
     ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
@@ -105,8 +112,8 @@ def choose_raw_peak_example(bouts: pd.DataFrame, recording_id: str, seed: int):
     return candidates.iloc[np.random.default_rng(seed).integers(len(candidates))], recording
 
 
-def raw_peak_assignment_figure(bouts: pd.DataFrame):
-    """Show literal within-bout peak assignment without the cohort baseline detector."""
+def raw_bout_mean_example_figure(bouts: pd.DataFrame):
+    """Show the reported within-bout mean and the retained shape anchor."""
     import plotly.graph_objects as go
 
     chosen, recording = choose_raw_peak_example(bouts, RAW_PEAK_EXAMPLE_RECORDING_ID, RAW_PEAK_EXAMPLE_SEED)
@@ -140,8 +147,15 @@ def raw_peak_assignment_figure(bouts: pd.DataFrame):
             marker={"color": STATE_COLORS["quiet_wake"], "size": 13, "line": {"color": "white", "width": 2}},
         )
     )
+    figure.add_hline(
+        y=chosen.raw_bout_mean,
+        line_dash="dash",
+        line_color="#05668d",
+        annotation_text="mean NE in outlined score run",
+        annotation_font={"size": 11, "color": "#05668d"},
+    )
     figure.add_annotation(
-        x=chosen.peak_seconds, y=chosen.raw_peak, text="P = maximum in outlined score run",
+        x=chosen.peak_seconds, y=chosen.raw_peak, text="Peak anchors episode width/slopes",
         showarrow=True, arrowhead=2, ax=0, ay=-42, bgcolor="rgba(255,255,255,0.92)",
         bordercolor="#334e68", font={"size": 11, "color": "#334e68"},
     )
@@ -149,7 +163,7 @@ def raw_peak_assignment_figure(bouts: pd.DataFrame):
         figure.add_vline(x=value, line_dash="dash", line_color="#7b3294", line_width=1.5)
         figure.add_annotation(x=value, y=high + pad * 0.25, text=label, showarrow=False, textangle=-90, font={"size": 11, "color": "#7b3294"})
     figure.update_layout(
-        template="plotly_white", title="Raw-bout peak assignment: literal maximum inside a Quiet-Wake score run",
+        template="plotly_white", title="Raw-bout mean: processed NE averaged inside a Quiet-Wake score run",
         xaxis_title="recording time (seconds)", yaxis_title="processed NE (percentage delta-F/F)",
         yaxis_range=[low - pad, high + pad], legend={"orientation": "h", "y": -0.2}, height=600,
         margin={"l": 80, "r": 40, "t": 95, "b": 100},
@@ -157,8 +171,8 @@ def raw_peak_assignment_figure(bouts: pd.DataFrame):
     figure.add_annotation(
         x=0.5, y=-0.31, xref="paper", yref="paper",
         text=("Orange = Active Wake; light blue = Quiet Wake; gray = other state. "
-              "No rolling baseline, prominence threshold, or local-peak detector is used: P is the literal maximum in the outlined score run. "
-              "Purple crossings are relative to P and may cross score boundaries by peak-state assignment."),
+              "The dashed line is the reported per-bout mean; no local baseline is applied. "
+              "The marked literal maximum remains only to anchor the peak-assigned width and slopes, whose crossings may cross score boundaries."),
         showarrow=False, font={"size": 12, "color": "#52606d"},
     )
     return figure
@@ -168,8 +182,8 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
-    figure = make_subplots(rows=2, cols=2, subplot_titles=[label for _, label, _ in METRICS])
-    for index, (metric, label, unit) in enumerate(METRICS):
+    figure = make_subplots(rows=3, cols=2, subplot_titles=[label for _, label, _ in RECORDING_METRICS])
+    for index, (metric, label, unit) in enumerate(RECORDING_METRICS):
         row, column = divmod(index, 2)
         row += 1
         column += 1
@@ -207,7 +221,7 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
     figure.update_layout(
         template="plotly_white",
         title="Exploratory raw-bout comparison: each MAT file treated as one recording",
-        height=1100,
+        height=1450,
         margin={"l": 80, "r": 30, "t": 95, "b": 70},
     )
     return figure
@@ -218,12 +232,12 @@ def independent_bout_metric_figure(bouts: pd.DataFrame, results: pd.DataFrame, s
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
-    figure = make_subplots(rows=2, cols=2, subplot_titles=[label for _, label, _ in METRICS])
+    figure = make_subplots(
+        rows=1, cols=3, subplot_titles=[label for _, label, _ in INDEPENDENT_BOUT_METRICS]
+    )
     rng = np.random.default_rng(seed)
-    for index, (metric, label, unit) in enumerate(METRICS):
-        row, column = divmod(index, 2)
-        row += 1
-        column += 1
+    for index, (metric, label, unit) in enumerate(INDEPENDENT_BOUT_METRICS):
+        row, column = 1, index + 1
         result = results.loc[results.metric == metric].iloc[0]
         for state, state_name in STATE_NAMES.items():
             values = bouts.loc[bouts.state == state, metric].dropna().to_numpy()
@@ -287,7 +301,7 @@ def independent_bout_metric_figure(bouts: pd.DataFrame, results: pd.DataFrame, s
     figure.update_layout(
         template="plotly_white",
         title="Exploratory raw-bout distributions: every bout treated as an independent observation",
-        height=1100,
+        height=560,
         margin={"l": 80, "r": 30, "t": 95, "b": 70},
     )
     return figure
@@ -433,7 +447,7 @@ def main(argv=None):
     spectral_window_results = pd.read_csv(args.analysis / "independent_spectral_window_results.csv")
     args.output.mkdir(parents=True, exist_ok=True)
     _save(metric_figure(recordings, results), args.output / "raw_bout_metric_comparisons.png")
-    _save(raw_peak_assignment_figure(bouts), args.output / "raw_peak_assignment_example.png")
+    _save(raw_bout_mean_example_figure(bouts), args.output / "raw_bout_mean_example.png")
     _save(
         independent_bout_metric_figure(bouts, bout_results),
         args.output / "raw_bout_independent_metric_comparisons.png",

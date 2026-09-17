@@ -18,7 +18,9 @@ should report.
 1. **Five minutes — scope and pilot result.** Present the
    [historical single-recording report](pilot_report.md), emphasizing that it is a
    pipeline demonstration, not a state-effect claim. Then use the
-   [preliminary cohort report](preliminary_report.md) for the current result.
+   [archived preliminary cohort report](archived/preliminary_report_20260916.md)
+   for the historical result; replace it with the refreshed report once all inputs
+   are available.
 2. **Ten minutes — inspect the proposal result.** Review peak-assigned events,
    boundary-crossing counts, and short-window coverage without treating files or
    events as independent mice.

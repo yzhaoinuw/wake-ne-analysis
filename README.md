@@ -9,18 +9,17 @@ This is a tested **pilot draft using synthetic signals**. Real MAT files are bei
 collected. Event-detection parameters and the spectral window/band must be reviewed
 against those recordings before biological conclusions are drawn.
 
-## Preliminary cohort report
+## Archived reports and refreshed analysis
 
-The current real-file cohort draft is presented in a GitHub-renderable
-[preliminary report](docs/preliminary_report.md). It documents the descriptive,
-mouse-paired results, figures, and remaining limits for proposal discussion. The
-earlier [single-recording pilot](docs/pilot_report.md) is retained as historical
-pipeline evidence.
+The previous real-file cohort draft and its companion raw-bout sensitivity report are
+preserved in [docs/archived](docs/archived/). The earlier
+[single-recording pilot](docs/pilot_report.md) is also historical pipeline evidence.
 
-An intentionally separate [raw-bout recording comparison](docs/preliminary_report_raw_bout_recordings.md)
-uses literal stored processed-NE peaks within each state bout and treats MAT files as
-independent preliminary records. It is a clearly labelled sensitivity screen, not a
-replacement for the mouse-level local-baseline report.
+The next recording-level report will use the mean saved NE value within each labelled
+bout, literal score-bout duration and count, contextual peak-assigned slopes, and
+short-window spectra. It will describe every MAT file as a recording while retaining
+mouse/session identity as a non-independence caveat. It is pending the complete
+11-file input set.
 
 ## Quick start
 

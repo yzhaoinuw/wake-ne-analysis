@@ -3,7 +3,7 @@
 **Status:** historical exploratory single-recording analysis, prepared for PI
 discussion on 2026-09-15. It demonstrates the initial pipeline and its decision
 boundaries, not a biological comparison or group-level result. The current cohort
-draft is the [preliminary cohort report](preliminary_report.md); it uses the
+draft is the [archived preliminary cohort report](archived/preliminary_report_20260916.md); it uses the
 PI-directed peak-state assignment and documented recording-start QC rule.
 
 ## Scope and input integrity

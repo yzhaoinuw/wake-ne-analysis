@@ -62,5 +62,6 @@ See [next steps](treaty_docs/next_steps.md): real-data coverage, common spectral
 event baseline/prominence, secant-versus-regression slope convention, boundary
 sensitivity, session/condition grouping, graphical QC, and MAT v7.3 if needed.
 
-The first presentation-ready pilot artifact is
-[docs/preliminary_report.md](docs/preliminary_report.md).
+The previous presentation-ready cohort artifacts are preserved in
+[docs/archived](docs/archived/); the refreshed recording-level report is pending the
+complete input set.

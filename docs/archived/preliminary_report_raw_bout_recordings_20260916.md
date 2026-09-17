@@ -125,7 +125,7 @@ local-baseline report, which estimates a rolling 20th-percentile baseline across
 continuous recording before detecting elevations. The two definitions are useful
 comparisons, not interchangeable estimates.
 
-![Raw-bout literal-peak assignment](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_peak_assignment_example.png)
+![Raw-bout literal-peak assignment](../assets/raw_bout_recording_comparison_peak_assigned_v2/raw_peak_assignment_example.png)
 
 **Figure 1.** Raw-bout peak assignment. The outlined light-blue score run supplies
 its own selected peak: `P` is the largest stored processed-NE value within that run.
@@ -181,7 +181,7 @@ state values. The zero-referenced peak and the peak-assigned NE-episode width ha
 nominal paired p-values below 0.05. They remain exploratory because the nine file
 pairs are only a temporary proxy for independent animals.
 
-![Recording-paired raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_metric_comparisons.png)
+![Recording-paired raw-bout metrics](../assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_metric_comparisons.png)
 
 **Figure 2.** File-level median raw-bout metrics. Orange is Active Wake; light blue
 is Quiet Wake. All panels contain nine recording pairs. Width and slopes are assigned
@@ -196,7 +196,7 @@ remaining value is 0.30 Hz. The paired p = 1.000 should not be read as evidence 
 frequency is the same—this edge-locking means the narrow band has not resolved a
 dominant oscillation.
 
-![Recording-paired raw-bout spectra](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_recording_spectral_comparisons.png)
+![Recording-paired raw-bout spectra](../assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_recording_spectral_comparisons.png)
 
 **Figure 3.** One averaged short-window spectrum per state per MAT file. Orange is
 Active Wake; light blue is Quiet Wake. The apparent frequency maximum clustering at
@@ -208,7 +208,7 @@ pseudoreplicated: 1,060 Active windows and 106 Quiet windows come from only nine
 files, and the samples are highly correlated within recordings. It cannot overturn or
 replace the paired recording-level result.
 
-![Independent-window raw-bout spectrum](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_spectral_comparisons.png)
+![Independent-window raw-bout spectrum](../assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_spectral_comparisons.png)
 
 **Figure 4.** Every 15-second state-pure spectral window. The point/violin display
 shows the window-count imbalance and is marked as an exploratory, non-independent
@@ -223,7 +223,7 @@ the large apparent sample size visible, but it must not be interpreted as thousa
 of independent animals or experimental replicates. Bouts share neural state,
 recording context, preprocessing, and often the same mouse.
 
-![Independent-bout raw-bout metrics](assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_metric_comparisons.png)
+![Independent-bout raw-bout metrics](../assets/raw_bout_recording_comparison_peak_assigned_v2/raw_bout_independent_metric_comparisons.png)
 
 **Figure 5.** Every eligible bout is shown as a faint point, with a violin and box
 summary. The fixed random seed controls horizontal jitter only. Mann–Whitney labels

@@ -25,6 +25,7 @@ from wake_ne_analysis.transients import detect_transients
 from wake_ne_analysis.validation import usable_data_summary, smoothing_power_retention
 from wake_ne_analysis.cli import analysis_main, validation_main
 from wake_ne_analysis.raw_bouts import (
+    add_score_bout_metrics,
     analyze_raw_spectra,
     analyze_raw_bouts,
     independent_spectral_window_results,
@@ -305,10 +306,28 @@ def test_raw_bout_comparison_uses_declared_common_start_interval():
     assert audit["common_start_samples"] == 10
     assert audit["tail_ne_seconds_not_analyzed"] == pytest.approx(2)
     assert bouts.raw_peak.tolist() == [3.0, 4.0]
+    assert bouts.raw_bout_mean.tolist() == [1.0, 1.2]
     assert bouts.complete_shape.all()
     summaries = summarize_recordings(bouts, pd.DataFrame([audit]))
-    results = paired_recording_results(summaries)
-    assert results.loc[results.metric == "raw_peak", "n_recording_pairs"].item() == 1
+    label_geometry = pd.DataFrame(
+        [
+            {
+                "recording_id": "raw",
+                "state": "active_wake",
+                "n_score_bouts": 1,
+                "bout_duration_median_seconds": 5.0,
+            },
+            {
+                "recording_id": "raw",
+                "state": "quiet_wake",
+                "n_score_bouts": 1,
+                "bout_duration_median_seconds": 5.0,
+            },
+        ]
+    )
+    results = paired_recording_results(add_score_bout_metrics(summaries, label_geometry))
+    assert results.loc[results.metric == "raw_bout_mean", "n_recording_pairs"].item() == 1
+    assert results.loc[results.metric == "score_bout_count", "active_median"].item() == 1
 
 
 def test_raw_bout_shape_can_cross_a_wake_state_boundary():
@@ -329,12 +348,11 @@ def test_raw_bout_independent_screen_uses_each_eligible_bout():
     )
     bouts, _ = analyze_raw_bouts(source)
     results = independent_bout_results(bouts)
-    peak = results.loc[results.metric == "raw_peak"].iloc[0]
-    assert peak.n_active_bouts == 1
-    assert peak.n_quiet_bouts == 1
-    assert peak.active_median == pytest.approx(5)
-    assert peak.quiet_median == pytest.approx(3)
-    assert np.isfinite(peak.p_value)
+    assert "raw_bout_mean" not in results.metric.tolist()
+    width = results.loc[results.metric == "duration_seconds"].iloc[0]
+    assert width.n_active_bouts == 1
+    assert width.n_quiet_bouts == 1
+    assert np.isfinite(width.p_value)
 
 
 def test_raw_spectral_screen_uses_common_start_windows(tmp_path):
