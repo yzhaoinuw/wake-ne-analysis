@@ -16,9 +16,9 @@ from wake_ne_analysis.io import load_recording
 STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
 STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
 RECORDING_METRICS = [
-    ("raw_bout_mean", "Mean NE within score bout", "processed NE (percentage delta-F/F)"),
-    ("score_bout_duration_seconds", "Actual score-bout duration", "seconds"),
-    ("score_bout_count", "Number of score bouts", "count"),
+    ("raw_bout_mean", "Mean NE within wake bout", "processed NE (percentage delta-F/F)"),
+    ("score_bout_duration_seconds", "Wake-bout duration", "seconds"),
+    ("score_bout_count", "Number of wake bouts", "count"),
     ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
     ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
 ]

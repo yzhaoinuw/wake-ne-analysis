@@ -15,7 +15,7 @@ therefore useful recording units, but not independent biological animals.
   were 1.590 (IQR 0.565–2.148) and 1.604 (0.321–2.146) percentage delta-F/F,
   respectively (paired Wilcoxon p = 0.557). This screen does not establish a
   mean-NE difference.
-- Actual score bouts were shorter in Quiet Wake: file-median duration 4 s (3–4) in
+- Wake bouts were shorter in Quiet Wake: file-median duration 4 s (3–4) in
   Active versus 2 s (1.25–2) in Quiet (p = 0.00391). File-median bout counts were
   222 (152.5–396.5) and 226.5 (147.5–396.0; p = 0.164).
 - The pooled-bout table and plot intentionally omit mean NE. Different recordings
@@ -33,16 +33,16 @@ recording-level screens, not independent-mouse inference.
 
 | Reported measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
-| Mean processed NE within score bout (percentage delta-F/F) | 1.590 (0.565–2.148) | 1.604 (0.321–2.146) | n = 10 | 0.557; no nominal recording-level difference |
-| **Sleep-score bout duration (s)** | **4 (3–4)** | **2 (1.25–2)** | n = 10 | 0.00391; literal file-median score-run duration |
-| **Number of score bouts** | **222 (152.5–396.5)** | **226.5 (147.5–396.0)** | n = 10 | 0.164; literal file-level count |
+| Mean processed NE within wake bout (percentage delta-F/F) | 1.590 (0.565–2.148) | 1.604 (0.321–2.146) | n = 10 | 0.557; no nominal recording-level difference |
+| **Wake-bout duration (s)** | **4 (3–4)** | **2 (1.25–2)** | n = 10 | 0.00391; median bout duration within each file, then paired across files |
+| **Number of wake bouts per recording** | **222 (152.5–396.5)** | **226.5 (147.5–396.0)** | n = 10 | 0.164; count of uninterrupted state-labelled bouts per file |
 | Zero-referenced, peak-anchored 20–80% NE rise slope (percentage points/s)† | 0.0545 (0.0301–0.1049) | 0.0631 (0.0301–0.0855) | n = 10 | 0.193; contextual recording-level screen |
 | Zero-referenced, peak-anchored 20–80% NE decay slope (percentage points/s)† | 0.0333 (0.0200–0.0791) | 0.0338 (0.0155–0.0759) | n = 10 | 0.625; contextual recording-level screen |
 
 †The literal within-bout maximum is retained only to anchor the unchanged
 zero-referenced slope calculations. It is not the reported signal-level
 comparison. Full shapes can cross saved score boundaries, so they are not
-sleep-score-bout measurements.
+wake-bout measurements.
 
 The next table deliberately disregards recording and mouse/session membership. It
 contains no pooled mean-NE comparison. Its Mann–Whitney values describe available
@@ -50,19 +50,25 @@ bouts only and must not be used as biological inference.
 
 | Reported measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
-| **Sleep-score bout duration (s)** | **4 (2–10)** | **1 (1–3)** | 2,871 | 2,904 | 9.37 × 10⁻¹⁷⁴ |
+| **Wake-bout duration (s)** | **4 (2–10)** | **1 (1–3)** | 2,871 | 2,904 | 9.37 × 10⁻¹⁷⁴ |
 | Zero-referenced, peak-anchored 20–80% NE rise slope (percentage points/s)† | 0.0627 (0.0114–0.3149) | 0.0528 (0.0095–0.2660) | 2,198 | 2,129 | 0.00727 |
 | Zero-referenced, peak-anchored 20–80% NE decay slope (percentage points/s)† | 0.0434 (0.0081–0.1409) | 0.0334 (0.0069–0.1341) | 2,198 | 2,129 | 0.0236 |
 
-### Score-label geometry (not an NE measurement)
+### Wake-bout duration and count
 
-| Actual maximal score-run measure | Active Wake | Quiet Wake | Interpretation |
+Each uninterrupted sequence of seconds labelled Active Wake or Quiet Wake is one
+wake bout. This table is a direct description of those labels: it does not use the
+NE waveform. “Total duration” means all seconds assigned to that state across the ten
+recordings; “total number of bouts” is the number of uninterrupted sequences; and
+the two duration rows distinguish all bouts pooled together from one typical duration
+per recording.
+
+| Wake-bout summary | Active Wake | Quiet Wake | What it means |
 |---|---:|---:|---|
-| Labelled time (s) | 30,497 | 7,623 | Quiet is 20.0% of labelled Wake time |
-| Number of score runs | 2,871 | 2,904 | Similar totals reflect fragmentation, not equal labelled time |
-| **Pooled score-bout duration (s)** | **4 (2–10)** | **1 (1–3)** | Literal one-second-label run duration |
-| Runs at most 5 s | 61.7% | 89.8% | Quiet Wake is more fragmented |
-| File-median score-bout duration (s) | 4 (3–4) | 2 (1.25–2) | n = 10 paired files; p = 0.00391 |
+| Total duration in state (s) | 30,497 | 7,623 | Quiet is 20.0% of all labelled Wake time |
+| Total number of wake bouts | 2,871 | 2,904 | Similar counts do not mean equal time in state |
+| Typical duration across all bouts (s) | 4 (2–10) | 1 (1–3) | Median (IQR) of every bout across all recordings; descriptive only |
+| Typical duration per recording (s) | 4 (3–4) | 2 (1.25–2) | Median (IQR) of the ten file-level medians; paired p = 0.00391 |
 
 The short-window spectrum uses each file's common labelled interval and non-overlapping
 15-second state-pure windows in the 0.20–0.30 Hz band.
@@ -100,7 +106,7 @@ Filename hints are not a verified experimental design. Repeated-file structure c
 correlate pairs, so file-level p-values are descriptive screens, not a replacement
 for a predeclared mouse- or session-level analysis once complete metadata exist.
 
-### Mean NE within each score bout, duration, and count
+### Mean NE within each wake bout, duration, and count
 
 For every maximal contiguous Active or Quiet score run with finite NE samples, the
 analysis calculates the arithmetic mean of its saved processed percentage delta-F/F
@@ -108,9 +114,9 @@ samples. No local baseline, detrending, additional smoothing, or normalization i
 applied. Each file/state value in the first table is the median of its bout means.
 Directly pooling mean NE across files is deliberately omitted.
 
-Literal score-bout duration and count are audited separately from saved one-second
-labels, including every maximal labelled run. They are not inferred from the NE
-waveform or the shape measurements below.
+Wake-bout duration and count are calculated directly from the saved one-second labels,
+including every maximal uninterrupted label sequence. They are not inferred from the
+NE waveform or the slope measurements below.
 
 ![Within-bout mean NE example](assets/recording_report_20260917/raw_bout_mean_example.png)
 
@@ -124,7 +130,7 @@ The preserved shape metrics choose the literal maximum inside each labelled run 
 locate 20% and 80% crossings relative to that raw, zero reference across the
 continuous finite trace. The reported slopes are central 20–80% secants, expressed
 as positive rise and decay magnitudes. They are not local-baseline event kinetics,
-T1/2 values, or score-bout durations, and their support can cross a score boundary.
+T1/2 values, or wake-bout durations, and their support can cross a score boundary.
 
 ### Short-window spectral power and frequency maximum
 
@@ -144,7 +150,7 @@ edge maxima are unresolved rather than rhythms.
 
 Figure 2 shows all ten file-level Active/Quiet pairs. The within-bout mean-NE panel
 has no nominal difference. Duration is shorter in Quiet Wake, while the number of
-score bouts has no nominal paired difference. Slope panels retain their contextual
+wake bouts has no nominal paired difference. Slope panels retain their contextual
 interpretation.
 
 ![Recording-paired metrics](assets/recording_report_20260917/raw_bout_metric_comparisons.png)
