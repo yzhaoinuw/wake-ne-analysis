@@ -2,6 +2,17 @@
 
 ## 2026-09-17
 
+### Remove zero-referenced shape width from public reporting (Codex GPT-5; effort/tokens not reported)
+
+- Removed the confusing zero-referenced, peak-anchored shape-width row and panels
+  from the current report. The underlying crossing times and width remain in the raw
+  audit tables, where they document the retained 20--80% slope calculations.
+- The report now presents only mean NE within score bouts, literal score-bout
+  duration/count, contextual slopes, and spectral measures.
+- Verification:
+  - Regenerated the ten-file report output and static figures.
+  - `python -m pytest --basetemp .pytest_refresh -p no:cacheprovider -q`: 31 passed.
+
 ### Publish refreshed ten-recording report after input-count confirmation (Codex GPT-5; effort/tokens not reported)
 
 - The user confirmed that the intended refreshed input set is 10 MAT files, not 11.

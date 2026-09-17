@@ -2,14 +2,27 @@
 
 ## Currently Hot
 
+- **Joint EEG + EMG + NE UMAP (first pass):** build a deliberately small,
+  exploratory joint map from the ten current MAT recordings. Use only four
+  predeclared per-second features: log EEG delta (0.5--4 Hz) power, log EEG
+  theta (6--9 Hz) power, 20--200 Hz EMG RMS (capped below Nyquist), and mean
+  saved processed NE. Scale features within recording, balance a maximum of 10
+  displayed seconds per label and recording, fit UMAP without labels, then colour it
+  by final Active Wake, Quiet Wake, MA, NREM, and REM labels. This is a joint
+  physiological visualization, not independent proof of the EMG-derived
+  Active/Quiet split; a future EEG+NE-only, held-out-recording analysis is the
+  independence check. Record inputs, preprocessing, feature coverage, seed,
+  UMAP settings, figure, and descriptive result in `docs/umap_analysis.md`.
+
 - **2026-09-17 recording-level refresh:** the two 2026-09-16 cohort reports are now
   archived under `docs/archived/`; their section structure is the template for the
   replacement. The raw-bout workflow now reports the mean saved processed-NE value
   within each labelled score bout (not its peak), actual score-bout duration, and
   score-bout count in the recording-paired table/figure. The deliberately pooled
   bout table/figure omits mean NE because different recordings can have different
-  signal baselines. Width, 20--80% slopes, and short-window spectral measures keep
-  their existing definitions and qualifications. The user confirmed that the current
+  signal baselines. The zero-referenced width remains in the raw audit output only;
+  20--80% slopes and short-window spectral measures retain their existing
+  qualifications. The user confirmed that the current
   input set is 10 MAT files, and the published report is
   `docs/preliminary_recording_report.md` with figures in
   `docs/assets/recording_report_20260917/`. Do not convert its recording-level or

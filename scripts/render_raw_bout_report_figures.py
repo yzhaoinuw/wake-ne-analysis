@@ -19,12 +19,10 @@ RECORDING_METRICS = [
     ("raw_bout_mean", "Mean NE within score bout", "processed NE (percentage delta-F/F)"),
     ("score_bout_duration_seconds", "Actual score-bout duration", "seconds"),
     ("score_bout_count", "Number of score bouts", "count"),
-    ("duration_seconds", "Peak-assigned NE-episode width", "seconds"),
     ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
     ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
 ]
 INDEPENDENT_BOUT_METRICS = [
-    ("duration_seconds", "Peak-assigned NE-episode width", "seconds"),
     ("rise_slope", "Peak-assigned 20–80% rise slope", "percentage points/s"),
     ("decay_slope", "Peak-assigned 20–80% decay slope", "percentage points/s"),
 ]
@@ -155,7 +153,7 @@ def raw_bout_mean_example_figure(bouts: pd.DataFrame):
         annotation_font={"size": 11, "color": "#05668d"},
     )
     figure.add_annotation(
-        x=chosen.peak_seconds, y=chosen.raw_peak, text="Peak anchors episode width/slopes",
+        x=chosen.peak_seconds, y=chosen.raw_peak, text="Peak anchors the slope measurements",
         showarrow=True, arrowhead=2, ax=0, ay=-42, bgcolor="rgba(255,255,255,0.92)",
         bordercolor="#334e68", font={"size": 11, "color": "#334e68"},
     )
@@ -172,7 +170,7 @@ def raw_bout_mean_example_figure(bouts: pd.DataFrame):
         x=0.5, y=-0.31, xref="paper", yref="paper",
         text=("Orange = Active Wake; light blue = Quiet Wake; gray = other state. "
               "The dashed line is the reported per-bout mean; no local baseline is applied. "
-              "The marked literal maximum remains only to anchor the peak-assigned width and slopes, whose crossings may cross score boundaries."),
+               "The marked literal maximum remains only to anchor the peak-assigned slopes, whose crossings may cross score boundaries."),
         showarrow=False, font={"size": 12, "color": "#52606d"},
     )
     return figure
@@ -182,9 +180,9 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
-    figure = make_subplots(rows=3, cols=2, subplot_titles=[label for _, label, _ in RECORDING_METRICS])
+    figure = make_subplots(rows=2, cols=3, subplot_titles=[label for _, label, _ in RECORDING_METRICS])
     for index, (metric, label, unit) in enumerate(RECORDING_METRICS):
-        row, column = divmod(index, 2)
+        row, column = divmod(index, 3)
         row += 1
         column += 1
         paired = recordings[["recording_id", f"active_wake_{metric}_median", f"quiet_wake_{metric}_median"]].dropna()
@@ -221,7 +219,7 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
     figure.update_layout(
         template="plotly_white",
         title="Exploratory raw-bout comparison: each MAT file treated as one recording",
-        height=1450,
+        height=1000,
         margin={"l": 80, "r": 30, "t": 95, "b": 70},
     )
     return figure
@@ -233,7 +231,7 @@ def independent_bout_metric_figure(bouts: pd.DataFrame, results: pd.DataFrame, s
     from plotly.subplots import make_subplots
 
     figure = make_subplots(
-        rows=1, cols=3, subplot_titles=[label for _, label, _ in INDEPENDENT_BOUT_METRICS]
+        rows=1, cols=2, subplot_titles=[label for _, label, _ in INDEPENDENT_BOUT_METRICS]
     )
     rng = np.random.default_rng(seed)
     for index, (metric, label, unit) in enumerate(INDEPENDENT_BOUT_METRICS):

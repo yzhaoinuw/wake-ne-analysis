@@ -20,7 +20,7 @@ therefore useful recording units, but not independent biological animals.
   222 (152.5–396.5) and 226.5 (147.5–396.0; p = 0.164).
 - The pooled-bout table and plot intentionally omit mean NE. Different recordings
   can have different signal baselines and shared within-session structure. Pooled
-  widths and slopes are descriptive, pseudoreplicated distributions only.
+  slopes are descriptive, pseudoreplicated distributions only.
 - Short-window spectral power also has no recording-level signal (p = 0.922). All
   20 frequency maxima are band edges (17 at 0.20 Hz; 3 at 0.30 Hz), so no preferred
   frequency is resolved.
@@ -36,12 +36,11 @@ recording-level screens, not independent-mouse inference.
 | Mean processed NE within score bout (percentage delta-F/F) | 1.590 (0.565–2.148) | 1.604 (0.321–2.146) | n = 10 | 0.557; no nominal recording-level difference |
 | **Sleep-score bout duration (s)** | **4 (3–4)** | **2 (1.25–2)** | n = 10 | 0.00391; literal file-median score-run duration |
 | **Number of score bouts** | **222 (152.5–396.5)** | **226.5 (147.5–396.0)** | n = 10 | 0.164; literal file-level count |
-| Zero-referenced, peak-anchored NE shape width (s)† | 133.66 (22.56–350.77) | 137.72 (27.72–389.64) | n = 10 | 0.0645; contextual recording-level screen |
 | Zero-referenced, peak-anchored 20–80% NE rise slope (percentage points/s)† | 0.0545 (0.0301–0.1049) | 0.0631 (0.0301–0.0855) | n = 10 | 0.193; contextual recording-level screen |
 | Zero-referenced, peak-anchored 20–80% NE decay slope (percentage points/s)† | 0.0333 (0.0200–0.0791) | 0.0338 (0.0155–0.0759) | n = 10 | 0.625; contextual recording-level screen |
 
 †The literal within-bout maximum is retained only to anchor the unchanged
-zero-referenced width and slope calculations. It is not the reported signal-level
+zero-referenced slope calculations. It is not the reported signal-level
 comparison. Full shapes can cross saved score boundaries, so they are not
 sleep-score-bout measurements.
 
@@ -52,7 +51,6 @@ bouts only and must not be used as biological inference.
 | Reported measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
 | **Sleep-score bout duration (s)** | **4 (2–10)** | **1 (1–3)** | 2,871 | 2,904 | 9.37 × 10⁻¹⁷⁴ |
-| Zero-referenced, peak-anchored NE shape width (s)† | 68.85 (14.97–406.99) | 87.64 (18.82–412.10) | 2,198 | 2,129 | 0.0256 |
 | Zero-referenced, peak-anchored 20–80% NE rise slope (percentage points/s)† | 0.0627 (0.0114–0.3149) | 0.0528 (0.0095–0.2660) | 2,198 | 2,129 | 0.00727 |
 | Zero-referenced, peak-anchored 20–80% NE decay slope (percentage points/s)† | 0.0434 (0.0081–0.1409) | 0.0334 (0.0069–0.1341) | 2,198 | 2,129 | 0.0236 |
 
@@ -117,17 +115,16 @@ waveform or the shape measurements below.
 ![Within-bout mean NE example](assets/recording_report_20260917/raw_bout_mean_example.png)
 
 **Figure 1.** The dashed line is the reported mean NE for the outlined Quiet score
-run. The marked maximum is retained only to define the existing zero-referenced shape
-width and slopes.
+run. The marked maximum is retained only to define the existing zero-referenced
+slopes.
 
-### Peak-anchored shape width and slopes
+### Peak-anchored slopes
 
 The preserved shape metrics choose the literal maximum inside each labelled run and
 locate 20% and 80% crossings relative to that raw, zero reference across the
-continuous finite trace. Width is the 20%-to-20% time; slopes are central 20–80%
-secants, reported as positive rise and decay magnitudes. They are not local-baseline
-event kinetics, T1/2 values, or score-bout durations, and their support can cross a
-score boundary.
+continuous finite trace. The reported slopes are central 20–80% secants, expressed
+as positive rise and decay magnitudes. They are not local-baseline event kinetics,
+T1/2 values, or score-bout durations, and their support can cross a score boundary.
 
 ### Short-window spectral power and frequency maximum
 
@@ -147,7 +144,7 @@ edge maxima are unresolved rather than rhythms.
 
 Figure 2 shows all ten file-level Active/Quiet pairs. The within-bout mean-NE panel
 has no nominal difference. Duration is shorter in Quiet Wake, while the number of
-score bouts has no nominal paired difference. Shape panels retain their contextual
+score bouts has no nominal paired difference. Slope panels retain their contextual
 interpretation.
 
 ![Recording-paired metrics](assets/recording_report_20260917/raw_bout_metric_comparisons.png)
@@ -171,8 +168,8 @@ maxima are a feasibility limitation, not a biological frequency finding.
 
 Figure 4 intentionally displays no mean-NE panel. Pooling mean level across files
 would obscure file-specific baseline/scale differences, and no pooled test can turn
-correlated bouts or repeated sessions into independent observations. Width and slope
-panels remain only as raw distributional diagnostics.
+correlated bouts or repeated sessions into independent observations. Slope panels
+remain only as raw distributional diagnostics.
 
 ![Pooled-bout shape distributions](assets/recording_report_20260917/raw_bout_independent_metric_comparisons.png)
 
@@ -195,11 +192,10 @@ within scored bouts. That is not evidence of biological equality. Quiet Wake sco
 runs are shorter and more fragmented under the supplied relative EMG-label method;
 their counts remain comparable because fragmentation creates many short runs.
 
-Width, slope, and spectral measures are preserved without overclaiming them. Slopes
-and spectra retain dependence on processed-signal scale, preprocessing, coverage, and
-session context; frequency maxima are edge constrained. Verified mouse/session
-metadata and a predeclared hierarchical or mouse-level analysis are needed for a
-biological state conclusion.
+Slopes and spectra are preserved without overclaiming them. They retain dependence on
+processed-signal scale, preprocessing, coverage, and session context; frequency
+maxima are edge constrained. Verified mouse/session metadata and a predeclared
+hierarchical or mouse-level analysis are needed for a biological state conclusion.
 
 ## Appendix A: statistical interpretation
 

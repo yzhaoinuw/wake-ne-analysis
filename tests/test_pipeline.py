@@ -349,10 +349,11 @@ def test_raw_bout_independent_screen_uses_each_eligible_bout():
     bouts, _ = analyze_raw_bouts(source)
     results = independent_bout_results(bouts)
     assert "raw_bout_mean" not in results.metric.tolist()
-    width = results.loc[results.metric == "duration_seconds"].iloc[0]
-    assert width.n_active_bouts == 1
-    assert width.n_quiet_bouts == 1
-    assert np.isfinite(width.p_value)
+    assert "duration_seconds" not in results.metric.tolist()
+    rise = results.loc[results.metric == "rise_slope"].iloc[0]
+    assert rise.n_active_bouts == 1
+    assert rise.n_quiet_bouts == 1
+    assert np.isfinite(rise.p_value)
 
 
 def test_raw_spectral_screen_uses_common_start_windows(tmp_path):

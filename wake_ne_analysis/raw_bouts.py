@@ -28,12 +28,11 @@ from .transients import crossing
 # peak-assigned episode width and slopes.  It is not a reported comparison metric:
 # the recording-level signal measure is the mean saved NE value in each score run.
 RAW_METRICS = ("raw_bout_mean", "duration_seconds", "rise_slope", "decay_slope")
-INDEPENDENT_BOUT_METRICS = ("duration_seconds", "rise_slope", "decay_slope")
+INDEPENDENT_BOUT_METRICS = ("rise_slope", "decay_slope")
 RECORDING_METRICS = (
     "raw_bout_mean",
     "score_bout_duration_seconds",
     "score_bout_count",
-    "duration_seconds",
     "rise_slope",
     "decay_slope",
 )
