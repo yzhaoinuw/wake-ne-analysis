@@ -41,25 +41,10 @@ p-values use the paired Wilcoxon signed-rank test described in
 [Appendix C](#appendix-c-statistical-test-and-interpretation). They are exploratory
 and use a two-sided threshold of 0.05.
 
-### Actual sleep-score bout duration
-
-This table reports the durations visible in the sleep-score timelines: maximal runs
-of the final one-second Active- or Quiet-Wake labels. It is intentionally separate
-from NE-episode width, which is reported below and may cross score boundaries under
-the allowed peak-state rule.
-
-| Score-bout measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
-|---|---:|---:|---:|---|
-| **Pooled-within-mouse score-bout duration (s)** | **6.0 (4.5–7.0)** | **2.0 (1.75–2.0)** | n = 4 | 0.125; exploratory, low power |
-
-These values pool every literal score run within each identified mouse before taking
-the mouse-level median. They confirm that Quiet-Wake runs are shorter; they do not
-describe NE-event width or kinetics.
-
-| Peak-assigned NE measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
+| Reported measure | Active Wake | Quiet Wake | Paired result | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Episode amplitude (percentage points) | 0.803 (0.760–0.870) | 0.928 (0.901–0.929) | n = 3 | 0.500; not significant |
-| Peak-assigned 20%-to-20% NE-episode width (s)† | 9.05 (6.40–9.47) | 8.65 (6.86–10.23) | n = 3 | 0.500; contextual peak-state screen |
+| **Sleep-score bout duration (s)** | **6.0 (4.5–7.0)** | **2.0 (1.75–2.0)** | n = 4 | 0.125; actual maximal score-run duration, exploratory |
 | Peak-assigned 20–80% NE rise slope (percentage points/s)† | 0.237 (0.204–0.378) | 0.342 (0.275–0.368) | n = 3 | 1.000; contextual peak-state screen |
 | Peak-assigned 20–80% NE decay slope (percentage points/s)† | 0.184 (0.157–0.277) | 0.159 (0.155–0.262) | n = 3 | 0.750; contextual peak-state screen |
 | 15 s spectral power, 0.20–0.30 Hz (percentage points²) | 0.0061 (0.0035–0.0105) | 0.0058 (0.0036–0.0094) | n = 4 | 0.625; not significant |

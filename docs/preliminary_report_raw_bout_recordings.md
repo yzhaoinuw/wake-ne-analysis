@@ -36,29 +36,30 @@ state per MAT file, then compares those matched recording summaries. Orange deno
 Active Wake and light blue Quiet Wake. The paired Wilcoxon test and its
 recording-independence caveat are explained in [Appendix C](#appendix-c-statistical-test-and-interpretation).
 
-| Zero-referenced NE measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
+| Reported measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Peak processed NE (percentage delta-F/F) | 1.833 (1.044–2.661) | 1.651 (0.927–2.510) | n = 9 | 0.0117; nominal recording-level signal |
-| Peak-assigned 20%-to-20% NE-episode width (s) | 177.92 (37.94–403.57) | 183.52 (40.23–406.87) | n = 9 | 0.0195; contextual peak-state screen |
+| **Sleep-score bout duration (s)** | **5 (4–7)** | **2 (1.5–2)** | n = 9 | 0.00391; actual file-median score-run duration, exploratory |
 | Peak-assigned 20–80% NE rise slope (percentage points/s) | 0.040 (0.035–0.062) | 0.039 (0.026–0.075) | n = 9 | 0.301; contextual peak-state screen |
 | Peak-assigned 20–80% NE decay slope (percentage points/s) | 0.028 (0.010–0.047) | 0.022 (0.013–0.035) | n = 9 | 1.000; contextual peak-state screen |
 
 The next table deliberately discards the recording grouping and treats every eligible
-bout as a separate observation. It is included to show the distributional signal,
-not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
+bout or score run as a separate observation. It is included to show the distributional
+signal, not to inflate confidence. Its Mann–Whitney p-values are **nominal only**; see
 [Appendix C](#mannwhitney-tests-for-the-independent-bout-and-independent-window-descriptions).
 
-| Zero-referenced NE measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
+| Reported measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
 | Peak processed NE (percentage delta-F/F) | 1.583 (0.812–2.750) | 1.452 (0.630–2.510) | 2,246 | 2,311 | 5.22 × 10⁻⁵ |
-| Peak-assigned 20%-to-20% NE-episode width (s) | 72.50 (18.23–342.98) | 78.28 (22.91–387.07) | 1,766 | 1,759 | 0.229 |
+| **Sleep-score bout duration (s)** | **4 (2–10)** | **2 (1–4)** | 2,247 | 2,312 | 1.82 × 10⁻¹¹² |
 | Peak-assigned 20–80% NE rise slope (percentage points/s) | 0.061 (0.012–0.338) | 0.058 (0.012–0.301) | 1,766 | 1,759 | 0.213 |
 | Peak-assigned 20–80% NE decay slope (percentage points/s) | 0.039 (0.009–0.126) | 0.036 (0.009–0.127) | 1,766 | 1,759 | 0.440 |
 
 ### Score-label geometry (not an NE measurement)
 
 This is the actual sleep-score bout duration requested by the score visualization;
-it is separate from the peak-assigned NE-episode width above.
+the peak-assigned NE-episode width remains an audit measurement rather than a
+reported duration result.
 
 | Actual maximal score-run measure | Active Wake | Quiet Wake | Interpretation |
 |---|---:|---:|---|
