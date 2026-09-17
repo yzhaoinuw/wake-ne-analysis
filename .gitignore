@@ -8,4 +8,6 @@ build/
 dist/
 data/
 outputs/
+results/
+features/features_*/
 *.mat

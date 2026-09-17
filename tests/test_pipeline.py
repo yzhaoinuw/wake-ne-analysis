@@ -33,6 +33,13 @@ from wake_ne_analysis.raw_bouts import (
     paired_recording_results,
     summarize_recordings,
 )
+from wake_ne_analysis.umap import (
+    FEATURE_COLUMNS,
+    STAGE_COLORS,
+    extract_recording_features,
+    load_feature_archives,
+    write_recording_feature_archives,
+)
 
 
 def _report_renderer_module():
@@ -73,6 +80,50 @@ def test_mat_units_timing_and_alias_are_preserved(tmp_path):
     np.testing.assert_array_equal(data.ne, [10, 20, 30, 40])
     np.testing.assert_array_equal(data.sample_labels, [4, 4, 5, 5])
     assert data.start_time == 100 and data.mouse_id == "007"
+
+
+def test_umap_feature_extraction_uses_complete_one_second_multimodal_epochs(tmp_path):
+    path = tmp_path / "multimodal.mat"
+    eeg_fs, ne_fs, seconds = 100, 10, 12
+    t = np.arange(seconds * eeg_fs) / eeg_fs
+    rng = np.random.default_rng(7)
+    savemat(
+        path,
+        {
+            "eeg": (1 + 0.01 * np.floor(t)) * (np.sin(2 * np.pi * 2 * t) + 0.25 * np.sin(2 * np.pi * 7 * t)),
+            "emg": rng.normal(size=t.size),
+            "ne": np.arange(seconds * ne_fs, dtype=float),
+            "eeg_frequency": eeg_fs,
+            "ne_frequency": ne_fs,
+            "sleep_scores": [1, 2, 3, 4, 5, -1, 1, 2, 3, 4, 5, 0],
+        },
+    )
+    features, coverage = extract_recording_features(path)
+    assert coverage["complete_multimodal_seconds"] == seconds
+    assert features.second.tolist() == list(range(seconds))
+    assert features.state.tolist()[:5] == ["nrem", "rem", "ma", "active_wake", "quiet_wake"]
+    assert features.state.isna().sum() == 2
+    assert np.isfinite(features.loc[features.state.notna(), FEATURE_COLUMNS]).all().all()
+
+    output_dir = tmp_path / "feature_archives"
+    archives = write_recording_feature_archives(tmp_path, output_dir)
+    assert [path.name for path in archives] == ["multimodal.npz"]
+    with np.load(archives[0], allow_pickle=False) as archive:
+        assert archive["second"].tolist() == [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]
+        assert archive["label"].tolist() == [1, 2, 3, 4, 5] * 2
+        assert tuple(archive["feature_names"].tolist()) == FEATURE_COLUMNS
+        assert np.isfinite(archive["X_robust_scaled"]).all()
+    loaded, loaded_archives = load_feature_archives(output_dir)
+    assert [archive.name for archive in loaded_archives] == ["multimodal.npz"]
+    assert loaded.recording_id.unique().tolist() == ["multimodal"]
+    assert loaded.state.tolist() == ["nrem", "rem", "ma", "active_wake", "quiet_wake"] * 2
+    assert STAGE_COLORS == {
+        "nrem": "#FB7C7C",
+        "rem": "#7BFB7B",
+        "ma": "#FFFF00",
+        "active_wake": "#E69F00",
+        "quiet_wake": "#56B4E9",
+    }
 
 
 @pytest.mark.parametrize(

@@ -13,6 +13,7 @@ dependencies = ["numpy>=2.0", "scipy>=1.14", "pandas>=2.2"]
 [project.optional-dependencies]
 test = ["pytest>=8"]
 plot = ["plotly>=5.0", "kaleido>=0.2"]
+umap = ["matplotlib>=3.8", "scikit-learn>=1.4", "umap-learn>=0.5"]
 
 [project.scripts]
 wake-ne-analyze = "wake_ne_analysis.cli:analysis_main"

@@ -2,6 +2,127 @@
 
 ## 2026-09-17
 
+### Complete joint and EEG+NE embedding comparison (Codex GPT-5; effort/tokens not reported)
+
+- Ran separate PCA, t-SNE, and UMAP figures on the fixed 4,800-point balanced sample
+  for both four-feature joint EEG+EMG+NE and fairer EEG+NE-only inputs. REM remains
+  visibly organized in both nonlinear feature sets. The joint Active-Wake arc does
+  not persist without EMG: Active and Quiet Wake broadly overlap in the EEG+NE maps.
+- PCA is a feature-QC display only: a Quiet-Wake Mouse 7 second with extreme
+  robust-scaled EEG values and several MA Mouse 1 seconds with extreme EMG values
+  dominate its axes. These finite data remain preserved; no clipping/removal rule
+  was applied.
+- Updated `docs/cluster_visualization_report.md` with figures, actual descriptive
+  results, settings, sample counts, and the non-independence caveat.
+- Verification:
+  - Both run JSON files record the same seed, sampling cap, t-SNE, and UMAP
+    settings; each uses all ten archives and 4,800 sampled rows.
+  - Figure files and audit CSVs exist in their documented `docs/assets/` and ignored
+    `results/` destinations.
+
+### Polish embedding figures and define the EEG+NE follow-up (Codex GPT-5; effort/tokens not reported)
+
+- Changed the archive-based comparison renderer to write three separate figures
+  (`pca.png`, `tsne.png`, and `umap.png`) rather than a crowded shared panel. Each
+  plot has its own in-panel legend and title, while the balanced-count caption is
+  recorded in `docs/cluster_visualization_report.md`.
+- Added an explicit `--feature-set eeg_ne` mode. It reuses the saved robust-scaled
+  archives but omits EMG RMS, retaining delta EEG, theta EEG, and mean NE as the
+  fairer follow-up to the EMG-related Active/Quiet label rule.
+- Added the cluster-visualization report and updated run documentation with both
+  the 4,800-point joint baseline and archive-only EEG+NE commands.
+- Verification:
+  - The revised CLI and feature module compile under `ne_umap`; its help exposes
+    separate figure destinations and both feature-set choices.
+  - All ten archives load directly (106,434 rows) and select 4,800 current rows at
+    the default cap. No new MAT extraction or output-directory artifacts were made.
+
+### Prepare archive-based PCA, t-SNE, and UMAP comparison (Codex GPT-5; effort/tokens not reported)
+
+- Added `scripts/plot_feature_embeddings.py`, which consumes the previously saved
+  `features/features_4/*.npz` robust-scaled matrices directly. PCA, t-SNE, and UMAP
+  receive the same fixed-seed, per-recording/per-state-balanced sample; final labels
+  colour panels only after fitting.
+- Set the baseline display cap to 100 seconds per available state per recording,
+  yielding 4,800 current points. The figure and audit destinations are explicitly
+  separate (`docs/assets/embedding_comparison/` and ignored
+  `results/embedding_comparison/`), with no new `outputs/` destination.
+- Centralized the exact scoring-app stage colours: NREM `#FB7C7C`, REM `#7BFB7B`, MA
+  `#FFFF00`, Active Wake `#E69F00`, and Quiet Wake `#56B4E9`.
+- Verification:
+  - Direct archive-load check completed across ten archives: 106,434 rows and 4,800
+    sampled rows at the default cap.
+  - The new CLI and source files compile under `ne_umap`; `ne_umap` lacks `pytest`,
+    so no test package was installed or environment modified.
+
+### Complete first joint UMAP and separate results from figures (Codex GPT-5; effort/tokens not reported)
+
+- Completed the fixed-seed joint UMAP in the working `ne_umap` environment. The
+  balanced display contains 480 points: 100 each for NREM, REM, Active Wake, and
+  Quiet Wake, plus 80 MA points from its eight available recordings.
+- The first map shows a clear Active-Wake region and a prominent REM neighborhood;
+  Quiet Wake remains diffuse and overlaps NREM/MA. This remains descriptive because
+  the plotted EMG feature relates to the Active/Quiet label rule and seconds within
+  recordings are correlated.
+- Moved run CSV/JSON audit artifacts to ignored `results/umap/initial_500_points/`
+  and the presentation PNG to `docs/assets/umap/initial_500_points/`. Updated the
+  CLI to accept separate `--results-dir` and `--figure` destinations, and removed
+  abandoned UMAP attempts from `outputs/`.
+- Verification:
+  - The completed run contains 480 sampled points and its `run.json` now records
+    the relocated figure path.
+  - The CLI source compiles in the working `ne_umap` environment.
+
+### Export named four-feature NumPy archives and make initial PCA views (Codex GPT-5; effort/tokens not reported)
+
+- Wrote one compressed NumPy archive per MAT file under `features/features_4/`,
+  named with the source MAT stem. Each `.npz` has raw `X` and within-recording
+  median/IQR-scaled `X_robust_scaled` four-column matrices, final labels, seconds,
+  source/rate provenance, and exact scaling values. `features/README.md` documents
+  the archive contract and loading. The mistakenly created feature CSV directory
+  under `outputs/` was removed.
+- Generated pairwise and ordinary PCA views under `outputs/pca_views_20260917/`.
+  The unaltered all-second PCA is a diagnostic, not a cluster conclusion: PC1
+  explains 80.3% and is almost entirely EMG, because 1,848 rows have at least one
+  robust-scaled feature magnitude above 10 (1,846 EMG rows and two rows each for
+  delta/theta EEG). No rows were removed, clipped, or imputed. A real feature-QC
+  rule is required before using PCA as a state-cluster visualization.
+- Verification:
+  - Feature exporter completed for all ten MAT files and wrote 106,434 rows.
+  - `python -m pytest --basetemp .pytest_pca_views -p no:cacheprovider -q
+    tests/test_pipeline.py -k umap_feature_extraction`: 1 passed.
+
+### Extract joint EEG + EMG + NE UMAP features; document UMAP runtime boundary (Codex GPT-5; effort/tokens not reported)
+
+- Added the initial four-feature, per-second joint panel: log EEG delta power,
+  log EEG theta power, mean-centered broadband EMG RMS, and mean saved processed
+  NE. The full ten-file extractor retained 106,434 finite four-feature seconds
+  from 106,452 complete multimodal score seconds; 18 seconds with invalid NE were
+  excluded without imputation or bridging.
+- Verified the fresh `ne_analysis` environment's SciPy forward/backward filter on a
+  synthetic trace. On multi-hour EMG vectors, the separate full-trace detrend and
+  forward/backward filter calls did not complete, so this deliberately simple
+  first-pass feature uses mean-centered native EMG RMS instead. The implementation
+  completed one real 14,527-second recording and then all ten files.
+- No UMAP figure or biological cluster statement was produced. `umap-learn 0.5.12`
+  invoked a Numba compilation that did not reach fitting after more than twelve
+  minutes; the process was stopped. `docs/umap_analysis.md` and `next_steps.md`
+  state this boundary explicitly.
+- Verification:
+  - Fresh-environment synthetic `scipy.signal.sosfiltfilt` test printed `PASS`
+    with SciPy 1.17.1.
+  - One-recording extraction printed `PASS 14527 14527` with four feature columns.
+  - Ten-file extraction wrote local audit CSVs and printed 106,434 retained seconds.
+
+### Replace wake-bout audit jargon in the report (Codex GPT-5; effort/tokens not reported)
+
+- Replaced the report's opaque “score-label geometry” table with a direct wake-bout
+  duration-and-count summary. It now defines total duration in state, total number
+  of wake bouts, all-bout typical duration, and recording-level typical duration in
+  plain language. Removed the redundant short-bout row.
+- Verification:
+  - Regenerated report figures with matching plain-language labels.
+
 ### Remove zero-referenced shape width from public reporting (Codex GPT-5; effort/tokens not reported)
 
 - Removed the confusing zero-referenced, peak-anchored shape-width row and panels

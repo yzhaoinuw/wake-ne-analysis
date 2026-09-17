@@ -2,23 +2,46 @@
 
 ## Currently Hot
 
-- **Joint EEG + EMG + NE UMAP (first pass):** build a deliberately small,
-  exploratory joint map from the ten current MAT recordings. Use only four
-  predeclared per-second features: log EEG delta (0.5--4 Hz) power, log EEG
-  theta (6--9 Hz) power, 20--200 Hz EMG RMS (capped below Nyquist), and mean
-  saved processed NE. Scale features within recording, balance a maximum of 10
-  displayed seconds per label and recording, fit UMAP without labels, then colour it
-  by final Active Wake, Quiet Wake, MA, NREM, and REM labels. This is a joint
-  physiological visualization, not independent proof of the EMG-derived
-  Active/Quiet split; a future EEG+NE-only, held-out-recording analysis is the
-  independence check. Record inputs, preprocessing, feature coverage, seed,
-  UMAP settings, figure, and descriptive result in `docs/umap_analysis.md`.
+- **PCA feature-QC decision:** raw and within-recording robust-scaled per-second
+  four-feature NumPy archives are now saved for every MAT recording in
+  `features/features_4/` (see `features/README.md`), with initial pairwise and PCA
+  figures in `docs/assets/pca/initial_20260917/` and their numerical tables in
+  ignored `results/pca/initial_20260917/`. The untouched PCA is dominated
+  by 1,848 extreme robust-scaled rows (mostly EMG); preserve those rows in the
+  source feature files and define a reviewed feature-QC/display policy before
+  treating an embedding as a cluster visualization.
+
+- **Joint EEG + EMG + NE UMAP follow-up:** the first pass completed in `ne_umap` from
+  106,434 valid seconds, using a fixed balanced display of 480 points (up to 10 per
+  state per recording). It uses log EEG delta/theta power, mean-centered broadband
+  EMG RMS, and mean saved processed NE; it is an integrated physiological
+  visualization, not independent proof of the EMG-derived Active/Quiet split.
+  Before biological interpretation, rerun a predeclared parameter sensitivity
+  (`n_neighbors` and `min_dist`) and an EEG+NE-only, held-out-recording analysis.
+  Keep audit tables in ignored `results/umap/` and presentation PNGs under
+  `docs/assets/umap/`; do not recreate an ad-hoc `outputs/` dump.
+
+- **Archive-based embedding comparison ready to run:**
+  `scripts/plot_feature_embeddings.py` now reads the ten existing
+  `features/features_4/*.npz` archives directly and fits PCA, t-SNE, and UMAP to the
+  same fixed-seed, within-recording-balanced display sample. The default cap is 100
+  per available state per recording (verified as 4,800 current points); it records
+  coordinates/tables in `results/embedding_comparison/<run>/` and the shared-panel
+  PNG in `docs/assets/embedding_comparison/<run>/`. It uses the exact upstream
+  Sleep Scoring colours. The 4,800-point joint and archive-only `--feature-set
+  eeg_ne` runs are complete, with separate figures and the result documented in
+  `docs/cluster_visualization_report.md`. REM remains organized in both nonlinear
+  feature sets; Active/Quiet Wake broadly overlap in EEG+NE, whereas the joint
+  EMG-containing map has an Active-Wake arc. PCA is dominated by a handful of
+  robust-scaled extremes and is QC-only pending a reviewed display rule. Next,
+  assess t-SNE/UMAP parameter sensitivity and held-out recordings before biological
+  claims; only then consider the optional 9,600-point display.
 
 - **2026-09-17 recording-level refresh:** the two 2026-09-16 cohort reports are now
   archived under `docs/archived/`; their section structure is the template for the
   replacement. The raw-bout workflow now reports the mean saved processed-NE value
-  within each labelled score bout (not its peak), actual score-bout duration, and
-  score-bout count in the recording-paired table/figure. The deliberately pooled
+  within each labelled wake bout (not its peak), wake-bout duration, and wake-bout
+  count in the recording-paired table/figure. The deliberately pooled
   bout table/figure omits mean NE because different recordings can have different
   signal baselines. The zero-referenced width remains in the raw audit output only;
   20--80% slopes and short-window spectral measures retain their existing
