@@ -2,6 +2,21 @@
 
 ## 2026-09-17
 
+### Clarify report sampling and EMG burst features (Codex GPT-5; effort/tokens not reported)
+
+- Removed copy-ready figure captions from the completed cluster report; the renamed
+  Sampling section now records only the design needed to interpret the displayed
+  points.
+- Added an appendix linked from the feature table that defines the exploratory EMG
+  burst features: core-wise detrend/zero-phase filtering, 75-ms RMS envelope,
+  recording-median plus three robust-SD threshold, 50-ms gap joining/minimum run,
+  and the exact per-second onset/duty/peak/RMS summaries. It explicitly separates
+  those summaries from the native mean-centred RMS and from sleep labeling.
+- Verification:
+  - Reviewed the implementation in `wake_ne_analysis/expanded_features.py` against
+    the new report appendix and existing feature/method documentation.
+  - `Get-Date -Format yyyy-MM-dd` returned `2026-09-17`.
+
 ### Archive four-feature report and publish expanded embedding result (Codex GPT-5; effort/tokens not reported)
 
 - Archived the completed compact EEG+EMG+NE report as

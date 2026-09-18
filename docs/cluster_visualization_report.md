@@ -24,7 +24,7 @@ feature, relabel a second, clip a finite value, or scale the values again.
 |---|---|---|
 | Wide EEG panel | 20 log10 one-second band-power summaries: 0.5--5 Hz, then consecutive 5-Hz bands through 95--100 Hz. | Same 20 summaries. |
 | Scoring-band EEG anchors | Log10 `>1--4 Hz` delta and `>4--8 Hz` theta power. | Same two anchors. |
-| EMG | Mean-centred RMS; filtered RMS over 20 Hz to `min(200 Hz, 0.45 * saved rate)`; burst-onset count; burst-duty fraction; peak 75-ms RMS envelope. | Omitted as a group. |
+| EMG | Mean-centred RMS; filtered RMS over 20 Hz to `min(200 Hz, 0.45 * saved rate)`; burst-onset count; burst-duty fraction; peak 75-ms RMS envelope. See [Appendix: EMG burst features](#appendix-emg-burst-features). | Omitted as a group. |
 | NE | Mean saved processed percentage delta-F/F and within-second OLS slope. | Same two summaries. |
 
 The repeated wide EEG bands are treated here as one exploratory spectral family,
@@ -32,7 +32,7 @@ not as 20 independent physiological tests. One-second spectra provide compact
 band summaries rather than fine frequency resolution. The EMG burst definition,
 wideband panel, and NE slope remain provisional feature engineering choices.
 
-## Sampling and figure captions
+## Sampling
 
 The seed is `20260917`; each run caps sampling at 100 seconds per available
 analysis label per recording. MA was removed **before** sampling and fitting.
@@ -43,20 +43,6 @@ analysis label per recording. MA was removed **before** sampling and fitting.
   Active/Quiet labels were combined before sampling and fitting. The retained audit
   field contains 797 source Active-Wake and 203 source Quiet-Wake seconds; that
   80/20 composition is intentional rather than a label-balanced comparison.
-
-Suggested caption for all-stage panels:
-
-> Label-coloured [t-SNE/UMAP] embedding of 4,000 balanced, one-second observations
-> from ten recordings using [all 29 EEG+EMG+NE features / 24 EEG+NE features]. MA
-> was excluded before sampling and fitting. Labels were not supplied to the
-> embedding fit.
-
-Suggested caption for Wake-only panels:
-
-> Unlabelled [t-SNE/UMAP] embedding of 1,000 combined-Wake observations from ten
-> recordings using [all 29 EEG+EMG+NE features / 24 EEG+NE features]. Active and
-> Quiet Wake were combined before sampling and fitting; point colour carries no
-> original Wake subtype.
 
 The stage colours retain the upstream contract: NREM `#FB7C7C`, REM `#7BFB7B`,
 Active Wake `#E69F00`, and Quiet Wake `#56B4E9`. Combined Wake is neutral grey.
@@ -154,3 +140,33 @@ recording-held-out and parameter-sensitivity analysis, inspect representative ra
 EMG/envelope examples, and define a cluster/stability rule that is evaluated at the
 recording level. Retain the no-EMG feature set as the primary check for any proposed
 non-EMG Wake organization.
+
+## Appendix: EMG burst features
+
+The five EMG features are not another sleep-labeling procedure. They are provisional
+per-second summaries of a recording-specific muscle-activity signal and are included
+only in the all-feature runs.
+
+1. The raw EMG is split into continuous finite stretches. Long flatlined stretches
+   are invalid. Each usable stretch is processed in 120-second cores with one second
+   of surrounding context on either side. Context is discarded after filtering.
+2. Each context segment is linearly detrended, then passed through a zero-phase,
+   fourth-order band-pass filter from 20 Hz to `min(200 Hz, 0.45 * saved EMG rate)`.
+   This matches the upstream filter family but, because it is core-wise, is not
+   bit-identical to filtering a whole multi-hour recording at once.
+3. A 75-ms RMS envelope is calculated from the filtered signal: at every sample it
+   is the square root of the local moving mean of squared filtered EMG. The threshold
+   is calculated once per recording as `median(envelope) + 3 * 1.4826 * MAD(envelope)`.
+4. Samples strictly above that threshold are provisionally active. Finite gaps of at
+   most 50 ms between active samples are joined; an active run shorter than 50 ms is
+   discarded. Each retained run is a burst.
+5. For every score second, `emg_burst_onset_count` counts retained burst starts that
+   fall inside that second, `emg_burst_duty_fraction` is the fraction of its valid
+   samples in retained bursts, and `emg_burst_peak_envelope` is its maximum 75-ms RMS
+   envelope. `emg_filtered_rms` is the full-second RMS of the filtered trace.
+   `emg_centered_rms` is separate: it is native raw EMG RMS after subtracting that
+   second's mean, not a burst measure.
+
+The median/MAD threshold adapts to each recording, so its numerical value is not an
+absolute movement threshold. It and the 50/75-ms timing choices require raw-trace
+review and sensitivity analysis before any biological interpretation.
