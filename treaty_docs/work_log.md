@@ -1,5 +1,20 @@
 # Work Log
 
+## 2026-09-18
+
+### Document EEG feature epochs and band integration (Codex GPT-5; effort/tokens not reported)
+
+- Corrected the proposed five-second centred-window interpretation: current EEG
+  features use left-aligned one-second epochs, followed by a Hann-tapered,
+  constant-detrended density periodogram and strict-lower/inclusive-upper band
+  integration.
+- Added a linked EEG appendix to the current cluster writeup that states the sample
+  boundary rule, log-power transform, band-edge rule, and one-second frequency
+  resolution limitation. No extraction or embedding result was changed.
+- Verification:
+  - Inspected `wake_ne_analysis/cluster_features.py` against the added appendix.
+  - `Get-Date -Format yyyy-MM-dd` returned `2026-09-18`.
+
 ## 2026-09-17
 
 ### Curate PI-facing repository surface (Codex GPT-5; effort/tokens not reported)

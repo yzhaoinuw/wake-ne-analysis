@@ -22,8 +22,8 @@ feature, relabel a second, clip a finite value, or scale the values again.
 
 | Feature family | All-feature run (29) | No-EMG run (24) |
 |---|---|---|
-| Wide EEG panel | 20 log10 one-second band-power summaries: 0.5--5 Hz, then consecutive 5-Hz bands through 95--100 Hz. | Same 20 summaries. |
-| Scoring-band EEG anchors | Log10 `>1--4 Hz` delta and `>4--8 Hz` theta power. | Same two anchors. |
+| Wide EEG panel | 20 log10 one-second band-power summaries: 0.5--5 Hz, then consecutive 5-Hz bands through 95--100 Hz. See [Appendix: EEG band-power features](#appendix-eeg-band-power-features). | Same 20 summaries. |
+| Scoring-band EEG anchors | Log10 `>1--4 Hz` delta and `>4--8 Hz` theta power, computed with the same one-second method. | Same two anchors. |
 | EMG | Mean-centred RMS; filtered RMS over 20 Hz to `min(200 Hz, 0.45 * saved rate)`; burst-onset count; burst-duty fraction; peak 75-ms RMS envelope. See [Appendix: EMG burst features](#appendix-emg-burst-features). | Omitted as a group. |
 | NE | Mean saved processed percentage delta-F/F and within-second OLS slope. | Same two summaries. |
 
@@ -133,6 +133,28 @@ recording-held-out and parameter-sensitivity analysis, inspect representative ra
 EMG/envelope examples, and define a cluster/stability rule that is evaluated at the
 recording level. Retain the no-EMG feature set as the primary check for any proposed
 non-EMG Wake organization.
+
+## Appendix: EEG band-power features
+
+The EEG features use a **one-second left-aligned epoch**, not a five-second window
+centred on a score second. For score second `k`, the epoch begins at sample
+`round(k * saved EEG rate)` and contains `floor(saved EEG rate)` consecutive
+samples. At the ordinary integer saved rates this is exactly `[k, k + 1)` seconds;
+the code requires the complete labelled second to be available before retaining its
+features.
+
+Each epoch is constant-detrended, tapered with a Hann window, and passed to SciPy's
+one-sided periodogram with density scaling. Band power is the trapezoidal integral
+of that power spectral density over frequency bins satisfying `frequency > lower`
+and `frequency <= upper`, then stored as `log10(max(power, machine_tiny))`. The
+strict lower and inclusive upper bound assigns a shared edge to only the preceding
+band, so adjacent bands do not double-count an FFT bin. The two scoring-band anchors
+use the same convention.
+
+The 20-band panel is 0.5--5 Hz followed by 5-Hz intervals through 95--100 Hz. With
+one-second epochs, its approximately 1-Hz frequency-bin spacing makes these compact
+spectral summaries rather than fine-resolution spectral estimates. It is an
+exploratory representation, not a separate 20-test EEG analysis.
 
 ## Appendix: EMG burst features
 

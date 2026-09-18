@@ -16,6 +16,9 @@
 - To regenerate cluster maps, run `scripts/extract_cluster_features.py` and
   `scripts/plot_cluster_embeddings.py`. MA is excluded before fitting, and
   combined-Wake runs collapse Active/Quiet labels before sampling and fitting.
+  EEG band powers use one-second left-aligned epochs, not five-second centred
+  windows; the current cluster writeup gives the exact periodogram and integration
+  convention.
   The all-feature Wake geometry is EMG-associated; no-EMG maps do not support a
   stable visible Wake subcluster in the fixed display.
 
