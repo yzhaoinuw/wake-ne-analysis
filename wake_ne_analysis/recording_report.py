@@ -1,9 +1,7 @@
-"""Exploratory per-state-bout NE summaries.
+"""Recording-level per-state-bout NE summaries for the current writeup.
 
-This deliberately separate workflow uses the stored processed NE values without a
-local baseline. It treats each MAT file as an independent recording for an explicitly
-labelled preliminary sensitivity comparison; it is not the primary mouse-level event
-analysis.
+This workflow uses the stored processed NE values without a local baseline. It treats
+each MAT file as a paired recording; it is not independent mouse-level inference.
 """
 
 from __future__ import annotations
@@ -18,7 +16,16 @@ from scipy.stats import mannwhitneyu, wilcoxon
 from .config import SpectrumConfig
 from .io import STATES, Recording, load_recording, runs
 from .spectra import compute_spectrum, spectral_metrics
-from .transients import crossing
+
+
+def crossing(y, start, stop, level, rising):
+    """Return an interpolated threshold crossing within one continuous NE stretch."""
+    a, b = y[start:stop], y[start + 1 : stop + 1]
+    hits = np.flatnonzero((a <= level) & (b > level) if rising else (a >= level) & (b < level))
+    if not hits.size:
+        return np.nan
+    index = start + int(hits[-1] if rising else hits[0])
+    return index + (level - y[index]) / (y[index + 1] - y[index])
 
 
 # Peak-state attribution deliberately permits timing crossings to leave the score

@@ -56,9 +56,9 @@ and rotation have no physiological meaning.
 
 ### Joint EEG + EMG + NE
 
-![Joint t-SNE](assets/embedding_comparison/initial_4800_separate/tsne.png)
+![Joint t-SNE](../assets/embedding_comparison/initial_4800_separate/tsne.png)
 
-![Joint UMAP](assets/embedding_comparison/initial_4800_separate/umap.png)
+![Joint UMAP](../assets/embedding_comparison/initial_4800_separate/umap.png)
 
 REM is the clearest reproducible state organization in the nonlinear views: it
 occupies a relatively distinct left/lower region in t-SNE and an upper region in
@@ -68,9 +68,9 @@ overlaps NREM, MA, and parts of Active Wake.
 
 ### Fairer EEG + NE follow-up
 
-![EEG + NE t-SNE](assets/embedding_comparison/eeg_ne_4800/tsne.png)
+![EEG + NE t-SNE](../assets/embedding_comparison/eeg_ne_4800/tsne.png)
 
-![EEG + NE UMAP](assets/embedding_comparison/eeg_ne_4800/umap.png)
+![EEG + NE UMAP](../assets/embedding_comparison/eeg_ne_4800/umap.png)
 
 After omitting EMG, REM remains visibly organized in both nonlinear maps (lower in
 t-SNE and left in UMAP). NREM also occupies more of the lower part of the EEG+NE

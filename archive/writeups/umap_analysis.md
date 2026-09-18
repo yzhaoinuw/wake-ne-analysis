@@ -79,7 +79,7 @@ imputed nor bridged. The retained state counts were 60,657 NREM, 30,477 Active W
 
 ## First-pass UMAP
 
-![Joint EEG, EMG, and NE UMAP](assets/umap/initial_500_points/joint_eeg_emg_ne_umap.png)
+![Joint EEG, EMG, and NE UMAP](../assets/umap/initial_500_points/joint_eeg_emg_ne_umap.png)
 
 The fixed-seed balanced display has 480 points: 100 each for NREM, REM, Active Wake,
 and Quiet Wake (10 per state in each of ten recordings), plus 80 MA points because

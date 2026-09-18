@@ -41,7 +41,7 @@ retains far fewer Quiet events.
 | 20–80% rise-slope median (percentage points/s) | 0.124 | 0.098 |
 | 20–80% decay-slope median (percentage points/s) | 0.116 | 0.078 |
 
-![Summary of candidate and retained events, with descriptive metrics](assets/preliminary_report/single_file_summary.png)
+![Summary of candidate and retained events, with descriptive metrics](../assets/preliminary_report/single_file_summary.png)
 
 **Interpretation.** The numerical differences are descriptive only. Two retained
 Quiet-Wake events cannot support a state contrast, and this one recording has no
@@ -61,7 +61,7 @@ In this recording, 15 of 35 Active-peak and 21 of 25 Quiet-peak candidates cross
 state boundary; six Active and two Quiet candidates are incomplete for other
 crossing/edge reasons. The retained totals are therefore 14 Active and 2 Quiet.
 
-![One excluded boundary-crossing Quiet-peak event and one retained Quiet event](assets/preliminary_report/boundary_crossing_examples.png)
+![One excluded boundary-crossing Quiet-peak event and one retained Quiet event](../assets/preliminary_report/boundary_crossing_examples.png)
 
 Figure A makes the rule tangible. The peak is Quiet Wake, but the purple dashed
 20%-rise and 20%-fall boundaries span a label transition (background shading: blue
@@ -76,7 +76,7 @@ Spectra require equal-length, continuous within-state windows. The pipeline does
 concatenate separate bouts, pad short bouts, or use a different window for each
 state, because those changes would manufacture comparability rather than measure it.
 
-![Window coverage and wake-bout duration distributions](assets/preliminary_report/spectral_coverage_and_bouts.png)
+![Window coverage and wake-bout duration distributions](../assets/preliminary_report/spectral_coverage_and_bouts.png)
 
 The illustrative 120 s / 0.025–0.1 Hz setting has one Active window and **zero**
 Quiet windows. At 60 s there are 4 Active and 1 Quiet window; at 30 s, 18 and 6;

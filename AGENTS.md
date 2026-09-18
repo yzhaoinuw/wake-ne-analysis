@@ -2,9 +2,9 @@
 
 ## Startup Rule
 
-Read this first. Then read `treaty_docs/next_steps.md` for current work and
-`docs/handoff.md` for decisions from the originating conversation. Read
-`docs/methods.md` before changing scientific definitions. Do not auto-read every doc.
+Read this first. Then read `treaty_docs/next_steps.md` for current work and the
+relevant current report in `writeups/`. Historical decisions and superseded work
+are in `archive/`; do not auto-read every archived document.
 
 ## Runtime Environment
 
@@ -24,8 +24,8 @@ For a separate environment, install `python -m pip install -e ".[test]"`.
 
 ```powershell
 python -m pytest --basetemp .pytest_tmp -p no:cacheprovider -q
-python scripts/summarize_usable_data.py --help
-python scripts/analyze_ne.py --help
+python scripts/build_recording_report.py --help
+python scripts/plot_cluster_embeddings.py --help
 treaty validate .
 git diff --check
 ```
@@ -74,8 +74,8 @@ Preserve local guidance and resolve conflicts before committing. This machine ha
 
 - `README.md`: setup, inputs, CLI/API usage, output columns.
 - `project_overview.md`: architecture and module responsibilities.
-- `docs/methods.md`: formulas, exclusions, weighting, units and limitations.
-- `docs/handoff.md`: prior agreement, upstream contracts, provisional choices.
+- `writeups/`: the two current PI-facing reports and their committed figures.
+- `archive/`: historical reports, assets, examples, and superseded generic code.
 - `treaty_docs/next_steps.md`: concrete unfinished work.
 - `treaty_docs/work_log.md`: decisions and verified delivery state.
 - `treaty_docs/treaty_conventions.md`: generic collaboration mechanics.

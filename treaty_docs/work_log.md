@@ -2,6 +2,26 @@
 
 ## 2026-09-17
 
+### Curate PI-facing repository surface (Codex GPT-5; effort/tokens not reported)
+
+- Replaced the misleading `features/` surface with ignored local caches under
+  `data/derived_features/`; the current cluster writeup now contains the feature
+  definition and EMG-burst appendix needed for interpretation.
+- Consolidated the two current reports and their referenced static figures under
+  `writeups/`. Unpresented PCA panels were removed; all prior reports and figures
+  are retained under `archive/`.
+- Kept only the recording-report and cluster-feature commands/modules in the active
+  source tree. The original generic manifest pipeline, compact embedding code,
+  examples, and their historical tests are preserved together in
+  `archive/legacy_pipeline/`.
+- Verification:
+  - `python -m pytest --basetemp .pytest_tmp\\pi_cleanup_elevated -p
+    no:cacheprovider -q` in `sleep_scoring_dash3.0` passed: 5 tests.
+  - All four retained script help commands completed; `compileall` completed for
+    `wake_ne_analysis/` and `scripts/`; `treaty validate .` passed.
+  - `git diff --check` passed and current source contains no stale `docs/`,
+    `features/`, or superseded-command references.
+
 ### Clarify report sampling and EMG burst features (Codex GPT-5; effort/tokens not reported)
 
 - Removed copy-ready figure captions from the completed cluster report; the renamed

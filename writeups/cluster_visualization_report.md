@@ -3,7 +3,7 @@
 **Status:** completed on 2026-09-17 for the expanded 29-feature comparison.
 Four fixed-seed runs use all features or EEG+NE only, each for all non-MA stages
 and combined Wake only. The prior four-feature report is retained at
-[`archived/cluster_visualization_report_20260917_four_feature.md`](archived/cluster_visualization_report_20260917_four_feature.md).
+[`archive/writeups/cluster_visualization_report_20260917_four_feature.md`](../archive/writeups/cluster_visualization_report_20260917_four_feature.md).
 
 ## Question
 
@@ -17,7 +17,7 @@ about independent biological observations.
 ## Features
 
 The runs read the saved, within-recording robust-scaled matrices in
-`features/features_29/` directly. They do not reopen MAT files, re-extract a
+`data/derived_features/features_29/` directly. They do not reopen MAT files, re-extract a
 feature, relabel a second, clip a finite value, or scale the values again.
 
 | Feature family | All-feature run (29) | No-EMG run (24) |
@@ -51,18 +51,11 @@ Active Wake `#E69F00`, and Quiet Wake `#56B4E9`. Combined Wake is neutral grey.
 
 | Method | Settings |
 |---|---|
-| t-SNE | Two dimensions; perplexity 30; PCA initialization; automatic learning rate; 1,000 iterations; seed `20260917`; Barnes-Hut optimization. |
+| t-SNE | Two dimensions; perplexity 30; standard initialization; automatic learning rate; 1,000 iterations; seed `20260917`; Barnes-Hut optimization. |
 | UMAP | Two dimensions; Euclidean distance; 30 neighbours; `min_dist=0.2`; 200 epochs; seed `20260917`; one worker. |
 
 t-SNE and UMAP axes are unitless learned layout coordinates: origin, direction,
 and rotation have no physiological meaning.
-
-PCA remains outside the presentation report. In the all-feature runs, PC1 alone
-accounts for 86.9% of the all-stage sample and 92.1% of the Wake-only sample,
-whereas PC2 contributes only 3.4% and 2.8%. In the no-EMG runs, PC1/PC2 account for
-20.2%/13.2% (all stages) and 22.2%/10.4% (Wake only). Those projections neither
-provide a balanced state view nor add a stable cluster claim, so their numerical
-audit CSVs are retained in `results/expanded_embedding/` but no PCA panel is shown.
 
 ## Results
 

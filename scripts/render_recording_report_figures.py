@@ -1,4 +1,4 @@
-"""Render figures for the exploratory recording-level raw-bout report."""
+"""Render figures for the current recording-level Wake/NE writeup."""
 
 from __future__ import annotations
 

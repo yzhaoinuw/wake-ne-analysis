@@ -12,7 +12,7 @@ from scipy import signal
 from scipy.io import loadmat
 from scipy.ndimage import uniform_filter1d
 
-from .umap import LABEL_NAMES
+from .stages import LABEL_NAMES
 
 
 WIDE_EEG_BANDS_HZ = ((0.5, 5.0),) + tuple((float(low), float(low + 5)) for low in range(5, 100, 5))

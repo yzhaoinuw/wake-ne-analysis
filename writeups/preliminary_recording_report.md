@@ -215,8 +215,8 @@ session, mouse, condition, or circadian metadata.
 ## Reproducibility
 
 ```powershell
-python scripts/analyze_raw_bouts.py --input-dir data --output outputs/recording_report_20260917
-python scripts/render_raw_bout_report_figures.py --analysis outputs/recording_report_20260917 --output docs/assets/recording_report_20260917
+python scripts/build_recording_report.py --input-dir data --output outputs/recording_report_20260917
+python scripts/render_recording_report_figures.py --analysis outputs/recording_report_20260917 --output writeups/assets/recording_report_20260917
 ```
 
 The MAT files and output tables are locally ignored; static figures are the

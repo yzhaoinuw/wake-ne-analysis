@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 import numpy as np
+import pandas as pd
 from scipy.io import loadmat
 
 STATES = {4: "active_wake", 5: "quiet_wake"}
@@ -88,6 +89,28 @@ def load_recording(path, mouse_id, recording_id=None):
         labels,
         _scalar(mat.get("start_time", 0), "start_time"),
     )
+
+
+def read_manifest(path):
+    """CSV columns mouse_id,mat_path; optional unique recording_id. Paths are CSV-relative."""
+    path = Path(path).resolve()
+    table = pd.read_csv(path, dtype=str, keep_default_na=False)
+    if not {"mouse_id", "mat_path"} <= set(table.columns) or table.empty:
+        raise ValueError("Manifest needs rows with mouse_id and mat_path.")
+    rows, seen_paths, seen_ids = [], set(), set()
+    for row in table.to_dict("records"):
+        if not row["mouse_id"].strip() or not row["mat_path"].strip():
+            raise ValueError("Manifest mouse_id and mat_path cannot be blank.")
+        file = (path.parent / row["mat_path"]).resolve()
+        key = str(file).casefold()
+        recording_id = row.get("recording_id") or file.stem
+        if key in seen_paths or recording_id in seen_ids:
+            raise ValueError("Duplicate MAT path or recording_id would double-count data.")
+        seen_paths.add(key)
+        seen_ids.add(recording_id)
+        rows.append({"path": file, "mouse_id": row["mouse_id"], "recording_id": recording_id})
+    return sorted(rows, key=lambda row: (row["mouse_id"], row["recording_id"]))
+
 
 def runs(mask):
     edges = np.diff(np.r_[False, np.asarray(mask, dtype=bool), False].astype(int))

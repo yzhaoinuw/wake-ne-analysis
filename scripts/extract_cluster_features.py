@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from wake_ne_analysis.expanded_features import FEATURE_SET_NAME, write_expanded_feature_archives
+from wake_ne_analysis.cluster_features import FEATURE_SET_NAME, write_expanded_feature_archives
 
 
 def main(argv=None):

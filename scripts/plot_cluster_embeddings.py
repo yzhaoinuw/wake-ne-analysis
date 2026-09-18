@@ -1,4 +1,4 @@
-"""Compare PCA, t-SNE, and UMAP for the saved 29-feature archives.
+"""Compare t-SNE and UMAP for the saved 29-feature archives.
 
 The script never supplies labels to a dimensionality-reduction fit.  It offers
 two feature variants (all features or all non-EMG features) and two analysis
@@ -16,12 +16,11 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from wake_ne_analysis.expanded_features import FEATURE_COLUMNS, FEATURE_SET_NAME
-from wake_ne_analysis.umap import LABEL_NAMES, STAGE_COLORS, STATE_LABELS
+from wake_ne_analysis.cluster_features import FEATURE_COLUMNS, FEATURE_SET_NAME
+from wake_ne_analysis.stages import LABEL_NAMES, STAGE_COLORS, STATE_LABELS
 
 
 ALL_STAGES_NO_MA = ("nrem", "rem", "active_wake", "quiet_wake")
@@ -124,8 +123,6 @@ def _fit_embeddings(sampled: pd.DataFrame, columns: tuple[str, ...], config: Emb
         raise ValueError("t-SNE perplexity must be greater than one and smaller than sampled rows.")
     if len(sampled) <= config.n_neighbors:
         raise ValueError("Need more sampled rows than n_neighbors for UMAP.")
-    pca = PCA(n_components=2, svd_solver="full")
-    pca_points = pca.fit_transform(values)
     tsne_points = TSNE(
         n_components=2,
         perplexity=config.tsne_perplexity,
@@ -145,7 +142,7 @@ def _fit_embeddings(sampled: pd.DataFrame, columns: tuple[str, ...], config: Emb
         random_state=config.random_seed,
         n_jobs=1,
     ).fit_transform(values)
-    return pca, pca_points, tsne_points, umap_points
+    return tsne_points, umap_points
 
 
 def _feature_title(variant: str) -> str:
@@ -154,14 +151,12 @@ def _feature_title(variant: str) -> str:
 
 def _plot_embedding(
     points: pd.DataFrame,
-    pca: PCA,
     method: str,
     path: Path,
     feature_variant: str,
     state_labels: dict[str, str],
 ) -> None:
     coordinates = {
-        "pca": ("pca_1", "pca_2", "PC 1", "PC 2", "PCA"),
         "tsne": ("tsne_1", "tsne_2", "t-SNE 1", "t-SNE 2", "t-SNE"),
         "umap": ("umap_1", "umap_2", "UMAP 1", "UMAP 2", "UMAP"),
     }
@@ -175,9 +170,6 @@ def _plot_embedding(
                 c=WAKE_COLOR if state == WAKE_ONLY else STAGE_COLORS[state],
                 label=label, linewidths=0, rasterized=True,
             )
-    if method == "pca":
-        x_label += f" ({pca.explained_variance_ratio_[0] * 100:.1f}% variance)"
-        y_label += f" ({pca.explained_variance_ratio_[1] * 100:.1f}% variance)"
     ax.set(
         title=f"{method_label} embedding: {_feature_title(feature_variant)}",
         xlabel=x_label,
@@ -235,18 +227,14 @@ def main(argv=None):
     scoped, state_labels = _prepare_scope(features, args.analysis_scope)
     sampled = _balanced_sample(scoped, config)
     columns = _feature_columns(args.feature_variant)
-    print(f"Fitting PCA, t-SNE, and UMAP on {len(sampled):,} balanced seconds...", flush=True)
-    pca, pca_points, tsne_points, umap_points = _fit_embeddings(sampled, columns, config)
+    print(f"Fitting t-SNE and UMAP on {len(sampled):,} balanced seconds...", flush=True)
+    tsne_points, umap_points = _fit_embeddings(sampled, columns, config)
     points = sampled.copy()
-    points[["pca_1", "pca_2"]] = pca_points
     points[["tsne_1", "tsne_2"]] = tsne_points
     points[["umap_1", "umap_2"]] = umap_points
     args.results_dir.mkdir(parents=True, exist_ok=True)
     points.to_csv(args.results_dir / "embedding_points.csv", index=False)
     _state_summary(points, columns).to_csv(args.results_dir / "state_summary.csv", index=False)
-    pd.DataFrame(
-        {"principal_component": ("PC1", "PC2"), "explained_variance_ratio": pca.explained_variance_ratio_}
-    ).to_csv(args.results_dir / "pca_explained_variance.csv", index=False)
     (args.results_dir / "run.json").write_text(
         json.dumps(
             {
@@ -265,10 +253,10 @@ def main(argv=None):
         ),
         encoding="utf-8",
     )
-    for method in ("pca", "tsne", "umap"):
-        _plot_embedding(points, pca, method, args.figures_dir / f"{method}.png", args.feature_variant, state_labels)
+    for method in ("tsne", "umap"):
+        _plot_embedding(points, method, args.figures_dir / f"{method}.png", args.feature_variant, state_labels)
     print(f"Wrote {len(points):,} sampled embedding rows to {args.results_dir}")
-    print(f"Wrote separate PCA, t-SNE, and UMAP figures to {args.figures_dir}")
+    print(f"Wrote t-SNE and UMAP figures to {args.figures_dir}")
 
 
 if __name__ == "__main__":
