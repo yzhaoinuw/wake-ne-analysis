@@ -2,6 +2,71 @@
 
 ## 2026-09-17
 
+### Archive four-feature report and publish expanded embedding result (Codex GPT-5; effort/tokens not reported)
+
+- Archived the completed compact EEG+EMG+NE report as
+  `docs/archived/cluster_visualization_report_20260917_four_feature.md` and
+  replaced the live report with the completed 29-feature comparison.
+- The expanded report uses grouped feature families rather than listing the 20
+  adjacent wide EEG bands individually. All-stage runs contain 4,000 balanced
+  non-MA seconds; Wake-only runs contain 1,000 combined-Wake seconds (797 source
+  Active, 203 source Quiet), with source subtype retained only for audit.
+- Both t-SNE and UMAP show visible broad-state organization. Combined-Wake geometry
+  is branched only when EMG features are included; no-EMG Wake maps are diffuse.
+  This is a descriptive EMG-associated pattern, not a predeclared or stable discrete
+  Wake clustering result.
+- Kept PCA panels out of the report. All-feature PC1 accounts for 86.9% (all
+  stages) and 92.1% (Wake only), while no-EMG PC1/PC2 captures only 20.2%/13.2%
+  and 22.2%/10.4%; neither view adds a useful presentation-level cluster claim.
+- Verification:
+  - Confirmed all four `run.json` files, point tables, state counts, and PCA audit
+    tables under `results/expanded_embedding/`.
+  - Visually inspected all eight t-SNE/UMAP PNGs under
+    `docs/assets/expanded_embedding/`.
+  - `Get-Date -Format yyyy-MM-dd` returned `2026-09-17`.
+
+### Prepare MA-excluded expanded-feature cluster visualizations (Codex GPT-5; effort/tokens not reported)
+
+- Decision: remove MA before balanced sampling and before PCA, t-SNE, or UMAP
+  fitting, rather than merely hiding its plotted points. MA is a manual override,
+  not a physiological comparison state.
+- Added four predeclared `features_29` configurations: all 29 features or all
+  non-EMG features, each with all non-MA states or a single combined Wake class.
+  Wake-only runs collapse Active/Quiet labels before sampling and fitting while
+  retaining `source_state` in the point audit table. The non-EMG set is defined by
+  the documented `emg_` feature-name prefix (24 retained EEG/NE columns).
+- No embedding result is claimed yet. The wide EEG panel, EMG burst features, and
+  NE slope remain exploratory; use the runs for QC/description before biological
+  interpretation.
+- Verification:
+  - Inspected all ten `features/features_29` archives: 106,434 finite rows, 29
+    all-feature columns, 24 non-EMG columns; expected balanced caps are 4,000
+    rows for all non-MA stages and 1,000 for combined Wake.
+  - `conda run --no-capture-output -n ne_umap python scripts\\plot_expanded_feature_embeddings.py --help`
+  - `conda run --no-capture-output -n ne_umap python scripts\\plot_feature_embeddings.py --help`
+  - `conda run --no-capture-output -n sleep_scoring_dash3.0 python -m pytest --basetemp .pytest_tmp\\cluster_script_regression_elevated -p no:cacheprovider -q` (32 passed)
+  - `treaty validate .` (passed)
+  - `git diff --check`
+
+### Create expanded 29-feature per-recording archives (Codex GPT-5; effort/tokens not reported)
+
+- Created ten ignored `features/features_29/*.npz` archives, retaining 106,434
+  finite labelled seconds. Each archive stores raw and within-recording scaled
+  matrices, labels/seconds, feature names, scaling provenance, and JSON metadata.
+- The panel has twenty 0.5--100 Hz wide EEG bands, exact `>1--4` and `>4--8` Hz
+  scoring anchors, five EMG measures, and mean plus within-second OLS slope for
+  saved processed NE. The EMG burst definition is provisional: 75-ms RMS envelope,
+  recording median plus three MAD-derived robust SD, 50-ms gap joining, and 50-ms
+  minimum duration.
+- Full-recording EMG filtering was impractical for the multi-hour recordings. The
+  delivery uses deterministic 120-s filter cores with one-second discarded context,
+  preserving the scoring method's detrend/20--200 Hz zero-phase filter family but
+  not claiming bit-identical whole-recording output. `features/README.md` and
+  `docs/methods.md` document this boundary.
+- Verification:
+  - Synthetic expanded-archive test: 1 passed.
+  - All ten generated archives have a finite `(n_seconds, 29)` raw matrix.
+
 ### Remove PCA from presentation-facing cluster report (Codex GPT-5; effort/tokens not reported)
 
 - Removed PCA methods, captions, and results discussion from

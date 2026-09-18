@@ -13,12 +13,13 @@ the MAT files, re-extract a feature, relabel a second, clip an outlier, or apply
 another normalization.
 
 Each embedding receives the **same** fixed-seed balanced sample: at most 100
-seconds for every available final state within every recording. With the present
-ten archives, this makes 4,800 points: 1,000 each NREM, REM, Active Wake, and Quiet
-Wake, plus 800 MA points from eight recordings. This prevents long states from
-dominating a picture while allowing substantially more points than the 480-point
-first UMAP. Raise or lower `--max-points-per-label-per-recording` to change the
-display density.
+seconds for every available final state within every recording. MA is removed
+before sampling and before PCA, t-SNE, or UMAP fitting, because it is a manual
+override rather than a physiological state in this comparison. With the present ten
+archives, a new baseline run therefore contains up to 4,000 points: 1,000 each
+NREM, REM, Active Wake, and Quiet Wake. This prevents long states from dominating a
+picture while allowing substantially more points than the 480-point first UMAP.
+Raise or lower `--max-points-per-label-per-recording` to change the display density.
 
 The final sleep label is withheld from PCA, t-SNE, and UMAP fitting; it is used only
 afterward to colour the resulting coordinates. Since the Active/Quiet labels were
@@ -52,8 +53,8 @@ Activate the working environment and run this from the repository root:
 conda activate ne_umap
 python scripts\plot_feature_embeddings.py `
   --feature-dir features\features_4 `
-  --results-dir results\embedding_comparison\initial_4800 `
-  --figures-dir docs\assets\embedding_comparison\initial_4800
+  --results-dir results\embedding_comparison\joint_no_ma_4000 `
+  --figures-dir docs\assets\embedding_comparison\joint_no_ma_4000
 ```
 
 The output CSV contains the same sampled rows and all six coordinates
@@ -64,8 +65,9 @@ settings. The three presentation PNGs are named `pca.png`, `tsne.png`, and
 The separate-figure captions are:
 
 > Label-coloured [PCA/t-SNE/UMAP] embedding of the same balanced sample of
-> one-second EEG + EMG + NE observations. The default current sample contains
-> 1,000 NREM, 1,000 REM, 800 MA, 1,000 Active Wake, and 1,000 Quiet Wake seconds,
+> one-second EEG + EMG + NE observations. The default current sample contains up to
+> 1,000 NREM, 1,000 REM, 1,000 Active Wake, and 1,000 Quiet Wake seconds; MA was
+> excluded before sampling and fitting,
 > capped at 100 seconds per available state per recording. Labels were not used to
 > fit the embedding. For the joint panel, EMG is related to the Active/Quiet label
 > rule, so the visualization is descriptive rather than independent validation of

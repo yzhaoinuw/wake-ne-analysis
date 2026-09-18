@@ -126,6 +126,12 @@ def main(argv=None):
     )
     print("Loading saved robust-scaled feature archives...", flush=True)
     features, archives = load_feature_archives(args.feature_dir)
+    # MA is a manual override rather than one of the physiological stages being
+    # compared here.  Exclude it before both balanced sampling and fitting so it
+    # cannot alter any PCA/t-SNE/UMAP neighbourhood or variance structure.
+    features = features.loc[features.state != "ma"].copy()
+    if features.empty:
+        raise ValueError("No non-MA feature rows are available for embedding.")
     feature_columns = EMBEDDING_FEATURE_SETS[args.feature_set]
     sampled = balanced_sample(
         features,
@@ -157,6 +163,7 @@ def main(argv=None):
                 "archive_files": [path.name for path in archives],
                 "feature_set": args.feature_set,
                 "feature_columns": feature_columns,
+                "excluded_states_before_sampling": ["ma"],
                 "figures_dir": str(args.figures_dir.resolve()),
             },
             indent=2,

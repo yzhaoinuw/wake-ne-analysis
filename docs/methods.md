@@ -30,6 +30,36 @@ occupancy. It is not the default labeling rule. Both methods treat EMG amplitude
 recording-specific muscle-activity proxy, not a calibrated whole-body movement measure,
 and require review against real recordings and expert/video annotation.
 
+## Expanded exploratory feature archives
+
+`features/features_29/` is a separate, versioned dimensional-reduction feature
+set. It has 29 per-second features: twenty log EEG band powers from 0.5--5 Hz and
+then 5-Hz steps through 95--100 Hz; exact upstream scoring-band log powers using
+`>1--4 Hz` and `>4--8 Hz`; five EMG features; and two NE features. EEG power uses
+the same one-second Hann periodogram/density convention as the compact feature set.
+The strict lower / inclusive upper frequency-bin rule prevents adjacent bands from
+double-counting a boundary bin. The 5-Hz panel is exploratory; a one-second epoch
+does not create high spectral resolution.
+
+The EMG features retain the native mean-centred RMS and add filtered RMS,
+burst-onset count, burst-duty fraction, and peak 75-ms RMS-envelope value. The
+EMG trace is linearly detrended and zero-phase fourth-order band-pass filtered from
+20 Hz to `min(200 Hz, 0.45 * saved EEG/EMG rate)`, matching the upstream method's
+filter family. To bound runtime on multi-hour recordings, filtering uses 120-s
+cores with one second of context on each side discarded after filtering. It is
+therefore deterministic and edge-buffered, but not bit-identical to a single
+whole-recording `filtfilt` call. A provisional burst exceeds the recording envelope
+median plus three MAD-derived robust standard deviations; gaps up to 50 ms are
+joined and runs shorter than 50 ms removed. Bursts are detected on continuous finite
+EMG, then their onsets and overlap fractions are assigned to score seconds.
+
+The NE features are the existing per-second mean and an ordinary-least-squares
+within-second slope in saved processed % delta-F/F per second. The saved NE trace is
+already strongly smoothed upstream, so slope is a local directional summary, not a
+phasic release or clearance measurement. The expanded archives preserve all finite
+rows and record the per-file threshold/configuration in `metadata_json`; no feature
+is clipped or removed for apparent extremity.
+
 ## Spectral analysis
 
 Within each file, construct the intersection of finite NE samples and each wake

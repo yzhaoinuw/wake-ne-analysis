@@ -2,6 +2,16 @@
 
 ## Currently Hot
 
+- **Expanded 29-feature QC:** The four fixed-seed runs are complete and reported
+  in `docs/cluster_visualization_report.md`: all versus no-EMG features, each for
+  all non-MA stages and combined Wake only. MA was excluded before sampling and
+  fitting; Wake-only runs combine Active/Quiet before both. Visible Wake branching
+  appears only with EMG features and does not establish discrete Wake clusters.
+  Treat the EMG burst threshold/duration and the full wideband panel as
+  provisional. Next, inspect raw EMG/envelope examples, then predeclare a
+  recording-held-out and parameter-sensitivity cluster/stability analysis before
+  interpreting a state effect or naming a Wake subtype.
+
 - **PCA feature-QC decision:** raw and within-recording robust-scaled per-second
   four-feature NumPy archives are now saved for every MAT recording in
   `features/features_4/` (see `features/README.md`), with initial pairwise and PCA
@@ -21,7 +31,7 @@
   Keep audit tables in ignored `results/umap/` and presentation PNGs under
   `docs/assets/umap/`; do not recreate an ad-hoc `outputs/` dump.
 
-- **Archive-based embedding comparison ready to run:**
+- **Four-feature embedding comparison is historical:**
   `scripts/plot_feature_embeddings.py` now reads the ten existing
   `features/features_4/*.npz` archives directly and fits PCA, t-SNE, and UMAP to the
   same fixed-seed, within-recording-balanced display sample. The default cap is 100
@@ -29,8 +39,8 @@
   coordinates/tables in `results/embedding_comparison/<run>/` and the shared-panel
   PNG in `docs/assets/embedding_comparison/<run>/`. It uses the exact upstream
   Sleep Scoring colours. The 4,800-point joint and archive-only `--feature-set
-  eeg_ne` runs are complete, with separate figures and the result documented in
-  `docs/cluster_visualization_report.md`. REM remains organized in both nonlinear
+  eeg_ne` runs are complete, with separate figures and the result archived in
+  `docs/archived/cluster_visualization_report_20260917_four_feature.md`. REM remains organized in both nonlinear
   feature sets; Active/Quiet Wake broadly overlap in EEG+NE, whereas the joint
   EMG-containing map has an Active-Wake arc. PCA is dominated by a handful of
   robust-scaled extremes and is QC-only pending a reviewed display rule. Next,
