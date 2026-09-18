@@ -2,6 +2,41 @@
 
 ## 2026-09-18
 
+### Report completed PI-directed Wake kNN-graph follow-up (Codex GPT-5; effort/tokens not reported)
+
+- Wrote `writeups/cluster_visualization_wake_only_report.md` as the concise
+  results-focused continuation of the 29-feature cluster visualization report.
+  It retains all source-label and 3/4/5-partition figures, while referring readers
+  to the parent report for shared feature extraction and baseline methods.
+- The balanced 2,000-second, ten-recording sample has a recurring
+  Quiet-associated and a recurring Active-associated broad group at four and five
+  groups. Smaller Active-only groups have incomplete recording recurrence; none is
+  presented as a validated Wake subtype. Because EMG both informed the upstream
+  Active/Quiet labels and is included in the feature space, the report calls this
+  EMG-associated organization rather than independent label validation.
+- Verification:
+  - Inspected the saved graph audit, source-label composition, and all 3/4/5
+    t-SNE/UMAP figures under `results/wake_knn_clusters_20260918/` and
+    `writeups/assets/wake_knn_clusters_20260918/`.
+  - Confirmed that the eight figures referenced by the new writeup are present.
+
+### Prepare PI-directed Wake kNN-graph clustering (Codex GPT-5; effort/tokens not reported)
+
+- Interpretation: "k-nearest-neighbour clustering" is implemented as spectral
+  clustering of an unweighted symmetric kNN graph in the full 29-dimensional,
+  within-recording robust-scaled EEG+EMG+NE space. It is not a supervised KNN
+  classifier, and t-SNE/UMAP are display-only.
+- The planned script will select only Active/Quiet Wake before sampling, balance the
+  capped sample within recording and source label, and produce matched 3-, 4-, and
+  5-cluster partitions. It will retain point, source-label composition,
+  feature-median, graph, and recording-composition audits.
+- Verification:
+  - Direct kNN-graph/spectral-clustering smoke check passed in `ne_umap` with
+    scikit-learn 1.9.1; the environment does not include pytest.
+  - `plot_wake_knn_clusters.py --help` and `compileall` completed in `ne_umap`.
+  - The maintained `sleep_scoring_dash3.0` suite passed: 5 passed, 1 skipped
+    because scikit-learn is intentionally an optional UMAP dependency there.
+
 ### Document EEG feature epochs and band integration (Codex GPT-5; effort/tokens not reported)
 
 - Corrected the proposed five-second centred-window interpretation: current EEG

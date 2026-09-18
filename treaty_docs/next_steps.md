@@ -2,10 +2,11 @@
 
 ## Currently Hot
 
-- The PI-facing material is limited to `writeups/preliminary_recording_report.md`
-  and `writeups/cluster_visualization_report.md`. Their committed figures live in
-  the adjacent `writeups/assets/` tree. Do not treat either descriptive screen as
-  independent-mouse biological inference.
+- The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
+  `writeups/cluster_visualization_report.md`, and its focused
+  `writeups/cluster_visualization_wake_only_report.md` follow-up. Their committed
+  figures live in the adjacent `writeups/assets/` tree. Do not treat any
+  descriptive screen as independent-mouse biological inference.
 - Local raw MAT files and regenerated products remain ignored: `data/` holds input
   and derived feature caches, `outputs/` holds recording-report tables, and
   `results/` holds cluster-coordinate and audit tables. Current feature caches are
@@ -21,6 +22,14 @@
   convention.
   The all-feature Wake geometry is EMG-associated; no-EMG maps do not support a
   stable visible Wake subcluster in the fixed display.
+- **PI-directed Wake clustering:** the completed 29-feature Active/Quiet Wake-only
+  analysis has 3, 4, and 5 spectral partitions of one symmetric k-nearest-neighbour
+  graph. `scripts/plot_wake_knn_clusters.py` must continue to exclude labels from
+  graph construction and clustering, retain per-cluster/per-recording label audits,
+  and never use t-SNE or UMAP coordinates to form clusters. The recurring broad
+  Quiet- and Active-associated groups are descriptive and EMG-associated; the
+  smaller Active-only groups lack sufficient recurrence or stability evidence for a
+  subtype claim.
 
 ## Scientific follow-up
 
