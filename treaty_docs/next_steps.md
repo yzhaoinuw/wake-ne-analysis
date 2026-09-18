@@ -29,7 +29,9 @@
   and never use t-SNE or UMAP coordinates to form clusters. The recurring broad
   Quiet- and Active-associated groups are descriptive and EMG-associated; the
   smaller Active-only groups lack sufficient recurrence or stability evidence for a
-  subtype claim.
+  subtype claim. A pure small group establishes only label purity, not full
+  Active/Quiet separability; a separability claim also needs near-complete
+  source-label coverage without cross-label contamination in held-out recordings.
 
 ## Scientific follow-up
 

@@ -148,6 +148,19 @@ four- and five-group resolutions. The smaller Active-only groups are visually
 compact but have incomplete recording recurrence, so they are not yet defensible
 as general Wake subtypes.
 
+A pure small cluster is not, by itself, evidence that Active and Quiet Wake are
+fully separable. A pure Active-only cluster may have high **purity** but contain
+only a small fraction of all Active seconds; it then describes a distinctive
+Active subset rather than the whole source class. Strong label separation would
+require both purity and **coverage**: collectively, the Active-associated
+clusters would contain essentially every Active second and no Quiet seconds, and
+the Quiet-associated clusters would do the converse. More than two clusters
+would still be compatible with that outcome because either source class could
+have several modes. The present four-group result does not meet this standard:
+the Quiet-associated group contains 947 Quiet and 280 Active seconds, and the
+Active-associated group contains 527 Active and 53 Quiet seconds. It therefore
+shows organized but overlapping source-label populations.
+
 This association is not independent validation of the source labels. Those
 labels were produced upstream from within-recording EMG activity, and this
 analysis deliberately includes five EMG features. It is therefore unsurprising

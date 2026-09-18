@@ -2,6 +2,19 @@
 
 ## 2026-09-18
 
+### Clarify label purity versus full Wake-label separation (Codex GPT-5; effort/tokens not reported)
+
+- Added a concise interpretation to the Wake-only report: an Active-only or
+  Quiet-only cluster can identify a pure subset without recovering the entire
+  source class. Full separability requires both high purity and near-complete
+  coverage by source-associated clusters, without cross-label contamination.
+- The report now applies that criterion to the four-group audit: its two broad
+  source-associated groups overlap materially, so this run shows organized but
+  not fully separated Active/Quiet label populations.
+- Verification:
+  - Checked the stated counts against
+    `results/wake_knn_clusters_20260918/4_clusters/cluster_summary.csv`.
+
 ### Report completed PI-directed Wake kNN-graph follow-up (Codex GPT-5; effort/tokens not reported)
 
 - Wrote `writeups/cluster_visualization_wake_only_report.md` as the concise
