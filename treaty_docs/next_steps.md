@@ -3,9 +3,10 @@
 ## Currently Hot
 
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
-  `writeups/cluster_visualization_report.md`, and its focused
-  `writeups/cluster_visualization_wake_only_report.md` follow-up. Their committed
-  figures live in the adjacent `writeups/assets/` tree. Do not treat any
+  `writeups/cluster_visualization_report.md`, its focused
+  `writeups/cluster_visualization_wake_only_report.md` follow-up, and the
+  source-preserving `writeups/nrem_baseline_cluster_target_report.md` comparison.
+  Their committed figures live in the adjacent `writeups/assets/` tree. Do not treat any
   descriptive screen as independent-mouse biological inference.
 - Local raw MAT files and regenerated products remain ignored: `data/` holds input
   and derived feature caches, `outputs/` holds recording-report tables, and
@@ -32,11 +33,26 @@
   subtype claim. A pure small group establishes only label purity, not full
   Active/Quiet separability; a separability claim also needs near-complete
   source-label coverage without cross-label contamination in held-out recordings.
+- **Experimental NREM-baseline calibration:** `scripts/calibrate_nrem_baseline.py`
+  reimplements the source-preserving NREM-envelope comparison locally and targets
+  the three-partition's two Active-only groups (clusters 2 and 3), never t-SNE/UMAP
+  coordinates. On the current 2,000-point display sample, its predeclared
+  multiplier sweep selected 10 robust SD above the NREM 75th percentile: 218/237
+  target seconds were selected (92.0% recall), but 183 non-target seconds were
+  also selected (54.4% precision). Across every one of the 38,120 current Wake
+  seconds, it labels 10,539 (27.6%) Active and 27,581 (72.4%) Quiet; the resulting
+  per-recording Active share ranges from 2.3% to 65.0%. This is a stricter
+  movement-associated rule, not an exact recovery of the graph targets or a
+  production-label change.
 
 ## Scientific follow-up
 
 - Inspect representative raw EMG/envelope traces and predeclare burst-threshold and
   feature-panel sensitivity work before interpreting EMG-associated Wake geometry.
+- Repeat the NREM-baseline calibration with recording-held-out target assignment;
+  assess its 10-robust-SD candidate against raw EMG traces before considering any
+  upstream scoring change. Do not tune against t-SNE/UMAP coordinates or overwrite
+  saved MAT labels.
 - For a potential Wake subtype claim, predeclare parameter/seed stability and a
   recording-held-out cluster or prediction evaluation. Nonlinear map appearance is
   descriptive, not a cluster statistic.

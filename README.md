@@ -4,6 +4,7 @@ Reproducible analyses behind two current descriptive PI-facing writeups:
 
 - [Recording-level Active/Quiet Wake report](writeups/preliminary_recording_report.md)
 - [EEG/EMG/NE cluster visualization report](writeups/cluster_visualization_report.md)
+- [NREM-baseline Wake-labeling cluster-target follow-up](writeups/nrem_baseline_cluster_target_report.md)
 
 Raw MATLAB files, derived feature archives, and CSV/JSON run outputs are deliberately
 local and ignored. Final one-second `sleep_scores` are read unchanged: Active Wake is
@@ -25,6 +26,23 @@ python scripts/plot_cluster_embeddings.py --feature-dir data/derived_features/fe
 Each command refuses to overwrite a non-empty output directory. The cluster script
 also supports `--feature-variant no_emg` and `--analysis-scope wake_only`; see the
 cluster report for the four reported combinations and interpretation limits.
+
+## Experimental NREM-baseline calibration
+
+The `nrem-baseline` experiment keeps source MAT files unchanged.  It derives a
+recording-specific 20 Hz EMG envelope, anchors its threshold to the NREM 75th
+percentile plus a shared robust-SD multiplier, and tests that multiplier only
+against pre-existing kNN graph-cluster assignments—not t-SNE or UMAP coordinates.
+
+```powershell
+python scripts/calibrate_nrem_baseline.py --input-dir data --clustered-points results/wake_knn_clusters_20260918/3_clusters/clustered_wake_points.csv --target-clusters 2 3 --output-dir results/nrem_baseline_calibration
+```
+
+The command evaluates multipliers from 0 to 32 in 0.25 increments. It selects the
+one with the highest mean F1 across recordings containing target points, breaking
+ties by specificity and then stricter multiplier. Its outputs are experimental CSV/
+JSON audits; they do not overwrite `sleep_scores` or establish a production scoring
+rule.
 
 ## Layout
 
