@@ -7,8 +7,8 @@ and combined Wake only. The prior four-feature report is retained at
 
 ## Question
 
-Each point is one final-labelled second from the same ten recordings. t-SNE and
-UMAP are fit without labels; labels are used only after fitting to colour the
+Each point is one final-labeled second from the same ten recordings. t-SNE and
+UMAP are fit without labels; labels are used only after fitting to color the
 all-stage figures. The combined-Wake figures intentionally hide the High/Low
 Alertness subdivision to ask whether the broader Wake population itself shows visible internal
 geometry. These are descriptive maps, not a formal cluster test or an inference
@@ -24,7 +24,7 @@ feature, relabel a second, clip a finite value, or scale the values again.
 |---|---|---|
 | Wide EEG panel | 20 log10 one-second band-power summaries: 0.5--5 Hz, then consecutive 5-Hz bands through 95--100 Hz. See [Appendix: EEG band-power features](#appendix-eeg-band-power-features). | Same 20 summaries. |
 | Scoring-band EEG anchors | Log10 `>1--4 Hz` delta and `>4--8 Hz` theta power, computed with the same one-second method. | Same two anchors. |
-| EMG | Mean-centred RMS; filtered RMS over 20 Hz to `min(200 Hz, 0.45 * saved rate)`; burst-onset count; burst-duty fraction; peak 75-ms RMS envelope. See [Appendix: EMG burst features](#appendix-emg-burst-features). | Omitted as a group. |
+| EMG | Mean-centered RMS; filtered RMS over 20 Hz to `min(200 Hz, 0.45 * saved rate)`; burst-onset count; burst-duty fraction; peak 75-ms RMS envelope. See [Appendix: EMG burst features](#appendix-emg-burst-features). | Omitted as a group. |
 | NE | Mean saved processed percentage delta-F/F and within-second OLS slope. | Same two summaries. |
 
 The repeated wide EEG bands are treated here as one exploratory spectral family,
@@ -144,10 +144,10 @@ non-EMG Wake organization.
 ## Appendix: EEG band-power features
 
 The EEG features use a **one-second left-aligned epoch**, not a five-second window
-centred on a score second. For score second `k`, the epoch begins at sample
+centered on a score second. For score second `k`, the epoch begins at sample
 `round(k * saved EEG rate)` and contains `floor(saved EEG rate)` consecutive
 samples. At the ordinary integer saved rates this is exactly `[k, k + 1)` seconds;
-the code requires the complete labelled second to be available before retaining its
+the code requires the complete labeled second to be available before retaining its
 features.
 
 Each epoch is constant-detrended, tapered with a Hann window, and passed to SciPy's

@@ -9,14 +9,14 @@ combined-Wake descriptive maps.
 
 ## Question
 
-Do the full 29-feature vectors of seconds already labelled High Alertness or Low
+Do the full 29-feature vectors of seconds already labeled High Alertness or Low
 Alertness form recurring groups when those labels are excluded from the clustering
 step? The same full-space k-nearest-neighbor graph is partitioned into 3,
 4, and 5 groups rather than selecting one resolution in advance.
 
 High Alertness and Low Alertness are the final source labels: score 4 and score 5,
 respectively. The terminology does not relabel a second or establish an
-independent behavioural measurement.
+independent behavioral measurement.
 
 This is a descriptive, label-audited clustering exercise, not a test of an
 independently derived alertness distinction or a claim that each partition
@@ -39,7 +39,7 @@ question is explicitly about organization in the joint EEG+EMG+NE feature space.
 
 ## Sampling
 
-Only final-labelled High Alertness and Low Alertness seconds were eligible. With
+Only final-labeled High Alertness and Low Alertness seconds were eligible. With
 seed `20260918`, the analysis sampled up to 100 seconds **per source label per
 recording** from each of ten feature archives, yielding 2,000 points: 1,000 source
 High Alertness and 1,000 source Low Alertness seconds, each represented in all ten
@@ -53,19 +53,15 @@ the unsupervised groups relate to the existing labels.
 
 ## Display labels, palette, and settings
 
-The source-label panels use the following shared palette. High and Low
-Alertness use high-saturation colours; muted NREM and REM colours are supplied for
-consistent all-stage figures even though they do not appear in this Wake-only
-report.
+The source-label panels use the following high-saturation palette for the two
+states shown in this report.
 
 | State | RGB | Hex | Use |
 |---|---|---|---|
 | High Alertness | `(227, 26, 28)` | `#E31A1C` | High-saturation red |
 | Low Alertness | `(0, 114, 178)` | `#0072B2` | High-saturation blue |
-| NREM | `(119, 115, 154)` | `#77739A` | Muted purple |
-| REM | `(155, 191, 154)` | `#9BBF9A` | Muted green |
 
-The spectral-cluster panels use separate arbitrary categorical colours: those colours
+The spectral-cluster panels use separate arbitrary categorical colors: those colors
 identify graph partitions and do not represent alertness labels.
 
 For the requested left-to-right presentation, UMAP 2 is horizontal and UMAP 1 is
@@ -109,9 +105,9 @@ large lower/left region, whereas High Alertness supplies the rightward and upper
 branches as well as some of the shared central region. The overlap matters: the
 labels do not map onto two perfectly separated islands.
 
-![t-SNE display coloured by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/tsne_source_labels.png)
+![t-SNE display colored by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/tsne_source_labels.png)
 
-![UMAP display coloured by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/umap_source_labels.png)
+![UMAP display colored by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/umap_source_labels.png)
 
 ### Three groups
 

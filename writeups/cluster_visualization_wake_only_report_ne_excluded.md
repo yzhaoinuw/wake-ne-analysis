@@ -49,14 +49,13 @@ component, minimum symmetric degree 30, and maximum symmetric degree 233.
 Spectral clustering creates the requested 3-, 4-, and 5-group partitions. It is
 not a supervised kNN classifier and does not cluster UMAP coordinates.
 
-The PI request concerned UMAP, so this sensitivity run intentionally generated
-**UMAP only**, not an unnecessary new t-SNE fit. UMAP uses the matched settings:
+This sensitivity run intentionally generated **UMAP only**, rather than a new
+t-SNE fit. UMAP uses the matched settings:
 30 neighbors, `min_dist=0.2`, 200 epochs, and seed `20260918`. UMAP 2 is the
 horizontal axis and UMAP 1 is vertical, so the high-alertness direction is shown
 left to right. The shared source-label palette is High Alertness red
 `#E31A1C` / RGB `(227, 26, 28)` and Low Alertness blue `#0072B2` / RGB
-`(0, 114, 178)`; see the parent report for the matching muted NREM and REM
-colours. UMAP axes remain unitless layout coordinates.
+`(0, 114, 178)`. UMAP axes remain unitless layout coordinates.
 
 ## Results
 
@@ -69,7 +68,7 @@ not form perfectly isolated UMAP islands. Coordinate positions cannot be compare
 numerically with the separate full-feature UMAP fit; the label composition and
 matched graph assignments below provide the more useful comparison.
 
-![NE-excluded UMAP display coloured by existing High/Low Alertness labels](assets/wake_knn_clusters_ne_excluded_20260921/umap_source_labels.png)
+![NE-excluded UMAP display colored by existing High/Low Alertness labels](assets/wake_knn_clusters_ne_excluded_20260921/umap_source_labels.png)
 
 ### Three groups
 
@@ -129,7 +128,7 @@ This does not show that NE is biologically irrelevant. It only says that, in thi
 within-recording robust-scaled, EMG-inclusive one-second representation, the two
 available NE summaries are not necessary to reproduce the displayed partitions.
 EMG remains in both panels and is entangled with the source alertness labels;
-other NE timescales, transformations, features, or independent behavioural
+other NE timescales, transformations, features, or independent behavioral
 measurements were not tested.
 
 ## Interpretation caveat
@@ -149,7 +148,7 @@ Retain this NE-excluded analysis as a feature-panel sensitivity result. Before
 naming a Wake subtype or making an alertness-separability claim, predeclare graph
 parameter/seed stability and a recording-held-out evaluation; inspect the small
 High-Alertness-only groups against raw EMG/envelope traces; and use an independent
-non-EMG behavioural or physiological measure where available.
+non-EMG behavioral or physiological measure where available.
 
 ## Reproducibility and retained audits
 
