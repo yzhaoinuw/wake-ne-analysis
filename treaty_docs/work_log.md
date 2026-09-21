@@ -2,6 +2,26 @@
 
 ## 2026-09-21
 
+### Present PI-facing alertness palette and NE-excluded Wake sensitivity (Codex GPT-5; effort/tokens not reported)
+
+- Renamed only the PI-facing source-label display language from Active/Quiet Wake
+  to High/Low Alertness; final score values 4/5, sampling, and source audits remain
+  unchanged. The Wake report now supplies the shared RGB palette and uses UMAP 2
+  horizontally with UMAP 1 vertically.
+- The user-generated matched 27-feature EEG+EMG UMAP run excludes only `ne_mean`
+  and `ne_slope_ols_per_second`. Its 3/4/5 graph partitions agree closely with
+  the full 29-feature result for the same points (adjusted Rand 0.978/0.964/0.959).
+  The new NE-excluded report presents this as an EMG-inclusive feature-panel
+  sensitivity, not an NE-null biological conclusion.
+- Documented the agent UMAP/Numba execution boundary in `AGENTS.md`: prepare and
+  validate scripts here, but have the user run fresh embeddings in their normal
+  interactive `ne_umap` terminal.
+- Verification:
+  - Inspected the NE-excluded `run.json`, source/cluster summaries, and all four
+    committed UMAP panels.
+  - Recomputed adjusted Rand agreement from matched point identities in the two
+    ignored cluster-result directories.
+
 ### Add source-preserving NREM-baseline target-cluster calibration (Codex GPT-5; effort/tokens not reported)
 
 - Added `wake_ne_analysis/nrem_baseline.py` and

@@ -20,6 +20,18 @@ with `run --no-capture-output -n sleep_scoring_dash3.0` before Python commands.
 This borrows installed NumPy/SciPy/pandas/pytest only; never import the scoring app.
 For a separate environment, install `python -m pip install -e ".[test]"`.
 
+## Agent UMAP Execution Boundary
+
+Do **not** run a fresh t-SNE or UMAP fit through the agent's non-interactive
+terminal. This host can load archives, run tests, and rerender figures from saved
+coordinates, but its UMAP/Numba execution has remained CPU-active beyond twelve
+minutes without producing a fit, whereas the user's normal interactive `ne_umap`
+terminal completes the requested run. This is a runtime-performance boundary, not
+a filesystem-permission failure. Prepare and validate the script here, then give
+the user a normal `conda activate ne_umap` command to run the embedding. Inspect
+the resulting audit tables and figures afterward; do not retry the fit here unless
+the user explicitly requests it.
+
 ## Common Tasks
 
 ```powershell
@@ -74,7 +86,7 @@ Preserve local guidance and resolve conflicts before committing. This machine ha
 
 - `README.md`: setup, inputs, CLI/API usage, output columns.
 - `project_overview.md`: architecture and module responsibilities.
-- `writeups/`: the two current PI-facing reports and their committed figures.
+- `writeups/`: the current PI-facing reports and their committed figures.
 - `archive/`: historical reports, assets, examples, and superseded generic code.
 - `treaty_docs/next_steps.md`: concrete unfinished work.
 - `treaty_docs/work_log.md`: decisions and verified delivery state.

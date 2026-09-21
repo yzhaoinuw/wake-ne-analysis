@@ -2,13 +2,24 @@ import numpy as np
 import pandas as pd
 import pytest
 
-pytest.importorskip("sklearn")
-
 from wake_ne_analysis.cluster_features import FEATURE_COLUMNS
-from wake_ne_analysis.wake_clusters import balanced_wake_sample, knn_spectral_clusters
+from wake_ne_analysis.wake_clusters import (
+    NE_FEATURE_COLUMNS,
+    balanced_wake_sample,
+    knn_spectral_clusters,
+    wake_clustering_feature_columns,
+)
+
+
+def test_ne_excluded_panel_removes_only_the_saved_ne_features():
+    selected = wake_clustering_feature_columns(exclude_ne_features=True)
+    assert set(selected).isdisjoint(NE_FEATURE_COLUMNS)
+    assert len(selected) == len(FEATURE_COLUMNS) - len(NE_FEATURE_COLUMNS)
+    assert wake_clustering_feature_columns(exclude_ne_features=False) == FEATURE_COLUMNS
 
 
 def test_wake_sampling_balances_source_labels_and_knn_partition_is_reportable():
+    pytest.importorskip("sklearn")
     rows = []
     rng = np.random.default_rng(4)
     for recording_id in ("r1", "r2"):

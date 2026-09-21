@@ -12,6 +12,17 @@ from .stages import LABEL_NAMES
 
 
 WAKE_STATES = ("active_wake", "quiet_wake")
+NE_FEATURE_COLUMNS = tuple(column for column in FEATURE_COLUMNS if column.startswith("ne_"))
+
+
+def wake_clustering_feature_columns(*, exclude_ne_features: bool) -> tuple[str, ...]:
+    """Return the full or NE-excluded feature panel without modifying saved values."""
+    if not exclude_ne_features:
+        return FEATURE_COLUMNS
+    selected = tuple(column for column in FEATURE_COLUMNS if column not in NE_FEATURE_COLUMNS)
+    if not selected or len(selected) + len(NE_FEATURE_COLUMNS) != len(FEATURE_COLUMNS):
+        raise RuntimeError("Expected NE columns are not present in the expanded feature panel.")
+    return selected
 
 
 def load_expanded_feature_archives(feature_dir: Path) -> tuple[pd.DataFrame, list[Path]]:

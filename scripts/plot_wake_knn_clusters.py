@@ -1,8 +1,8 @@
-"""Cluster Active/Quiet Wake with a k-nearest-neighbour graph in all 29 features.
+"""Cluster source-labelled Wake with a k-nearest-neighbour graph.
 
-Clusters are fit in the full within-recording robust-scaled EEG+EMG+NE feature space.
-t-SNE and UMAP are display-only maps of those graph-cluster assignments. Source
-Active/Quiet labels are used only to select and balance the display sample.
+Clusters are fit in a requested panel of saved within-recording robust-scaled
+features. t-SNE and UMAP are display-only maps of those graph-cluster assignments.
+Source labels are used only to select and balance the display sample.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import argparse
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
+import shutil
 import sys
 
 import matplotlib.pyplot as plt
@@ -19,14 +20,31 @@ import pandas as pd
 from sklearn.manifold import TSNE
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from wake_ne_analysis.cluster_features import FEATURE_COLUMNS, FEATURE_SET_NAME
-from wake_ne_analysis.stages import STAGE_COLORS, STATE_LABELS
+from wake_ne_analysis.cluster_features import FEATURE_SET_NAME
 from wake_ne_analysis.wake_clusters import (
+    NE_FEATURE_COLUMNS,
     WAKE_STATES,
     balanced_wake_sample,
     knn_spectral_clusters,
     load_expanded_feature_archives,
+    wake_clustering_feature_columns,
 )
+
+
+SOURCE_STATE_DISPLAY_LABELS = {
+    "active_wake": "High Alertness",
+    "quiet_wake": "Low Alertness",
+}
+SOURCE_STATE_DISPLAY_COLORS = {
+    "active_wake": "#E31A1C",
+    "quiet_wake": "#0072B2",
+}
+PI_STATE_PALETTE_RGB = {
+    "High Alertness": (227, 26, 28),
+    "Low Alertness": (0, 114, 178),
+    "NREM": (119, 115, 154),
+    "REM": (155, 191, 154),
+}
 
 
 @dataclass(frozen=True)
@@ -41,20 +59,24 @@ class WakeClusterConfig:
     umap_epochs: int = 200
 
 
-def _fit_display_embeddings(values: np.ndarray, config: WakeClusterConfig):
-    if not 1 < config.tsne_perplexity < len(values):
-        raise ValueError("t-SNE perplexity must be greater than one and smaller than sampled rows.")
+def _fit_display_embeddings(
+    values: np.ndarray, config: WakeClusterConfig, *, include_tsne: bool
+):
     if len(values) <= config.umap_neighbors:
         raise ValueError("Need more sampled rows than umap_neighbors for UMAP.")
-    tsne = TSNE(
-        n_components=2,
-        perplexity=config.tsne_perplexity,
-        max_iter=config.tsne_iterations,
-        init="pca",
-        learning_rate="auto",
-        random_state=config.random_seed,
-        method="barnes_hut",
-    ).fit_transform(values)
+    tsne = None
+    if include_tsne:
+        if not 1 < config.tsne_perplexity < len(values):
+            raise ValueError("t-SNE perplexity must be greater than one and smaller than sampled rows.")
+        tsne = TSNE(
+            n_components=2,
+            perplexity=config.tsne_perplexity,
+            max_iter=config.tsne_iterations,
+            init="pca",
+            learning_rate="auto",
+            random_state=config.random_seed,
+            method="barnes_hut",
+        ).fit_transform(values)
     import umap
 
     umap_points = umap.UMAP(
@@ -71,15 +93,15 @@ def _fit_display_embeddings(values: np.ndarray, config: WakeClusterConfig):
 def _plot(points: pd.DataFrame, method: str, category: str, path: Path, title: str) -> None:
     coordinates = {
         "tsne": ("tsne_1", "tsne_2", "t-SNE 1", "t-SNE 2"),
-        "umap": ("umap_1", "umap_2", "UMAP 1", "UMAP 2"),
+        "umap": ("umap_2", "umap_1", "UMAP 2", "UMAP 1"),
     }
     x, y, x_label, y_label = coordinates[method]
     fig, ax = plt.subplots(figsize=(7.2, 6.2), constrained_layout=True)
     if category == "source_state":
         order = WAKE_STATES
-        labels = STATE_LABELS
-        colors = STAGE_COLORS
-        legend_title = "Saved source label"
+        labels = SOURCE_STATE_DISPLAY_LABELS
+        colors = SOURCE_STATE_DISPLAY_COLORS
+        legend_title = "Source alertness label"
     else:
         order = sorted(points.cluster.unique())
         labels = {cluster: f"Cluster {cluster}" for cluster in order}
@@ -115,10 +137,18 @@ def _cluster_summary(points: pd.DataFrame) -> pd.DataFrame:
     return summary.reset_index()
 
 
-def _cluster_feature_medians(points: pd.DataFrame) -> pd.DataFrame:
+def _cluster_feature_medians(points: pd.DataFrame, feature_columns: tuple[str, ...]) -> pd.DataFrame:
     return points.groupby("cluster", sort=True).agg(
-        **{f"{column}_median": (column, "median") for column in FEATURE_COLUMNS}
+        **{f"{column}_median": (column, "median") for column in feature_columns}
     ).reset_index()
+
+
+def _prepare_output_directory(path: Path, *, overwrite: bool) -> None:
+    if path.exists() and any(path.iterdir()):
+        if not overwrite:
+            raise ValueError("Results and figures directories must be new or empty; use --overwrite to replace them.")
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def main(argv=None):
@@ -126,6 +156,26 @@ def main(argv=None):
     parser.add_argument("--feature-dir", type=Path, required=True)
     parser.add_argument("--results-dir", type=Path, required=True)
     parser.add_argument("--figures-dir", type=Path, required=True)
+    parser.add_argument(
+        "--exclude-ne-features",
+        action="store_true",
+        help="Omit ne_mean and ne_slope_ols_per_second from fitting, clustering, and feature-median audits.",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace an existing non-empty results or figures directory named explicitly above.",
+    )
+    parser.add_argument(
+        "--umap-only",
+        action="store_true",
+        help="Fit and plot UMAP only; skip the optional t-SNE display.",
+    )
+    parser.add_argument(
+        "--render-only",
+        action="store_true",
+        help="Regenerate figures from saved point and cluster CSVs without refitting embeddings or clustering.",
+    )
     parser.add_argument("--n-clusters", type=int, nargs="+", default=(3, 4, 5))
     parser.add_argument("--max-points-per-source-state-per-recording", type=int, default=100)
     parser.add_argument("--knn-neighbors", type=int, default=30)
@@ -136,10 +186,6 @@ def main(argv=None):
     parser.add_argument("--umap-min-dist", type=float, default=0.2)
     parser.add_argument("--umap-epochs", type=int, default=200)
     args = parser.parse_args(argv)
-    if args.results_dir.exists() and any(args.results_dir.iterdir()):
-        raise ValueError("Results directory must be new or empty.")
-    if args.figures_dir.exists() and any(args.figures_dir.iterdir()):
-        raise ValueError("Figures directory must be new or empty.")
     cluster_counts = tuple(sorted(set(args.n_clusters)))
     if not cluster_counts:
         raise ValueError("At least one requested cluster count is required.")
@@ -153,18 +199,71 @@ def main(argv=None):
         umap_min_dist=args.umap_min_dist,
         umap_epochs=args.umap_epochs,
     )
-    print("Loading 29-feature archives and selecting Active/Quiet Wake seconds...", flush=True)
+    display_methods = ("umap",) if args.umap_only else ("tsne", "umap")
+    if args.render_only:
+        sampled_path = args.results_dir / "sampled_wake_points.csv"
+        if not sampled_path.is_file():
+            raise ValueError("--render-only requires an existing sampled_wake_points.csv result.")
+        points = pd.read_csv(sampled_path)
+        required_columns = {f"{method}_{axis}" for method in display_methods for axis in ("1", "2")}
+        if missing := required_columns.difference(points.columns):
+            raise ValueError(f"Saved points lack display coordinates required for rendering: {sorted(missing)}.")
+        clustered_paths = {
+            n_clusters: args.results_dir / f"{n_clusters}_clusters" / "clustered_wake_points.csv"
+            for n_clusters in cluster_counts
+        }
+        missing_clustered_paths = [path for path in clustered_paths.values() if not path.is_file()]
+        if missing_clustered_paths:
+            raise ValueError(f"--render-only requires {missing_clustered_paths[0]}.")
+        _prepare_output_directory(args.figures_dir, overwrite=args.overwrite)
+        for method in display_methods:
+            _plot(
+                points,
+                method,
+                "source_state",
+                args.figures_dir / f"{method}_source_labels.png",
+                f"{method.upper()} display: source High/Low Alertness labels",
+        )
+        for n_clusters in cluster_counts:
+            clustered = pd.read_csv(clustered_paths[n_clusters])
+            for method in display_methods:
+                _plot(
+                    clustered,
+                    method,
+                    "cluster",
+                    args.figures_dir / f"{n_clusters}_clusters" / f"{method}_clusters.png",
+                    f"{method.upper()} display: {n_clusters}-cluster kNN-graph partition",
+                )
+        print(f"Rerendered {', '.join(display_methods)} figures from {args.results_dir}")
+        return
+    feature_columns = wake_clustering_feature_columns(
+        exclude_ne_features=args.exclude_ne_features
+    )
+    excluded_feature_columns = tuple(
+        column for column in NE_FEATURE_COLUMNS if column not in feature_columns
+    )
+    print(
+        f"Loading {len(feature_columns)}-feature archives and selecting source-labelled Wake seconds...",
+        flush=True,
+    )
     features, archives = load_expanded_feature_archives(args.feature_dir)
     sampled = balanced_wake_sample(
         features, config.max_points_per_source_state_per_recording, config.random_seed
     )
-    values = sampled.loc[:, FEATURE_COLUMNS].to_numpy(dtype=np.float32)
-    print(f"Fitting t-SNE and UMAP display maps on {len(sampled):,} Wake seconds...", flush=True)
-    tsne_points, umap_points = _fit_display_embeddings(values, config)
+    values = sampled.loc[:, feature_columns].to_numpy(dtype=np.float32)
+    print(
+        f"Fitting {', '.join(display_methods)} display map(s) on {len(sampled):,} Wake seconds...",
+        flush=True,
+    )
+    tsne_points, umap_points = _fit_display_embeddings(
+        values, config, include_tsne=not args.umap_only
+    )
     points = sampled.copy()
-    points[["tsne_1", "tsne_2"]] = tsne_points
+    if tsne_points is not None:
+        points[["tsne_1", "tsne_2"]] = tsne_points
     points[["umap_1", "umap_2"]] = umap_points
-    args.results_dir.mkdir(parents=True, exist_ok=True)
+    _prepare_output_directory(args.results_dir, overwrite=args.overwrite)
+    _prepare_output_directory(args.figures_dir, overwrite=args.overwrite)
     points.to_csv(args.results_dir / "sampled_wake_points.csv", index=False)
     (
         points.groupby("source_state", sort=True)
@@ -172,8 +271,14 @@ def main(argv=None):
         .reset_index()
         .to_csv(args.results_dir / "sample_summary.csv", index=False)
     )
-    for method in ("tsne", "umap"):
-        _plot(points, method, "source_state", args.figures_dir / f"{method}_source_labels.png", f"{method.upper()} display: saved Active/Quiet labels")
+    for method in display_methods:
+        _plot(
+            points,
+            method,
+            "source_state",
+            args.figures_dir / f"{method}_source_labels.png",
+            f"{method.upper()} display: source High/Low Alertness labels",
+        )
     graph_audits = {}
     for n_clusters in cluster_counts:
         print(f"Clustering the symmetric {config.knn_neighbors}-nearest-neighbour graph into {n_clusters} groups...", flush=True)
@@ -193,7 +298,7 @@ def main(argv=None):
             .reset_index()
             .to_csv(result_directory / "cluster_by_source_state.csv", index=False)
         )
-        _cluster_feature_medians(clustered).to_csv(
+        _cluster_feature_medians(clustered, feature_columns).to_csv(
             result_directory / "cluster_feature_medians.csv", index=False
         )
         (
@@ -203,7 +308,7 @@ def main(argv=None):
             .reset_index()
             .to_csv(result_directory / "cluster_by_recording.csv", index=False)
         )
-        for method in ("tsne", "umap"):
+        for method in display_methods:
             _plot(
                 clustered, method, "cluster", figure_directory / f"{method}_clusters.png",
                 f"{method.upper()} display: {n_clusters}-cluster kNN-graph partition",
@@ -215,11 +320,23 @@ def main(argv=None):
                 "config": asdict(config),
                 "feature_dir": str(args.feature_dir.resolve()),
                 "archive_files": [path.name for path in archives],
-                "feature_set": FEATURE_SET_NAME,
-                "feature_columns": FEATURE_COLUMNS,
+                "feature_set": (
+                    f"{FEATURE_SET_NAME}_ne_excluded"
+                    if args.exclude_ne_features
+                    else FEATURE_SET_NAME
+                ),
+                "feature_columns": feature_columns,
+                "excluded_feature_columns": excluded_feature_columns,
                 "selected_source_states_before_sampling": WAKE_STATES,
+                "source_state_display_labels": SOURCE_STATE_DISPLAY_LABELS,
+                "source_state_display_colors_rgb": PI_STATE_PALETTE_RGB,
+                "umap_display_axes": {"horizontal": "UMAP 2", "vertical": "UMAP 1"},
+                "display_methods": display_methods,
                 "source_labels_used_for_clustering": False,
-                "clustering_method": "spectral clustering on an unweighted symmetric k-nearest-neighbour graph in 29-dimensional robust-scaled feature space",
+                "clustering_method": (
+                    "spectral clustering on an unweighted symmetric k-nearest-neighbour graph "
+                    f"in {len(feature_columns)}-dimensional robust-scaled feature space"
+                ),
                 "requested_cluster_counts": cluster_counts,
                 "graph_audits": graph_audits,
                 "figures_dir": str(args.figures_dir.resolve()),

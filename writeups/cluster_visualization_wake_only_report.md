@@ -1,27 +1,32 @@
 # Wake-only cluster visualization follow-up
 
-**Status:** completed on 2026-09-18. This is a focused follow-up to
+**Status:** completed on 2026-09-18; presentation updated on 2026-09-21. This
+is a focused follow-up to
 [`cluster_visualization_report.md`](cluster_visualization_report.md), prompted by
-the request to recluster only Active and Quiet Wake with the complete EEG+EMG+NE
-feature set. It does not replace the original all-stage and combined-Wake
-descriptive maps.
+the request to recluster only the two Wake source labels with the complete
+EEG+EMG+NE feature set. It does not replace the original all-stage and
+combined-Wake descriptive maps.
 
 ## Question
 
-Do the full 29-feature vectors of seconds already labelled Active or Quiet Wake
-form recurring groups when those labels are excluded from the clustering step? To
-make this concrete without choosing a single resolution in advance, the same
-full-space k-nearest-neighbour (kNN) graph is partitioned into 3, 4, and 5 groups.
+Do the full 29-feature vectors of seconds already labelled High Alertness or Low
+Alertness form recurring groups when those labels are excluded from the clustering
+step? The same full-space k-nearest-neighbour (kNN) graph is partitioned into 3,
+4, and 5 groups rather than selecting one resolution in advance.
 
-This is a descriptive, label-audited clustering exercise. It asks whether the
-full feature space has Wake organization beyond one compact cloud; it is **not** a
-test of an independently derived Active/Quiet distinction or a claim that each
-partition identifies biological Wake subtypes.
+High Alertness and Low Alertness are PI-facing display names for the pre-existing
+upstream final source labels: score 4 (formerly Active Wake) and score 5 (formerly
+Quiet Wake), respectively. They do not relabel a second or establish an
+independent behavioural measurement.
+
+This is a descriptive, label-audited clustering exercise, not a test of an
+independently derived alertness distinction or a claim that each partition
+identifies biological Wake subtypes.
 
 ## Features
 
-This follow-up uses all 29 saved features: the 22 EEG band-power summaries, five
-EMG summaries, and two NE summaries. It reads the same already
+This follow-up uses all 29 saved features: 22 EEG band-power summaries, five EMG
+summaries, and two NE summaries. It reads the same already
 within-recording-robust-scaled feature archives as the parent report and neither
 reopens raw MAT files nor re-extracts, relabels, or rescales a second. The exact
 feature definitions, including the one-second EEG epoch convention and EMG burst
@@ -29,17 +34,16 @@ definition, are in the parent report's [Features](cluster_visualization_report.m
 [EEG appendix](cluster_visualization_report.md#appendix-eeg-band-power-features),
 and [EMG appendix](cluster_visualization_report.md#appendix-emg-burst-features).
 
-EMG is intentionally retained here. The parent report showed that the conspicuous
+EMG is intentionally retained here. The parent report showed that conspicuous
 Wake geometry was not retained in the EEG+NE-only representation; the present
-question is therefore explicitly about organization in the joint EEG+EMG+NE
-feature space.
+question is explicitly about organization in the joint EEG+EMG+NE feature space.
 
 ## Sampling
 
-Only final-labelled Active Wake and Quiet Wake seconds were eligible. With seed
-`20260918`, the analysis sampled up to 100 seconds **per source label per
-recording** from each of ten feature archives, yielding 2,000 points: 1,000
-source Active Wake and 1,000 source Quiet Wake, each represented in all ten
+Only final-labelled High Alertness and Low Alertness seconds were eligible. With
+seed `20260918`, the analysis sampled up to 100 seconds **per source label per
+recording** from each of ten feature archives, yielding 2,000 points: 1,000 source
+High Alertness and 1,000 source Low Alertness seconds, each represented in all ten
 recordings. This balances source-label representation for the audit and figure;
 the resulting cluster sizes are therefore not estimates of natural state
 prevalence.
@@ -48,7 +52,33 @@ The upstream source label selected and balanced the sample, but it did **not**
 enter the kNN graph or the clustering. It is shown afterward only to assess how
 the unsupervised groups relate to the existing labels.
 
-## kNN-graph clustering and display settings
+## Display labels, palette, and settings
+
+The source-label panels use the following shared PI-facing palette. High and Low
+Alertness use high-saturation colours; muted NREM and REM colours are supplied for
+consistent all-stage figures even though they do not appear in this Wake-only
+report.
+
+| State | RGB | Hex | Use |
+|---|---|---|---|
+| High Alertness | `(227, 26, 28)` | `#E31A1C` | High-saturation red |
+| Low Alertness | `(0, 114, 178)` | `#0072B2` | High-saturation blue |
+| NREM | `(119, 115, 154)` | `#77739A` | Muted purple |
+| REM | `(155, 191, 154)` | `#9BBF9A` | Muted green |
+
+The kNN-cluster panels use separate arbitrary categorical colours: those colours
+identify graph partitions and do not represent alertness labels.
+
+For the requested left-to-right presentation, UMAP 2 is horizontal and UMAP 1 is
+vertical. In the source-label UMAP panel, High Alertness predominates toward the
+right-hand branches and Low Alertness toward the left-hand compact region. t-SNE
+and UMAP are display-only views of the same sampled feature vectors. t-SNE uses
+perplexity 30 and 1,000 iterations; UMAP uses 30 neighbours, `min_dist=0.2`, 200
+epochs, and seed `20260918`. Their axes are unitless learned layout coordinates;
+see the parent report's [dimension-reduction settings](cluster_visualization_report.md#dimension-reduction-settings)
+for the broader presentation context.
+
+## kNN-graph clustering
 
 For the 2,000 sampled 29-dimensional vectors, the analysis constructed an
 unweighted, symmetric 30-nearest-neighbour graph using Euclidean distance in the
@@ -58,39 +88,31 @@ connected component. Spectral clustering of this graph produced the requested
 spectral partitioning—not a supervised kNN classifier and not clustering of a
 t-SNE or UMAP image.
 
-t-SNE and UMAP are display-only views of the same sampled feature vectors. They
-use the parent report's settings except for seed `20260918`: t-SNE has perplexity
-30 and 1,000 iterations; UMAP has 30 neighbours, `min_dist=0.2`, and 200 epochs.
-Their axes are unitless layout coordinates, not physiological variables. See the
-parent report's [dimension-reduction settings](cluster_visualization_report.md#dimension-reduction-settings)
-for the broader presentation context.
-
 ## Results
 
-### Existing Active/Quiet labels on the display maps
+### Existing High/Low Alertness labels on the display maps
 
 The source labels, not used for graph construction or partitioning, occupy a
-similar broad ordering in both displays: most Quiet Wake seconds lie in the
-large lower/left region, whereas Active Wake supplies the rightward and upper
+similar broad ordering in both displays: most Low Alertness seconds lie in the
+large lower/left region, whereas High Alertness supplies the rightward and upper
 branches as well as some of the shared central region. The overlap matters: the
 labels do not map onto two perfectly separated islands.
 
-![t-SNE display coloured by existing source labels](assets/wake_knn_clusters_20260918/tsne_source_labels.png)
+![t-SNE display coloured by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/tsne_source_labels.png)
 
-![UMAP display coloured by existing source labels](assets/wake_knn_clusters_20260918/umap_source_labels.png)
+![UMAP display coloured by existing High/Low Alertness labels](assets/wake_knn_clusters_20260918/umap_source_labels.png)
 
 ### Three groups
 
-| kNN-graph cluster | Seconds | Recordings | Source Active | Source Quiet | Reading |
+| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
-| 1 | 1,763 | 10 | 763 | 1,000 | Broad mixed group containing every sampled Quiet second and 76.3% of sampled Active seconds. |
-| 2 | 111 | 8 | 111 | 0 | Small Active-only extreme. |
-| 3 | 126 | 4 | 126 | 0 | Small Active-only extreme with limited recording recurrence. |
+| 1 | 1,763 | 10 | 763 | 1,000 | Broad mixed group containing every sampled Low Alertness second and 76.3% of sampled High Alertness seconds. |
+| 2 | 111 | 8 | 111 | 0 | Small High-Alertness-only extreme. |
+| 3 | 126 | 4 | 126 | 0 | Small High-Alertness-only extreme with limited recording recurrence. |
 
-At this coarse resolution, the graph separates two compact Active-only ends from
-a broad central population rather than separating all Active and Quiet seconds.
-The broad group includes all Quiet seconds and many Active seconds, so the
-three-group result is not a simple recovery of the two source labels.
+At this coarse resolution, the graph separates two compact High-Alertness-only
+ends from a broad central population rather than separating all High and Low
+Alertness seconds.
 
 ![Three-group t-SNE display](assets/wake_knn_clusters_20260918/3_clusters/tsne_clusters.png)
 
@@ -98,20 +120,18 @@ three-group result is not a simple recovery of the two source labels.
 
 ### Four groups
 
-| kNN-graph cluster | Seconds | Recordings | Source Active | Source Quiet | Reading |
+| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
-| 1 | 1,227 | 10 | 280 | 947 | Quiet-associated broad group. |
-| 2 | 97 | 7 | 97 | 0 | Small Active-only extreme. |
-| 3 | 96 | 3 | 96 | 0 | Small Active-only extreme with limited recording recurrence. |
-| 4 | 580 | 10 | 527 | 53 | Active-associated broad group. |
+| 1 | 1,227 | 10 | 280 | 947 | Low-Alertness-associated broad group. |
+| 2 | 97 | 7 | 97 | 0 | Small High-Alertness-only extreme. |
+| 3 | 96 | 3 | 96 | 0 | Small High-Alertness-only extreme with limited recording recurrence. |
+| 4 | 580 | 10 | 527 | 53 | High-Alertness-associated broad group. |
 
 The four-group partition is the clearest descriptive resolution. It divides the
-former broad group into a Quiet-associated population (77.2% source Quiet) and
-an Active-associated population (90.9% source Active), and both occur in every
-recording. The two smaller Active-only groups remain; one occurs in only three
-recordings. This supports recurring joint-feature organization associated with
-the existing labels, while also showing that the graph has finer local structure
-within the Active-associated region.
+former broad group into a Low-Alertness-associated population (77.2% source Low)
+and a High-Alertness-associated population (90.9% source High), and both occur in
+every recording. The two smaller High-Alertness-only groups remain; one occurs in
+only three recordings.
 
 ![Four-group t-SNE display](assets/wake_knn_clusters_20260918/4_clusters/tsne_clusters.png)
 
@@ -119,21 +139,21 @@ within the Active-associated region.
 
 ### Five groups
 
-| kNN-graph cluster | Seconds | Recordings | Source Active | Source Quiet | Reading |
+| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
-| 1 | 1,227 | 10 | 274 | 953 | Quiet-associated broad group. |
-| 2 | 93 | 3 | 93 | 0 | Rare Active-only extreme. |
-| 3 | 64 | 3 | 64 | 0 | Rare Active-only extreme. |
-| 4 | 464 | 10 | 421 | 43 | Active-associated broad group. |
-| 5 | 152 | 9 | 148 | 4 | Additional Active-associated branch. |
+| 1 | 1,227 | 10 | 274 | 953 | Low-Alertness-associated broad group. |
+| 2 | 93 | 3 | 93 | 0 | Rare High-Alertness-only extreme. |
+| 3 | 64 | 3 | 64 | 0 | Rare High-Alertness-only extreme. |
+| 4 | 464 | 10 | 421 | 43 | High-Alertness-associated broad group. |
+| 5 | 152 | 9 | 148 | 4 | Additional High-Alertness-associated branch. |
 
-At five groups, the Quiet-associated and main Active-associated populations
-remain across all ten recordings. A further Active-associated branch appears in
-nine recordings, but two other Active-only groups now occur in only three
-recordings each. Five groups therefore add descriptive granularity, not a
-predeclared or validated number of Wake states. Cluster numbers are arbitrary
-within each partition and must not be treated as matched identities across the
-three resolutions.
+At five groups, the Low-Alertness-associated and main High-Alertness-associated
+populations remain across all ten recordings. A further High-Alertness-associated
+branch appears in nine recordings, but two other High-Alertness-only groups now
+occur in only three recordings each. Five groups therefore add descriptive
+granularity, not a predeclared or validated number of Wake states. Cluster numbers
+are arbitrary within each partition and must not be treated as matched identities
+across the three resolutions.
 
 ![Five-group t-SNE display](assets/wake_knn_clusters_20260918/5_clusters/tsne_clusters.png)
 
@@ -142,30 +162,28 @@ three resolutions.
 ## Interpretation caveat
 
 The strongest result is modest: in this balanced sample, the joint feature space
-contains a recurring Quiet-associated population and a recurring
-Active-associated population, each represented in all ten recordings at the
-four- and five-group resolutions. The smaller Active-only groups are visually
-compact but have incomplete recording recurrence, so they are not yet defensible
-as general Wake subtypes.
+contains a recurring Low-Alertness-associated population and a recurring
+High-Alertness-associated population, each represented in all ten recordings at
+the four- and five-group resolutions. The smaller High-Alertness-only groups are
+visually compact but have incomplete recording recurrence, so they are not yet
+defensible as general Wake subtypes.
 
-A pure small cluster is not, by itself, evidence that Active and Quiet Wake are
-fully separable. A pure Active-only cluster may have high **purity** but contain
-only a small fraction of all Active seconds; it then describes a distinctive
-Active subset rather than the whole source class. Strong label separation would
-require both purity and **coverage**: collectively, the Active-associated
-clusters would contain essentially every Active second and no Quiet seconds, and
-the Quiet-associated clusters would do the converse. More than two clusters
-would still be compatible with that outcome because either source class could
-have several modes. The present four-group result does not meet this standard:
-the Quiet-associated group contains 947 Quiet and 280 Active seconds, and the
-Active-associated group contains 527 Active and 53 Quiet seconds. It therefore
-shows organized but overlapping source-label populations.
+A pure small cluster is not, by itself, evidence that High and Low Alertness are
+fully separable. A pure High-Alertness-only cluster may have high **purity** but
+contain only a small fraction of all High Alertness seconds; it then describes a
+distinctive subset rather than the whole source class. Strong label separation
+would require both purity and **coverage**: collectively, the High-associated
+clusters would contain essentially every High second and no Low seconds, and the
+Low-associated clusters would do the converse. The present four-group result does
+not meet this standard: the Low-associated group contains 947 Low and 280 High
+seconds, and the High-associated group contains 527 High and 53 Low seconds. It
+therefore shows organized but overlapping source-label populations.
 
-This association is not independent validation of the source labels. Those
-labels were produced upstream from within-recording EMG activity, and this
-analysis deliberately includes five EMG features. It is therefore unsurprising
-that the partitions organize with the labels; the finding should be described as
-an **EMG-associated organization of the joint feature space**, not as proof of
+This association is not independent validation of the source labels. Those labels
+were produced upstream from within-recording EMG activity, and this analysis
+deliberately includes five EMG features. It is therefore unsurprising that the
+partitions organize with the labels; the finding should be described as an
+**EMG-associated organization of the joint feature space**, not as proof of
 distinct Wake biology. The parent report's EMG-free comparison remains the
 critical guardrail: it did not show similarly conspicuous Wake structure.
 
@@ -181,25 +199,30 @@ Before naming a Wake subtype, predeclare a cluster selection and stability rule;
 repeat the graph construction across sensible neighbour counts and seeds; and
 evaluate whether a cluster assignment or classifier trained on one set of
 recordings generalizes to held-out recordings. Representative raw EMG and RMS
-envelope traces should be inspected for the small Active-only groups, along with
-the existing EMG burst-threshold sensitivity work. A non-EMG feature-set check
-should remain part of any claim about Wake physiology rather than movement-linked
-organization.
+envelope traces should be inspected for the small High-Alertness-only groups, along
+with the existing EMG burst-threshold sensitivity work. A non-EMG feature-set
+check should remain part of any claim about Wake physiology rather than
+movement-linked organization.
 
 ## Reproducibility and retained audits
 
-The analysis was generated with:
+The original full-feature analysis is retained under
+`results/wake_knn_clusters_20260918/`. The current source-label styling can be
+rerendered from its saved points and graph assignments without refitting:
 
 ```powershell
-& "C:\Users\yzhao\miniconda3\condabin\conda.bat" run --no-capture-output -n ne_umap python scripts/plot_wake_knn_clusters.py `
-  --feature-dir data/derived_features/features_29 `
-  --results-dir results/wake_knn_clusters_20260918 `
-  --figures-dir writeups/assets/wake_knn_clusters_20260918 `
-  --n-clusters 3 4 5
+conda activate ne_umap
+
+python scripts\plot_wake_knn_clusters.py `
+  --feature-dir data\derived_features\features_29 `
+  --results-dir results\wake_knn_clusters_20260918 `
+  --figures-dir writeups\assets\wake_knn_clusters_20260918 `
+  --n-clusters 3 4 5 `
+  --render-only `
+  --overwrite
 ```
 
-The ignored `results/wake_knn_clusters_20260918/` directory retains the exact
-configuration, sampled point identities, graph audit, per-cluster source-label
-and recording composition, and within-recording robust-scaled feature medians.
-Those medians are an audit for inspecting candidate groups, not 29 separate
-statistical tests.
+The ignored results directory retains the exact configuration, sampled point
+identities, graph audit, per-cluster source-label and recording composition, and
+within-recording robust-scaled feature medians. Those medians are an audit for
+inspecting candidate groups, not 29 separate statistical tests.

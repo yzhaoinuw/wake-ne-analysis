@@ -4,7 +4,9 @@
 
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused
-  `writeups/cluster_visualization_wake_only_report.md` follow-up, and the
+  `writeups/cluster_visualization_wake_only_report.md` follow-up, its
+  `writeups/cluster_visualization_wake_only_report_ne_excluded.md` NE-excluded
+  sensitivity, and the
   source-preserving `writeups/nrem_baseline_cluster_target_report.md` comparison.
   Their committed figures live in the adjacent `writeups/assets/` tree. Do not treat any
   descriptive screen as independent-mouse biological inference.
@@ -33,6 +35,12 @@
   subtype claim. A pure small group establishes only label purity, not full
   Active/Quiet separability; a separability claim also needs near-complete
   source-label coverage without cross-label contamination in held-out recordings.
+- **NE-excluded Wake sensitivity:** removing `ne_mean` and
+  `ne_slope_ols_per_second` leaves 27 EEG+EMG features and closely reproduces the
+  full-feature graph partitions on the same 2,000 points (adjusted Rand 0.978,
+  0.964, and 0.959 for 3, 4, and 5 groups). This is a feature-panel sensitivity
+  result, not evidence that NE is biologically irrelevant or that the
+  EMG-associated alertness organization is independently validated.
 - **Experimental NREM-baseline calibration:** `scripts/calibrate_nrem_baseline.py`
   reimplements the source-preserving NREM-envelope comparison locally and targets
   the three-partition's two Active-only groups (clusters 2 and 3), never t-SNE/UMAP
