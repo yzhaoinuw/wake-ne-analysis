@@ -23,7 +23,7 @@ def test_wake_sampling_balances_source_labels_and_knn_partition_is_reportable():
     rows = []
     rng = np.random.default_rng(4)
     for recording_id in ("r1", "r2"):
-        for source_state, center in (("active_wake", -2.0), ("quiet_wake", 2.0)):
+        for source_state, center in (("high_alertness", -2.0), ("low_alertness", 2.0)):
             for second in range(8):
                 rows.append(
                     {

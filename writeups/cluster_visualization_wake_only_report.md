@@ -11,12 +11,11 @@ combined-Wake descriptive maps.
 
 Do the full 29-feature vectors of seconds already labelled High Alertness or Low
 Alertness form recurring groups when those labels are excluded from the clustering
-step? The same full-space k-nearest-neighbour (kNN) graph is partitioned into 3,
+step? The same full-space k-nearest-neighbor graph is partitioned into 3,
 4, and 5 groups rather than selecting one resolution in advance.
 
-High Alertness and Low Alertness are PI-facing display names for the pre-existing
-upstream final source labels: score 4 (formerly Active Wake) and score 5 (formerly
-Quiet Wake), respectively. They do not relabel a second or establish an
+High Alertness and Low Alertness are the final source labels: score 4 and score 5,
+respectively. The terminology does not relabel a second or establish an
 independent behavioural measurement.
 
 This is a descriptive, label-audited clustering exercise, not a test of an
@@ -54,7 +53,7 @@ the unsupervised groups relate to the existing labels.
 
 ## Display labels, palette, and settings
 
-The source-label panels use the following shared PI-facing palette. High and Low
+The source-label panels use the following shared palette. High and Low
 Alertness use high-saturation colours; muted NREM and REM colours are supplied for
 consistent all-stage figures even though they do not appear in this Wake-only
 report.
@@ -66,27 +65,39 @@ report.
 | NREM | `(119, 115, 154)` | `#77739A` | Muted purple |
 | REM | `(155, 191, 154)` | `#9BBF9A` | Muted green |
 
-The kNN-cluster panels use separate arbitrary categorical colours: those colours
+The spectral-cluster panels use separate arbitrary categorical colours: those colours
 identify graph partitions and do not represent alertness labels.
 
 For the requested left-to-right presentation, UMAP 2 is horizontal and UMAP 1 is
 vertical. In the source-label UMAP panel, High Alertness predominates toward the
 right-hand branches and Low Alertness toward the left-hand compact region. t-SNE
 and UMAP are display-only views of the same sampled feature vectors. t-SNE uses
-perplexity 30 and 1,000 iterations; UMAP uses 30 neighbours, `min_dist=0.2`, 200
+perplexity 30 and 1,000 iterations; UMAP uses 30 neighbors, `min_dist=0.2`, 200
 epochs, and seed `20260918`. Their axes are unitless learned layout coordinates;
 see the parent report's [dimension-reduction settings](cluster_visualization_report.md#dimension-reduction-settings)
 for the broader presentation context.
 
-## kNN-graph clustering
+## Spectral clustering of a k-nearest-neighbor graph
 
-For the 2,000 sampled 29-dimensional vectors, the analysis constructed an
-unweighted, symmetric 30-nearest-neighbour graph using Euclidean distance in the
-saved robust-scaled feature space. That graph had 45,893 undirected edges and one
-connected component. Spectral clustering of this graph produced the requested
-3-, 4-, and 5-group partitions. Thus, “kNN clustering” here means graph-based
-spectral partitioning—not a supervised kNN classifier and not clustering of a
-t-SNE or UMAP image.
+For the 2,000 sampled 29-dimensional vectors, the analysis first computes ordinary
+Euclidean distances in the saved robust-scaled feature space. It connects every
+point to its 30 closest points, then makes the graph **symmetric**: an undirected
+edge is kept when either point selected the other as a nearest neighbor. The source
+High/Low Alertness labels do not enter these distance or edge calculations. The
+resulting unweighted graph had 45,893 edges and one connected component.
+
+Spectral clustering then converts this network structure into groups. It uses the
+graph adjacency and degree structure to obtain a low-dimensional spectral
+representation in which strongly connected points tend to lie together and weakly
+connected regions separate. A final k-means step assigns rows **in that spectral
+representation** to the requested 3, 4, or 5 groups. Therefore this is not k-means
+of the original 29 features, not a supervised kNN classifier, and not clustering
+of t-SNE or UMAP coordinates. “kNN-graph clustering” was a loose shorthand; the
+precise name is spectral clustering of a symmetric k-nearest-neighbor graph.
+
+The specified group count is a display resolution, not a learned or validated
+biological number of Wake states. Cluster integers are arbitrary within each
+resolution.
 
 ## Results
 
@@ -104,7 +115,7 @@ labels do not map onto two perfectly separated islands.
 
 ### Three groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,763 | 10 | 763 | 1,000 | Broad mixed group containing every sampled Low Alertness second and 76.3% of sampled High Alertness seconds. |
 | 2 | 111 | 8 | 111 | 0 | Small High-Alertness-only extreme. |
@@ -120,7 +131,7 @@ Alertness seconds.
 
 ### Four groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,227 | 10 | 280 | 947 | Low-Alertness-associated broad group. |
 | 2 | 97 | 7 | 97 | 0 | Small High-Alertness-only extreme. |
@@ -139,7 +150,7 @@ only three recordings.
 
 ### Five groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,227 | 10 | 274 | 953 | Low-Alertness-associated broad group. |
 | 2 | 93 | 3 | 93 | 0 | Rare High-Alertness-only extreme. |
@@ -196,7 +207,7 @@ not cluster statistics.
 ## Fairer follow-up
 
 Before naming a Wake subtype, predeclare a cluster selection and stability rule;
-repeat the graph construction across sensible neighbour counts and seeds; and
+repeat the graph construction across sensible neighbor counts and seeds; and
 evaluate whether a cluster assignment or classifier trained on one set of
 recordings generalizes to held-out recordings. Representative raw EMG and RMS
 envelope traces should be inspected for the small High-Alertness-only groups, along

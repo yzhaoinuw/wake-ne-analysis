@@ -38,18 +38,18 @@ def test_recording_report_uses_common_interval_and_literal_score_bout_metrics():
     summaries = summarize_recordings(bouts, pd.DataFrame([audit]))
     geometry = pd.DataFrame(
         [
-            {"recording_id": "r1", "state": "active_wake", "n_score_bouts": 1, "bout_duration_median_seconds": 5.0},
-            {"recording_id": "r1", "state": "quiet_wake", "n_score_bouts": 1, "bout_duration_median_seconds": 5.0},
+            {"recording_id": "r1", "state": "high_alertness", "n_score_bouts": 1, "bout_duration_median_seconds": 5.0},
+            {"recording_id": "r1", "state": "low_alertness", "n_score_bouts": 1, "bout_duration_median_seconds": 5.0},
         ]
     )
     results = paired_recording_results(add_score_bout_metrics(summaries, geometry))
-    assert results.loc[results.metric == "score_bout_count", "active_median"].item() == 1
+    assert results.loc[results.metric == "score_bout_count", "high_alertness_median"].item() == 1
 
 
 def test_recording_report_audits_peak_shapes_that_cross_score_boundaries():
     source = recording([0, 1, 5, 4, 1, 0], [4, 4, 4, 5, 5, 5], fs=1, name="crossing")
     bouts, _ = analyze_raw_bouts(source)
-    active = bouts.loc[bouts.state == "active_wake"].iloc[0]
+    active = bouts.loc[bouts.state == "high_alertness"].iloc[0]
     assert active.complete_shape
     assert active.crosses_state_boundary
     assert active.decay20_seconds > active.offset_seconds
@@ -71,9 +71,9 @@ def test_recording_spectral_screen_uses_state_pure_common_interval_windows(tmp_p
         {"ne": np.sin(2 * np.pi * 0.2 * time), "sleep_scores": [4] * 30 + [5] * 30, "ne_frequency": fs},
     )
     _, windows, summaries, paired = analyze_raw_spectra(tmp_path)
-    assert summaries.active_wake_n_windows.item() == 2
-    assert summaries.quiet_wake_n_windows.item() == 2
+    assert summaries.high_alertness_n_windows.item() == 2
+    assert summaries.low_alertness_n_windows.item() == 2
     assert paired.n_recording_pairs.tolist() == [1, 1]
     independent = independent_spectral_window_results(windows)
-    assert independent.n_active_windows.item() == 2
-    assert independent.n_quiet_windows.item() == 2
+    assert independent.n_high_alertness_windows.item() == 2
+    assert independent.n_low_alertness_windows.item() == 2

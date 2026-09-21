@@ -11,10 +11,11 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from wake_ne_analysis.io import load_recording
+from wake_ne_analysis.stages import STAGE_COLORS, STATE_LABELS
 
 
-STATE_NAMES = {"active_wake": "Active Wake", "quiet_wake": "Quiet Wake"}
-STATE_COLORS = {"active_wake": "#E69F00", "quiet_wake": "#56B4E9"}
+STATE_NAMES = {state: STATE_LABELS[state] for state in ("high_alertness", "low_alertness")}
+STATE_COLORS = {state: STAGE_COLORS[state] for state in STATE_NAMES}
 RECORDING_METRICS = [
     ("raw_bout_mean", "Mean NE within wake bout", "processed NE (percentage delta-F/F)"),
     ("score_bout_duration_seconds", "Wake-bout duration", "seconds"),
@@ -50,7 +51,7 @@ def _save(figure, path: Path):
 
 def _state_spans(recording, left: float, right: float):
     """Yield clipped one-second score spans for the illustrative raw-bout trace."""
-    state = np.where(recording.labels == 4, "active_wake", np.where(recording.labels == 5, "quiet_wake", "other"))
+    state = np.where(recording.labels == 4, "high_alertness", np.where(recording.labels == 5, "low_alertness", "other"))
     start = recording.start_time + np.arange(recording.labels.size)
     chosen = (start < right) & (start + 1 > left)
     start, state = start[chosen], state[chosen]
@@ -71,7 +72,7 @@ def choose_raw_peak_example(bouts: pd.DataFrame, recording_id: str, seed: int):
     """Choose a visible Quiet-Wake literal-bout maximum with crossing context."""
     candidates = bouts.loc[
         (bouts.recording_id == recording_id)
-        & (bouts.state == "quiet_wake")
+        & (bouts.state == "low_alertness")
         & bouts.complete_shape
         & bouts.crosses_state_boundary
         & (bouts.bout_duration_seconds >= 5)
@@ -142,7 +143,7 @@ def raw_bout_mean_example_figure(bouts: pd.DataFrame):
     figure.add_trace(
         go.Scatter(
             x=[chosen.peak_seconds], y=[chosen.raw_peak], mode="markers", name="literal within-bout maximum",
-            marker={"color": STATE_COLORS["quiet_wake"], "size": 13, "line": {"color": "white", "width": 2}},
+            marker={"color": STATE_COLORS["low_alertness"], "size": 13, "line": {"color": "white", "width": 2}},
         )
     )
     figure.add_hline(
@@ -168,7 +169,7 @@ def raw_bout_mean_example_figure(bouts: pd.DataFrame):
     )
     figure.add_annotation(
         x=0.5, y=-0.31, xref="paper", yref="paper",
-        text=("Orange = Active Wake; light blue = Quiet Wake; gray = other state. "
+        text=("Red = High Alertness; blue = Low Alertness; gray = other state. "
               "The dashed line is the reported per-bout mean; no local baseline is applied. "
                "The marked literal maximum remains only to anchor the peak-assigned slopes, whose crossings may cross score boundaries."),
         showarrow=False, font={"size": 12, "color": "#52606d"},
@@ -185,16 +186,16 @@ def metric_figure(recordings: pd.DataFrame, results: pd.DataFrame):
         row, column = divmod(index, 3)
         row += 1
         column += 1
-        paired = recordings[["recording_id", f"active_wake_{metric}_median", f"quiet_wake_{metric}_median"]].dropna()
+        paired = recordings[["recording_id", f"high_alertness_{metric}_median", f"low_alertness_{metric}_median"]].dropna()
         result = results.loc[results.metric == metric].iloc[0]
         for _, values in paired.iterrows():
             figure.add_trace(
                 go.Scatter(
-                    x=[STATE_NAMES["active_wake"], STATE_NAMES["quiet_wake"]],
-                    y=[values[f"active_wake_{metric}_median"], values[f"quiet_wake_{metric}_median"]],
+                    x=[STATE_NAMES["high_alertness"], STATE_NAMES["low_alertness"]],
+                    y=[values[f"high_alertness_{metric}_median"], values[f"low_alertness_{metric}_median"]],
                     mode="lines+markers",
                     line={"color": "#9aa5b1", "width": 1.4},
-                    marker={"size": 8, "color": [STATE_COLORS["active_wake"], STATE_COLORS["quiet_wake"]]},
+                    marker={"size": 8, "color": [STATE_COLORS["high_alertness"], STATE_COLORS["low_alertness"]]},
                     customdata=[[values.recording_id], [values.recording_id]],
                     hovertemplate="%{customdata[0]}<br>%{x}: %{y:.4g}<extra></extra>",
                     showlegend=False,
@@ -239,7 +240,7 @@ def independent_bout_metric_figure(bouts: pd.DataFrame, results: pd.DataFrame, s
         result = results.loc[results.metric == metric].iloc[0]
         for state, state_name in STATE_NAMES.items():
             values = bouts.loc[bouts.state == state, metric].dropna().to_numpy()
-            x_center = 0 if state == "active_wake" else 1
+            x_center = 0 if state == "high_alertness" else 1
             figure.add_trace(
                 go.Violin(
                     x=[x_center] * len(values),
@@ -290,7 +291,7 @@ def independent_bout_metric_figure(bouts: pd.DataFrame, results: pd.DataFrame, s
         figure.update_xaxes(
             tickmode="array",
             tickvals=[0, 1],
-            ticktext=[STATE_NAMES["active_wake"], STATE_NAMES["quiet_wake"]],
+            ticktext=[STATE_NAMES["high_alertness"], STATE_NAMES["low_alertness"]],
             range=[-0.5, 1.5],
             row=row,
             col=column,
@@ -312,16 +313,16 @@ def recording_spectral_figure(recordings: pd.DataFrame, results: pd.DataFrame):
 
     figure = make_subplots(rows=1, cols=2, subplot_titles=[label for _, label, _ in SPECTRAL_METRICS])
     for index, (metric, label, unit) in enumerate(SPECTRAL_METRICS, start=1):
-        paired = recordings[["recording_id", f"active_wake_{metric}", f"quiet_wake_{metric}"]].dropna()
+        paired = recordings[["recording_id", f"high_alertness_{metric}", f"low_alertness_{metric}"]].dropna()
         result = results.loc[results.metric == metric].iloc[0]
         for _, values in paired.iterrows():
             figure.add_trace(
                 go.Scatter(
-                    x=[STATE_NAMES["active_wake"], STATE_NAMES["quiet_wake"]],
-                    y=[values[f"active_wake_{metric}"], values[f"quiet_wake_{metric}"],],
+                    x=[STATE_NAMES["high_alertness"], STATE_NAMES["low_alertness"]],
+                    y=[values[f"high_alertness_{metric}"], values[f"low_alertness_{metric}"],],
                     mode="lines+markers",
                     line={"color": "#9aa5b1", "width": 1.4},
-                    marker={"size": 8, "color": [STATE_COLORS["active_wake"], STATE_COLORS["quiet_wake"]]},
+                    marker={"size": 8, "color": [STATE_COLORS["high_alertness"], STATE_COLORS["low_alertness"]]},
                     customdata=[[values.recording_id], [values.recording_id]],
                     hovertemplate="%{customdata[0]}<br>%{x}: %{y:.4g}<extra></extra>",
                     showlegend=False,
@@ -332,7 +333,7 @@ def recording_spectral_figure(recordings: pd.DataFrame, results: pd.DataFrame):
         if metric == "dominant_frequency_hz":
             edge_count = int(
                 np.isclose(
-                    paired[[f"active_wake_{metric}", f"quiet_wake_{metric}"]].to_numpy(), 0.2
+                    paired[[f"high_alertness_{metric}", f"low_alertness_{metric}"]].to_numpy(), 0.2
                 ).sum()
             )
             annotation = (
@@ -377,7 +378,7 @@ def independent_spectral_window_figure(windows: pd.DataFrame, results: pd.DataFr
     figure = go.Figure()
     for state, state_name in STATE_NAMES.items():
         values = windows.loc[windows.state == state, "band_power"].dropna().to_numpy()
-        x_center = 0 if state == "active_wake" else 1
+        x_center = 0 if state == "high_alertness" else 1
         figure.add_trace(
             go.Violin(
                 x=[x_center] * len(values),
@@ -418,7 +419,7 @@ def independent_spectral_window_figure(windows: pd.DataFrame, results: pd.DataFr
     figure.update_xaxes(
         tickmode="array",
         tickvals=[0, 1],
-        ticktext=[STATE_NAMES["active_wake"], STATE_NAMES["quiet_wake"]],
+        ticktext=[STATE_NAMES["high_alertness"], STATE_NAMES["low_alertness"]],
         range=[-0.5, 1.5],
     )
     figure.update_yaxes(title="15 s 0.20–0.30 Hz band power (percentage points²)")

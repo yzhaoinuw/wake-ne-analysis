@@ -42,4 +42,4 @@ def test_cluster_feature_archives_store_documented_features_and_burst_metadata(t
         assert archive["X"].shape == (seconds, 29)
         assert tuple(archive["feature_names"].tolist()) == FEATURE_COLUMNS
 
-    assert STAGE_COLORS["active_wake"] == "#E69F00"
+    assert STAGE_COLORS["high_alertness"] == "#E31A1C"

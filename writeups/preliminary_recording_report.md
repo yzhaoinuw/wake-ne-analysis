@@ -1,4 +1,4 @@
-# Preliminary recording-level report: NE during Active and Quiet Wake
+# Preliminary recording-level report: NE during High and Low Alertness
 
 **Status:** descriptive ten-recording analysis, 2026-09-17. This report replaces
 the archived 2026-09-16 cohort drafts for the current input set. Each MAT file
@@ -9,13 +9,13 @@ therefore useful recording units, but not independent biological animals.
 ## Executive summary
 
 - All 10 supplied MAT files contributed. Final one-second labels were read unchanged:
-  Active Wake is 4 and Quiet Wake is 5.
+  High Alertness is 4 and Low Alertness is 5.
 - The recording-level signal measure is the **mean saved processed NE within each
   scored bout**, not the within-bout maximum. Active and Quiet median file summaries
   were 1.590 (IQR 0.565–2.148) and 1.604 (0.321–2.146) percentage delta-F/F,
   respectively (paired Wilcoxon p = 0.557). This screen does not establish a
   mean-NE difference.
-- Wake bouts were shorter in Quiet Wake: file-median duration 4 s (3–4) in
+- Wake bouts were shorter in Low Alertness: file-median duration 4 s (3–4) in
   Active versus 2 s (1.25–2) in Quiet (p = 0.00391). File-median bout counts were
   222 (152.5–396.5) and 226.5 (147.5–396.0; p = 0.164).
 - The pooled-bout table and plot intentionally omit mean NE. Different recordings
@@ -31,7 +31,7 @@ Values are median (interquartile range). The first table summarizes one median p
 state per MAT file, then compares the matched summaries. Its Wilcoxon values are
 recording-level screens, not independent-mouse inference.
 
-| Reported measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
+| Reported measure | High Alertness | Low Alertness | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
 | Mean processed NE within wake bout (percentage delta-F/F) | 1.590 (0.565–2.148) | 1.604 (0.321–2.146) | n = 10 | 0.557; no nominal recording-level difference |
 | **Wake-bout duration (s)** | **4 (3–4)** | **2 (1.25–2)** | n = 10 | 0.00391; median bout duration within each file, then paired across files |
@@ -48,7 +48,7 @@ The next table deliberately disregards recording and mouse/session membership. I
 contains no pooled mean-NE comparison. Its Mann–Whitney values describe available
 bouts only and must not be used as biological inference.
 
-| Reported measure | Active Wake | Quiet Wake | Active observations | Quiet observations | Nominal Mann–Whitney p-value |
+| Reported measure | High Alertness | Low Alertness | High observations | Low observations | Nominal Mann–Whitney p-value |
 |---|---:|---:|---:|---:|---:|
 | **Wake-bout duration (s)** | **4 (2–10)** | **1 (1–3)** | 2,871 | 2,904 | 9.37 × 10⁻¹⁷⁴ |
 | Zero-referenced, peak-anchored 20–80% NE rise slope (percentage points/s)† | 0.0627 (0.0114–0.3149) | 0.0528 (0.0095–0.2660) | 2,198 | 2,129 | 0.00727 |
@@ -56,14 +56,14 @@ bouts only and must not be used as biological inference.
 
 ### Wake-bout duration and count
 
-Each uninterrupted sequence of seconds labelled Active Wake or Quiet Wake is one
+Each uninterrupted sequence of seconds labelled High Alertness or Low Alertness is one
 wake bout. This table is a direct description of those labels: it does not use the
 NE waveform. “Total duration” means all seconds assigned to that state across the ten
 recordings; “total number of bouts” is the number of uninterrupted sequences; and
 the two duration rows distinguish all bouts pooled together from one typical duration
 per recording.
 
-| Wake-bout summary | Active Wake | Quiet Wake | What it means |
+| Wake-bout summary | High Alertness | Low Alertness | What it means |
 |---|---:|---:|---|
 | Total duration in state (s) | 30,497 | 7,623 | Quiet is 20.0% of all labelled Wake time |
 | Total number of wake bouts | 2,871 | 2,904 | Similar counts do not mean equal time in state |
@@ -73,7 +73,7 @@ per recording.
 The short-window spectrum uses each file's common labelled interval and non-overlapping
 15-second state-pure windows in the 0.20–0.30 Hz band.
 
-| Short-window spectral measure | Active Wake | Quiet Wake | Recording pairs | p-value / interpretation |
+| Short-window spectral measure | High Alertness | Low Alertness | Recording pairs | p-value / interpretation |
 |---|---:|---:|---:|---|
 | 15 s 0.20–0.30 Hz band power (percentage points²) | 0.00690 (0.00386–0.01545) | 0.00607 (0.00421–0.01506) | n = 10 | 0.922; no nominal recording-level difference |
 | Frequency maximum in that band (Hz) | 0.20 (0.20–0.20) | 0.20 (0.20–0.275) | n = 10 | Not interpretable; all 20 values are band edges |
@@ -85,14 +85,14 @@ replace the recording-level result.
 
 ## Methodology
 
-### Sleep scoring and Active/Quiet Wake labels
+### Sleep scoring and High/Low Alertness labels
 
 This analysis consumes final one-second `sleep_scores` without relabeling them. The
 current upstream method detrends raw EMG, band-pass filters it from 20 Hz to the lower
 of 200 Hz or 45% of sampling rate, then calculates one true RMS value for each score
 second. Within a recording, remaining Wake seconds are ranked by RMS; the
 highest-ranked seconds become Active until the final recording targets 80% Active and
-20% Quiet Wake. Explicit manual labels remain authoritative. This is a relative
+20% Low Alertness. Explicit manual labels remain authoritative. This is a relative
 within-recording EMG-activity split, not an absolute calibrated movement measure.
 
 ### Recordings, grouping, and input handling
@@ -149,7 +149,7 @@ edge maxima are unresolved rather than rhythms.
 ### Paired recording summaries
 
 Figure 2 shows all ten file-level Active/Quiet pairs. The within-bout mean-NE panel
-has no nominal difference. Duration is shorter in Quiet Wake, while the number of
+has no nominal difference. Duration is shorter in Low Alertness, while the number of
 wake bouts has no nominal paired difference. Slope panels retain their contextual
 interpretation.
 
@@ -194,7 +194,7 @@ than independent replication.
 ## Interpretation for the proposal
 
 The refreshed screen did not establish a systematic difference in mean processed NE
-within scored bouts. That is not evidence of biological equality. Quiet Wake score
+within scored bouts. That is not evidence of biological equality. Low Alertness score
 runs are shorter and more fragmented under the supplied relative EMG-label method;
 their counts remain comparable because fragmentation creates many short runs.
 

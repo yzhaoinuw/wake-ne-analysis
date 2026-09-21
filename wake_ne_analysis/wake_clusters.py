@@ -1,4 +1,4 @@
-"""Wake-only sampling and k-nearest-neighbour graph clustering utilities."""
+"""Wake-only sampling and spectral clustering of a k-nearest-neighbor graph."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .cluster_features import FEATURE_COLUMNS, FEATURE_SET_NAME
 from .stages import LABEL_NAMES
 
 
-WAKE_STATES = ("active_wake", "quiet_wake")
+WAKE_STATES = ("high_alertness", "low_alertness")
 NE_FEATURE_COLUMNS = tuple(column for column in FEATURE_COLUMNS if column.startswith("ne_"))
 
 
@@ -72,7 +72,7 @@ def balanced_wake_sample(
         raise ValueError("max_points_per_source_state_per_recording must be positive.")
     wake = features.loc[features.source_state.isin(WAKE_STATES)].copy()
     if wake.empty:
-        raise ValueError("No Active or Quiet Wake rows are available.")
+        raise ValueError("No High or Low Alertness rows are available.")
     rng = np.random.default_rng(random_seed)
     selected = []
     for _, group in wake.groupby(["recording_id", "source_state"], sort=True):
@@ -82,7 +82,7 @@ def balanced_wake_sample(
 
 
 def symmetric_knn_graph(values: np.ndarray, n_neighbors: int):
-    """Return an unweighted symmetric kNN graph and auditable graph diagnostics."""
+    """Return an unweighted symmetric k-nearest-neighbor graph and diagnostics."""
     from scipy.sparse.csgraph import connected_components
     from sklearn.neighbors import kneighbors_graph
 
@@ -108,7 +108,7 @@ def symmetric_knn_graph(values: np.ndarray, n_neighbors: int):
 def knn_spectral_clusters(
     values: np.ndarray, n_neighbors: int, n_clusters: int, random_seed: int
 ) -> tuple[np.ndarray, dict]:
-    """Partition a symmetric kNN graph; returned labels are one-based for reporting."""
+    """Spectrally partition a symmetric k-nearest-neighbor graph for reporting."""
     from sklearn.cluster import SpectralClustering
 
     if not 2 <= n_clusters < len(values):

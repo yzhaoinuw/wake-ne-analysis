@@ -7,8 +7,8 @@ It does not replace the saved labels or the prior clustering result.
 ## Question
 
 Can a stricter, NREM-referenced EMG rule label the two compact Active-only ends
-of the existing three-group Wake partition as Active Wake, while leaving the
-broad mixed group Quiet Wake?
+of the existing three-group Wake partition as High Alertness, while leaving the
+broad mixed group Low Alertness?
 
 This is a source-preserving algorithm comparison. The three-group graph was held
 fixed as the target, and no t-SNE or UMAP coordinate was used to choose a rule.
@@ -158,7 +158,7 @@ T(m) = Q_{0.75}(E_{\mathrm{NREM}}) + m \times 1.4826 \times
 \operatorname{MAD}(E_{\mathrm{NREM}}).
 \]
 
-Only bins in existing coarse Wake (the union of saved Active and Quiet Wake) are
+Only bins in existing coarse Wake (the union of saved High and Low Alertness) are
 eligible. Above-threshold gaps of at most 0.5 seconds are joined; runs shorter
 than one second are removed. A one-second Wake interval is experimentally Active
 when at least half of its twenty envelope bins remain active. All other existing

@@ -9,8 +9,8 @@ and combined Wake only. The prior four-feature report is retained at
 
 Each point is one final-labelled second from the same ten recordings. t-SNE and
 UMAP are fit without labels; labels are used only after fitting to colour the
-all-stage figures. The combined-Wake figures intentionally hide the Active/Quiet
-subdivision to ask whether the broader Wake population itself shows visible internal
+all-stage figures. The combined-Wake figures intentionally hide the High/Low
+Alertness subdivision to ask whether the broader Wake population itself shows visible internal
 geometry. These are descriptive maps, not a formal cluster test or an inference
 about independent biological observations.
 
@@ -37,22 +37,29 @@ wideband panel, and NE slope remain provisional feature engineering choices.
 The seed is `20260917`; each run caps sampling at 100 seconds per available
 analysis label per recording. MA was removed **before** sampling and fitting.
 
-- **All stages except MA:** 4,000 points: 1,000 each NREM, REM, Active Wake, and
-  Quiet Wake, from all ten recordings.
+- **All stages except MA:** 4,000 points: 1,000 each NREM, REM, High Alertness,
+  and Low Alertness, from all ten recordings.
 - **Combined Wake:** 1,000 points: up to 100 Wake seconds from each recording.
-  Active/Quiet labels were combined before sampling and fitting. The retained audit
-  field contains 797 source Active-Wake and 203 source Quiet-Wake seconds; that
+  High/Low Alertness labels were combined before sampling and fitting. The retained audit
+  field contains 797 source High-Alertness and 203 source Low-Alertness seconds; that
   80/20 composition is intentional rather than a label-balanced comparison.
 
-The stage colours retain the upstream contract: NREM `#FB7C7C`, REM `#7BFB7B`,
-Active Wake `#E69F00`, and Quiet Wake `#56B4E9`. Combined Wake is neutral grey.
+The shared palette is listed explicitly below. High and Low Alertness are
+saturated; NREM and REM are muted. Combined Wake is neutral grey.
+
+| State | RGB | Hex |
+|---|---|---|
+| High Alertness | `(227, 26, 28)` | `#E31A1C` |
+| Low Alertness | `(0, 114, 178)` | `#0072B2` |
+| NREM | `(119, 115, 154)` | `#77739A` |
+| REM | `(155, 191, 154)` | `#9BBF9A` |
 
 ## Dimension-reduction settings
 
 | Method | Settings |
 |---|---|
 | t-SNE | Two dimensions; perplexity 30; standard initialization; automatic learning rate; 1,000 iterations; seed `20260917`; Barnes-Hut optimization. |
-| UMAP | Two dimensions; Euclidean distance; 30 neighbours; `min_dist=0.2`; 200 epochs; seed `20260917`; one worker. |
+| UMAP | Two dimensions; Euclidean distance; 30 neighbors; `min_dist=0.2`; 200 epochs; seed `20260917`; one worker. |
 
 t-SNE and UMAP axes are unitless learned layout coordinates: origin, direction,
 and rotation have no physiological meaning.
@@ -66,11 +73,11 @@ and rotation have no physiological meaning.
 ![All-feature UMAP](assets/expanded_embedding/all_features_all_stages_no_ma/umap.png)
 
 Both nonlinear maps organize the broad sleep stages. REM and NREM occupy largely
-different regions, while Active Wake forms the most conspicuous Wake-associated
-branch/region. Quiet Wake lies mainly between or alongside NREM and Active Wake,
+different regions, while High Alertness forms the most conspicuous Wake-associated
+branch/region. Low Alertness lies mainly between or alongside NREM and High Alertness,
 with substantial overlap rather than a similarly isolated island. This is a
 descriptive organization of the full feature set, not independent validation of the
-Active/Quiet split because that set includes five EMG features related to the
+High/Low Alertness split because that set includes five EMG features related to the
 upstream Wake subdivision.
 
 ### All 29 features: combined Wake
@@ -86,7 +93,7 @@ observation that the full feature space contains Wake variation, but it does **n
 establish discrete Wake subclusters: no cluster number, density threshold, stability
 rule, or recording-level replication criterion was predeclared. Given the inclusion
 of EMG RMS and burst features, the visible structure could primarily reflect the
-same muscle-activity continuum used to derive Active and Quiet Wake.
+same muscle-activity continuum used to derive High and Low Alertness.
 
 ### EEG + NE only: all stages except MA
 
@@ -94,9 +101,9 @@ same muscle-activity continuum used to derive Active and Quiet Wake.
 
 ![No-EMG UMAP](assets/expanded_embedding/no_emg_all_stages_no_ma/umap.png)
 
-REM and NREM remain visibly organized in these EMG-free maps. In contrast, Active
-and Quiet Wake are broadly intermingled in their shared region in both projections;
-the distinct Active-Wake branch seen in the all-feature panels is not retained.
+REM and NREM remain visibly organized in these EMG-free maps. In contrast, High and
+Low Alertness are broadly intermingled in their shared region in both projections;
+the distinct High-Alertness branch seen in the all-feature panels is not retained.
 Removing EMG therefore removes the most conspicuous Wake-label organization while
 preserving broad sleep-state structure.
 
@@ -114,7 +121,7 @@ particular one-second EEG+NE representation and these t-SNE/UMAP settings.
 
 ## Interpretation caveat
 
-The saved Active/Quiet labels were generated upstream from within-recording EMG
+The saved High/Low Alertness labels were generated upstream from within-recording EMG
 activity. Thus the all-feature panels are expected to express variation associated
 with that label rule, and cannot independently prove distinct Wake biology. The
 EMG-free panels are less circular, but their 22 wide EEG bands are correlated

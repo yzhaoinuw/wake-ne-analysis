@@ -45,6 +45,6 @@ def test_nrem_baseline_calibration_uses_target_bearing_recording_f1(tmp_path, mo
     assert selection["selected_multiplier"] == 1.0
     assert summary.loc[summary.multiplier == 1.0, "macro_target_recording_f1"].item() == 1.0
     assert detail.true_positive.sum() == 2
-    assert predictions.experimental_active_wake.sum() == 2
-    assert detail.experimental_active_wake_seconds.sum() == 2
-    assert detail.experimental_quiet_wake_seconds.sum() == 2
+    assert predictions.experimental_high_alertness.sum() == 2
+    assert detail.experimental_high_alertness_seconds.sum() == 2
+    assert detail.experimental_low_alertness_seconds.sum() == 2

@@ -49,7 +49,7 @@ multiple requested changes need a body.
 
 ## Scientific Invariants
 
-- Final `sleep_scores`: 4 Active Wake, 5 Quiet Wake; one label per second.
+- Final `sleep_scores`: 4 High Alertness, 5 Low Alertness; one label per second.
 - `ne` is processed percentage delta-F/F. Use its saved rate and `start_time`.
 - Equal-length windows are for spectra only. NE signal elevation episodes retain natural boundaries.
 - Never join disjoint bouts or bridge invalid NE to manufacture usable duration.

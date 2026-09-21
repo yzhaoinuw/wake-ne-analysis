@@ -2,10 +2,29 @@
 
 ## 2026-09-21
 
+### Standardize High/Low Alertness terminology and spectral-clustering language (Codex GPT-5; effort/tokens not reported)
+
+- Made High Alertness / Low Alertness the sole current internal and reader-facing
+  names for final score values 4 / 5. The numeric labels and their provenance are
+  unchanged; current code, generated-table schemas, tests, reports, and recording
+  figure renderer now use the standardized names.
+- Updated the shared palette to High Alertness RGB `(227, 26, 28)` / `#E31A1C`,
+  Low Alertness `(0, 114, 178)` / `#0072B2`, NREM `(119, 115, 154)` / `#77739A`,
+  and REM `(155, 191, 154)` / `#9BBF9A`. Rerendered committed cluster figures
+  from existing saved coordinates only; no t-SNE, UMAP, or graph fit was rerun.
+- Replaced ambiguous “kNN-graph clustering” language with spectral clustering of
+  a symmetric k-nearest-neighbor graph. Its final `assign_labels="kmeans"`
+  implementation step is only spectral-embedding discretization, not k-means
+  clustering of the observations.
+- Verification:
+  - Inspected the rerendered all-stage and Wake-only UMAP panels.
+  - Focused tests passed: `7 passed, 1 skipped` in `sleep_scoring_dash3.0`.
+  - Both plotting CLIs accepted the updated `--render-only` interface in `ne_umap`.
+
 ### Present PI-facing alertness palette and NE-excluded Wake sensitivity (Codex GPT-5; effort/tokens not reported)
 
-- Renamed only the PI-facing source-label display language from Active/Quiet Wake
-  to High/Low Alertness; final score values 4/5, sampling, and source audits remain
+- Standardized source-label language as High/Low Alertness; final score values
+  4/5, sampling, and source audits remain
   unchanged. The Wake report now supplies the shared RGB palette and uses UMAP 2
   horizontally with UMAP 1 vertically.
 - The user-generated matched 27-feature EEG+EMG UMAP run excludes only `ne_mean`

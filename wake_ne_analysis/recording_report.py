@@ -166,28 +166,28 @@ def paired_recording_results(summaries: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for metric in RECORDING_METRICS:
         if (
-            f"active_wake_{metric}_median" not in summaries
-            or f"quiet_wake_{metric}_median" not in summaries
+            f"high_alertness_{metric}_median" not in summaries
+            or f"low_alertness_{metric}_median" not in summaries
         ):
             continue
-        active = summaries[f"active_wake_{metric}_median"]
-        quiet = summaries[f"quiet_wake_{metric}_median"]
-        paired = pd.DataFrame({"active": active, "quiet": quiet}).dropna()
-        active_median, active_lower, active_upper = _median_iqr(paired.active)
-        quiet_median, quiet_lower, quiet_upper = _median_iqr(paired.quiet)
+        high = summaries[f"high_alertness_{metric}_median"]
+        low = summaries[f"low_alertness_{metric}_median"]
+        paired = pd.DataFrame({"high": high, "low": low}).dropna()
+        high_median, high_lower, high_upper = _median_iqr(paired.high)
+        low_median, low_lower, low_upper = _median_iqr(paired.low)
         p_value = np.nan
-        if len(paired) and not (paired.active - paired.quiet).eq(0).all():
-            p_value = float(wilcoxon(paired.active, paired.quiet, alternative="two-sided", method="auto").pvalue)
+        if len(paired) and not (paired.high - paired.low).eq(0).all():
+            p_value = float(wilcoxon(paired.high, paired.low, alternative="two-sided", method="auto").pvalue)
         rows.append(
             {
                 "metric": metric,
                 "n_recording_pairs": len(paired),
-                "active_median": active_median,
-                "active_iqr_lower": active_lower,
-                "active_iqr_upper": active_upper,
-                "quiet_median": quiet_median,
-                "quiet_iqr_lower": quiet_lower,
-                "quiet_iqr_upper": quiet_upper,
+                "high_alertness_median": high_median,
+                "high_alertness_iqr_lower": high_lower,
+                "high_alertness_iqr_upper": high_upper,
+                "low_alertness_median": low_median,
+                "low_alertness_iqr_lower": low_lower,
+                "low_alertness_iqr_upper": low_upper,
                 "p_value": p_value,
             }
         )
@@ -203,24 +203,24 @@ def independent_bout_results(bouts: pd.DataFrame) -> pd.DataFrame:
     """
     rows = []
     for metric in INDEPENDENT_BOUT_METRICS:
-        active = bouts.loc[bouts.state == "active_wake", metric].dropna()
-        quiet = bouts.loc[bouts.state == "quiet_wake", metric].dropna()
-        active_median, active_lower, active_upper = _median_iqr(active)
-        quiet_median, quiet_lower, quiet_upper = _median_iqr(quiet)
+        high = bouts.loc[bouts.state == "high_alertness", metric].dropna()
+        low = bouts.loc[bouts.state == "low_alertness", metric].dropna()
+        high_median, high_lower, high_upper = _median_iqr(high)
+        low_median, low_lower, low_upper = _median_iqr(low)
         p_value = np.nan
-        if len(active) and len(quiet):
-            p_value = float(mannwhitneyu(active, quiet, alternative="two-sided", method="auto").pvalue)
+        if len(high) and len(low):
+            p_value = float(mannwhitneyu(high, low, alternative="two-sided", method="auto").pvalue)
         rows.append(
             {
                 "metric": metric,
-                "n_active_bouts": len(active),
-                "n_quiet_bouts": len(quiet),
-                "active_median": active_median,
-                "active_iqr_lower": active_lower,
-                "active_iqr_upper": active_upper,
-                "quiet_median": quiet_median,
-                "quiet_iqr_lower": quiet_lower,
-                "quiet_iqr_upper": quiet_upper,
+                "n_high_alertness_bouts": len(high),
+                "n_low_alertness_bouts": len(low),
+                "high_alertness_median": high_median,
+                "high_alertness_iqr_lower": high_lower,
+                "high_alertness_iqr_upper": high_upper,
+                "low_alertness_median": low_median,
+                "low_alertness_iqr_lower": low_lower,
+                "low_alertness_iqr_upper": low_upper,
                 "p_value": p_value,
             }
         )
@@ -231,24 +231,24 @@ def _paired_results(summaries: pd.DataFrame, metrics: tuple[str, ...]) -> pd.Dat
     """Calculate paired recording screens for specified state-summary metrics."""
     rows = []
     for metric in metrics:
-        active = summaries[f"active_wake_{metric}"]
-        quiet = summaries[f"quiet_wake_{metric}"]
-        paired = pd.DataFrame({"active": active, "quiet": quiet}).dropna()
-        active_median, active_lower, active_upper = _median_iqr(paired.active)
-        quiet_median, quiet_lower, quiet_upper = _median_iqr(paired.quiet)
+        high = summaries[f"high_alertness_{metric}"]
+        low = summaries[f"low_alertness_{metric}"]
+        paired = pd.DataFrame({"high": high, "low": low}).dropna()
+        high_median, high_lower, high_upper = _median_iqr(paired.high)
+        low_median, low_lower, low_upper = _median_iqr(paired.low)
         p_value = np.nan
-        if len(paired) and not (paired.active - paired.quiet).eq(0).all():
-            p_value = float(wilcoxon(paired.active, paired.quiet, alternative="two-sided", method="auto").pvalue)
+        if len(paired) and not (paired.high - paired.low).eq(0).all():
+            p_value = float(wilcoxon(paired.high, paired.low, alternative="two-sided", method="auto").pvalue)
         rows.append(
             {
                 "metric": metric,
                 "n_recording_pairs": len(paired),
-                "active_median": active_median,
-                "active_iqr_lower": active_lower,
-                "active_iqr_upper": active_upper,
-                "quiet_median": quiet_median,
-                "quiet_iqr_lower": quiet_lower,
-                "quiet_iqr_upper": quiet_upper,
+                "high_alertness_median": high_median,
+                "high_alertness_iqr_lower": high_lower,
+                "high_alertness_iqr_upper": high_upper,
+                "low_alertness_median": low_median,
+                "low_alertness_iqr_lower": low_lower,
+                "low_alertness_iqr_upper": low_upper,
                 "p_value": p_value,
             }
         )
@@ -283,24 +283,24 @@ def independent_spectral_window_results(windows: pd.DataFrame) -> pd.DataFrame:
     """Describe spectral windows while explicitly ignoring their recording hierarchy."""
     rows = []
     for metric in ("band_power",):
-        active = windows.loc[windows.state == "active_wake", metric].dropna()
-        quiet = windows.loc[windows.state == "quiet_wake", metric].dropna()
-        active_median, active_lower, active_upper = _median_iqr(active)
-        quiet_median, quiet_lower, quiet_upper = _median_iqr(quiet)
+        high = windows.loc[windows.state == "high_alertness", metric].dropna()
+        low = windows.loc[windows.state == "low_alertness", metric].dropna()
+        high_median, high_lower, high_upper = _median_iqr(high)
+        low_median, low_lower, low_upper = _median_iqr(low)
         p_value = np.nan
-        if len(active) and len(quiet):
-            p_value = float(mannwhitneyu(active, quiet, alternative="two-sided", method="auto").pvalue)
+        if len(high) and len(low):
+            p_value = float(mannwhitneyu(high, low, alternative="two-sided", method="auto").pvalue)
         rows.append(
             {
                 "metric": metric,
-                "n_active_windows": len(active),
-                "n_quiet_windows": len(quiet),
-                "active_median": active_median,
-                "active_iqr_lower": active_lower,
-                "active_iqr_upper": active_upper,
-                "quiet_median": quiet_median,
-                "quiet_iqr_lower": quiet_lower,
-                "quiet_iqr_upper": quiet_upper,
+                "n_high_alertness_windows": len(high),
+                "n_low_alertness_windows": len(low),
+                "high_alertness_median": high_median,
+                "high_alertness_iqr_lower": high_lower,
+                "high_alertness_iqr_upper": high_upper,
+                "low_alertness_median": low_median,
+                "low_alertness_iqr_lower": low_lower,
+                "low_alertness_iqr_upper": low_upper,
                 "p_value": p_value,
             }
         )

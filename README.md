@@ -2,13 +2,13 @@
 
 Reproducible analyses behind two current descriptive PI-facing writeups:
 
-- [Recording-level Active/Quiet Wake report](writeups/preliminary_recording_report.md)
+- [Recording-level High/Low Alertness report](writeups/preliminary_recording_report.md)
 - [EEG/EMG/NE cluster visualization report](writeups/cluster_visualization_report.md)
 - [NREM-baseline Wake-labeling cluster-target follow-up](writeups/nrem_baseline_cluster_target_report.md)
 
 Raw MATLAB files, derived feature archives, and CSV/JSON run outputs are deliberately
-local and ignored. Final one-second `sleep_scores` are read unchanged: Active Wake is
-4 and Quiet Wake is 5.
+local and ignored. Final one-second `sleep_scores` are read unchanged: High
+Alertness is 4 and Low Alertness is 5.
 
 ## Reproduce the current writeups
 
@@ -32,7 +32,8 @@ cluster report for the four reported combinations and interpretation limits.
 The `nrem-baseline` experiment keeps source MAT files unchanged.  It derives a
 recording-specific 20 Hz EMG envelope, anchors its threshold to the NREM 75th
 percentile plus a shared robust-SD multiplier, and tests that multiplier only
-against pre-existing kNN graph-cluster assignments—not t-SNE or UMAP coordinates.
+against pre-existing spectral partitions of a k-nearest-neighbor graph—not t-SNE
+or UMAP coordinates.
 
 ```powershell
 python scripts/calibrate_nrem_baseline.py --input-dir data --clustered-points results/wake_knn_clusters_20260918/3_clusters/clustered_wake_points.csv --target-clusters 2 3 --output-dir results/nrem_baseline_calibration

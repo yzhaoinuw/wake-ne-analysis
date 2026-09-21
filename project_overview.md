@@ -6,7 +6,7 @@ comparison. It does not contain raw MAT files or saved feature matrices.
 
 | Current workflow | Command entry point | Core modules |
 |---|---|---|
-| Recording-level Active/Quiet Wake report | `build_recording_report.py`, then `render_recording_report_figures.py` | `recording_report.py`, `io.py`, `spectra.py`, `config.py` |
+| Recording-level High/Low Alertness report | `build_recording_report.py`, then `render_recording_report_figures.py` | `recording_report.py`, `io.py`, `spectra.py`, `config.py` |
 | EEG/EMG/NE cluster visualization | `extract_cluster_features.py`, then `plot_cluster_embeddings.py` | `cluster_features.py`, `stages.py` |
 | Experimental NREM-baseline Wake calibration | `calibrate_nrem_baseline.py` | `nrem_baseline.py` |
 
@@ -16,8 +16,8 @@ MAT files, CSV/JSON outputs, and feature archives remain ignored under `data/`,
 examples, reports, and figures for provenance; it is not part of the maintained
 workflow.
 
-Final one-second `sleep_scores` are read without relabeling: Active Wake is 4 and
-Quiet Wake is 5. The cluster maps are descriptive; use the caveats in the cluster
+Final one-second `sleep_scores` are read without relabeling: High Alertness is 4
+and Low Alertness is 5. The cluster maps are descriptive; use the caveats in the cluster
 writeup before interpreting visible geometry as a biological subtype.
 
 The NREM-baseline command is deliberately an experimental, source-preserving

@@ -1,4 +1,4 @@
-"""Cluster source-labelled Wake with a k-nearest-neighbour graph.
+"""Cluster source-labeled Wake with a k-nearest-neighbor graph.
 
 Clusters are fit in a requested panel of saved within-recording robust-scaled
 features. t-SNE and UMAP are display-only maps of those graph-cluster assignments.
@@ -21,6 +21,7 @@ from sklearn.manifold import TSNE
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from wake_ne_analysis.cluster_features import FEATURE_SET_NAME
+from wake_ne_analysis.stages import LABEL_NAMES, STAGE_COLORS, STAGE_COLORS_RGB, STATE_LABELS
 from wake_ne_analysis.wake_clusters import (
     NE_FEATURE_COLUMNS,
     WAKE_STATES,
@@ -29,22 +30,6 @@ from wake_ne_analysis.wake_clusters import (
     load_expanded_feature_archives,
     wake_clustering_feature_columns,
 )
-
-
-SOURCE_STATE_DISPLAY_LABELS = {
-    "active_wake": "High Alertness",
-    "quiet_wake": "Low Alertness",
-}
-SOURCE_STATE_DISPLAY_COLORS = {
-    "active_wake": "#E31A1C",
-    "quiet_wake": "#0072B2",
-}
-PI_STATE_PALETTE_RGB = {
-    "High Alertness": (227, 26, 28),
-    "Low Alertness": (0, 114, 178),
-    "NREM": (119, 115, 154),
-    "REM": (155, 191, 154),
-}
 
 
 @dataclass(frozen=True)
@@ -99,14 +84,14 @@ def _plot(points: pd.DataFrame, method: str, category: str, path: Path, title: s
     fig, ax = plt.subplots(figsize=(7.2, 6.2), constrained_layout=True)
     if category == "source_state":
         order = WAKE_STATES
-        labels = SOURCE_STATE_DISPLAY_LABELS
-        colors = SOURCE_STATE_DISPLAY_COLORS
+        labels = STATE_LABELS
+        colors = STAGE_COLORS
         legend_title = "Source alertness label"
     else:
         order = sorted(points.cluster.unique())
         labels = {cluster: f"Cluster {cluster}" for cluster in order}
         colors = {cluster: plt.get_cmap("tab10")((cluster - 1) % 10) for cluster in order}
-        legend_title = "kNN-graph cluster"
+        legend_title = "Spectral cluster"
     for value in order:
         group = points.loc[points[category] == value]
         if not group.empty:
@@ -131,9 +116,9 @@ def _cluster_summary(points: pd.DataFrame) -> pd.DataFrame:
     summary = points.groupby("cluster", sort=True).agg(
         n_seconds=("cluster", "size"), n_recordings=("recording_id", "nunique")
     )
-    summary["active_wake_seconds"] = counts.active_wake
-    summary["quiet_wake_seconds"] = counts.quiet_wake
-    summary["active_wake_fraction"] = summary.active_wake_seconds / summary.n_seconds
+    summary["high_alertness_seconds"] = counts.high_alertness
+    summary["low_alertness_seconds"] = counts.low_alertness
+    summary["high_alertness_fraction"] = summary.high_alertness_seconds / summary.n_seconds
     return summary.reset_index()
 
 
@@ -208,6 +193,11 @@ def main(argv=None):
         required_columns = {f"{method}_{axis}" for method in display_methods for axis in ("1", "2")}
         if missing := required_columns.difference(points.columns):
             raise ValueError(f"Saved points lack display coordinates required for rendering: {sorted(missing)}.")
+        if "label" not in points:
+            raise ValueError("Saved points lack final score labels required for source-label rendering.")
+        points["source_state"] = points.label.map(LABEL_NAMES)
+        if points.source_state.isna().any() or not points.source_state.isin(WAKE_STATES).all():
+            raise ValueError("Saved points contain unsupported source Wake labels.")
         clustered_paths = {
             n_clusters: args.results_dir / f"{n_clusters}_clusters" / "clustered_wake_points.csv"
             for n_clusters in cluster_counts
@@ -232,7 +222,7 @@ def main(argv=None):
                     method,
                     "cluster",
                     args.figures_dir / f"{n_clusters}_clusters" / f"{method}_clusters.png",
-                    f"{method.upper()} display: {n_clusters}-cluster kNN-graph partition",
+                    f"{method.upper()} display: {n_clusters}-cluster spectral partition",
                 )
         print(f"Rerendered {', '.join(display_methods)} figures from {args.results_dir}")
         return
@@ -281,7 +271,7 @@ def main(argv=None):
         )
     graph_audits = {}
     for n_clusters in cluster_counts:
-        print(f"Clustering the symmetric {config.knn_neighbors}-nearest-neighbour graph into {n_clusters} groups...", flush=True)
+        print(f"Clustering the symmetric {config.knn_neighbors}-nearest-neighbor graph into {n_clusters} groups...", flush=True)
         labels, audit = knn_spectral_clusters(
             values, config.knn_neighbors, n_clusters, config.random_seed
         )
@@ -311,7 +301,7 @@ def main(argv=None):
         for method in display_methods:
             _plot(
                 clustered, method, "cluster", figure_directory / f"{method}_clusters.png",
-                f"{method.upper()} display: {n_clusters}-cluster kNN-graph partition",
+                f"{method.upper()} display: {n_clusters}-cluster spectral partition",
             )
         graph_audits[str(n_clusters)] = audit
     (args.results_dir / "run.json").write_text(
@@ -328,13 +318,13 @@ def main(argv=None):
                 "feature_columns": feature_columns,
                 "excluded_feature_columns": excluded_feature_columns,
                 "selected_source_states_before_sampling": WAKE_STATES,
-                "source_state_display_labels": SOURCE_STATE_DISPLAY_LABELS,
-                "source_state_display_colors_rgb": PI_STATE_PALETTE_RGB,
+                "source_state_labels": {state: STATE_LABELS[state] for state in WAKE_STATES},
+                "source_state_colors_rgb": {state: STAGE_COLORS_RGB[state] for state in WAKE_STATES},
                 "umap_display_axes": {"horizontal": "UMAP 2", "vertical": "UMAP 1"},
                 "display_methods": display_methods,
                 "source_labels_used_for_clustering": False,
                 "clustering_method": (
-                    "spectral clustering on an unweighted symmetric k-nearest-neighbour graph "
+                    "spectral clustering on an unweighted symmetric k-nearest-neighbor graph "
                     f"in {len(feature_columns)}-dimensional robust-scaled feature space"
                 ),
                 "requested_cluster_counts": cluster_counts,

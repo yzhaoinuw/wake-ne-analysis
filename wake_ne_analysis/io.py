@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from scipy.io import loadmat
 
-STATES = {4: "active_wake", 5: "quiet_wake"}
+STATES = {4: "high_alertness", 5: "low_alertness"}
 
 
 @dataclass

@@ -59,7 +59,7 @@ class NremBaselineConfig:
 class NremBaselineResult:
     """Per-recording NREM-baseline prediction, with the reference audit."""
 
-    active_seconds: np.ndarray
+    high_alertness_seconds: np.ndarray
     threshold: float
     nrem_percentile: float
     nrem_robust_sd: float
@@ -143,28 +143,28 @@ def emg_envelope(emg: np.ndarray, fs: float, config: NremBaselineConfig) -> np.n
     return power[sample_indices]
 
 
-def _active_mask(
+def _high_alertness_mask(
     envelope: np.ndarray, wake_mask: np.ndarray, threshold: float, config: NremBaselineConfig
 ) -> np.ndarray:
     eligible = np.repeat(wake_mask, config.envelope_rate_hz)[: len(envelope)]
     eligible &= np.isfinite(envelope)
-    active = (envelope > threshold) & eligible
+    high_alertness = (envelope > threshold) & eligible
     max_gap = math.floor(config.gap_tolerance_seconds * config.envelope_rate_hz + 1e-9)
-    for start, stop in _runs(~active):
-        if start > 0 and stop < len(active) and stop - start <= max_gap and eligible[start:stop].all():
-            active[start:stop] = True
+    for start, stop in _runs(~high_alertness):
+        if start > 0 and stop < len(high_alertness) and stop - start <= max_gap and eligible[start:stop].all():
+            high_alertness[start:stop] = True
     minimum = math.ceil(config.min_duration_seconds * config.envelope_rate_hz - 1e-9)
-    for start, stop in _runs(active):
+    for start, stop in _runs(high_alertness):
         if stop - start < minimum:
-            active[start:stop] = False
-    return active
+            high_alertness[start:stop] = False
+    return high_alertness
 
 
-def _second_activity(active: np.ndarray, length: int, rate: int) -> np.ndarray:
-    bins = np.arange(len(active)) // rate
+def _second_high_alertness(high_alertness: np.ndarray, length: int, rate: int) -> np.ndarray:
+    bins = np.arange(len(high_alertness)) // rate
     counts = np.bincount(bins, minlength=length)[:length]
-    active_counts = np.bincount(bins, weights=active, minlength=length)[:length]
-    return (counts > 0) & (active_counts >= 0.5 * counts)
+    high_counts = np.bincount(bins, weights=high_alertness, minlength=length)[:length]
+    return (counts > 0) & (high_counts >= 0.5 * counts)
 
 
 def prepare_nrem_baseline(
@@ -174,7 +174,7 @@ def prepare_nrem_baseline(
     labels = np.asarray(labels, dtype=float).reshape(-1)
     wake = np.isin(labels, WAKE_LABELS)
     if not wake.any():
-        raise ValueError("No existing Active/Quiet Wake seconds are available for experimental relabeling.")
+        raise ValueError("No existing High/Low Alertness seconds are available for experimental relabeling.")
     envelope = emg_envelope(emg, fs, config)[: len(labels) * config.envelope_rate_hz]
     bins = np.arange(len(envelope)) // config.envelope_rate_hz
     counts = np.bincount(bins, minlength=len(labels))[: len(labels)]
@@ -202,9 +202,11 @@ def classify_prepared_nrem_baseline(
 ) -> NremBaselineResult:
     """Apply one threshold multiplier to a prepared recording."""
     threshold = prepared.nrem_percentile + config.deviation_multiplier * prepared.nrem_robust_sd
-    active = _active_mask(prepared.envelope, prepared.wake, threshold, config)
+    high_alertness = _high_alertness_mask(prepared.envelope, prepared.wake, threshold, config)
     return NremBaselineResult(
-        active_seconds=_second_activity(active, len(prepared.wake), config.envelope_rate_hz),
+        high_alertness_seconds=_second_high_alertness(
+            high_alertness, len(prepared.wake), config.envelope_rate_hz
+        ),
         threshold=threshold,
         nrem_percentile=prepared.nrem_percentile,
         nrem_robust_sd=prepared.nrem_robust_sd,
@@ -301,9 +303,11 @@ def calibrate_to_cluster_targets(
                 rms_window_seconds=base_config.rms_window_seconds,
             )
             result = classify_prepared_nrem_baseline(prepared, config)
-            predicted = result.active_seconds[seconds]
-            full_active_seconds = int(np.count_nonzero(result.active_seconds & prepared.wake))
-            full_quiet_seconds = result.wake_seconds - full_active_seconds
+            predicted = result.high_alertness_seconds[seconds]
+            full_high_alertness_seconds = int(
+                np.count_nonzero(result.high_alertness_seconds & prepared.wake)
+            )
+            full_low_alertness_seconds = result.wake_seconds - full_high_alertness_seconds
             metrics = _classification_metrics(predicted, target)
             row = {
                 "multiplier": float(multiplier),
@@ -316,14 +320,14 @@ def calibrate_to_cluster_targets(
                 "nrem_robust_sd": result.nrem_robust_sd,
                 "nrem_samples": result.nrem_samples,
                 "source_wake_seconds": result.wake_seconds,
-                "experimental_active_wake_seconds": full_active_seconds,
-                "experimental_quiet_wake_seconds": full_quiet_seconds,
-                "experimental_active_wake_fraction": full_active_seconds / result.wake_seconds,
+                "experimental_high_alertness_seconds": full_high_alertness_seconds,
+                "experimental_low_alertness_seconds": full_low_alertness_seconds,
+                "experimental_high_alertness_fraction": full_high_alertness_seconds / result.wake_seconds,
                 **metrics,
             }
             detail_rows.append(row)
             audit = group.copy()
-            audit["experimental_active_wake"] = predicted
+            audit["experimental_high_alertness"] = predicted
             audit["multiplier"] = float(multiplier)
             audit["nrem_threshold"] = result.threshold
             predictions_by_multiplier[float(multiplier)].append(audit)
@@ -346,10 +350,14 @@ def calibrate_to_cluster_targets(
                 "macro_target_recording_recall": target_bearing.recall.mean(),
                 "macro_all_recording_specificity": detail.specificity.mean(),
                 "sampled_selected_fraction": detail.n_selected_seconds.sum() / detail.n_sampled_seconds.sum(),
-                "experimental_active_wake_seconds": int(detail.experimental_active_wake_seconds.sum()),
-                "experimental_quiet_wake_seconds": int(detail.experimental_quiet_wake_seconds.sum()),
-                "experimental_active_wake_fraction": (
-                    detail.experimental_active_wake_seconds.sum() / detail.source_wake_seconds.sum()
+                "experimental_high_alertness_seconds": int(
+                    detail.experimental_high_alertness_seconds.sum()
+                ),
+                "experimental_low_alertness_seconds": int(
+                    detail.experimental_low_alertness_seconds.sum()
+                ),
+                "experimental_high_alertness_fraction": (
+                    detail.experimental_high_alertness_seconds.sum() / detail.source_wake_seconds.sum()
                 ),
                 **global_metrics,
             }

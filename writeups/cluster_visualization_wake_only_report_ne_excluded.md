@@ -3,18 +3,18 @@
 **Status:** completed on 2026-09-21. This is the matched NE-feature sensitivity
 to [`cluster_visualization_wake_only_report.md`](cluster_visualization_wake_only_report.md).
 It follows the same Wake-only sampling, graph construction, requested 3/4/5
-partitions, PI-facing alertness labels, palette, and UMAP axis order. It differs
+partitions, alertness terminology, palette, and UMAP axis order. It differs
 only by omitting both NE summaries before UMAP fitting and graph clustering.
 
 ## Question
 
 Does removing the two saved NE summaries materially change the descriptive
-High/Low Alertness organization or the kNN-graph partitions of the same Wake
+High/Low Alertness organization or the graph partitions of the same Wake
 seconds? This is a feature-panel sensitivity check, not a test of whether NE has
 no biological relation to alertness.
 
-High Alertness and Low Alertness are reader-facing names for the unchanged
-upstream source labels: score 4 and score 5, respectively. The labels select and
+High Alertness and Low Alertness are the unchanged upstream source labels: score 4
+and score 5, respectively. The labels select and
 balance the display sample but never enter the graph or clustering.
 
 ## Features
@@ -41,9 +41,9 @@ prevalence estimates. See the parent Wake-only report's
 [Sampling](cluster_visualization_wake_only_report.md#sampling) section for the
 selection rationale.
 
-## kNN-graph clustering and UMAP display settings
+## Spectral clustering of a k-nearest-neighbor graph and UMAP display settings
 
-The 27-dimensional vectors form an unweighted, symmetric 30-nearest-neighbour
+The 27-dimensional vectors form an unweighted, symmetric 30-nearest-neighbor
 graph under Euclidean distance. It has 45,534 undirected edges, one connected
 component, minimum symmetric degree 30, and maximum symmetric degree 233.
 Spectral clustering creates the requested 3-, 4-, and 5-group partitions. It is
@@ -51,7 +51,7 @@ not a supervised kNN classifier and does not cluster UMAP coordinates.
 
 The PI request concerned UMAP, so this sensitivity run intentionally generated
 **UMAP only**, not an unnecessary new t-SNE fit. UMAP uses the matched settings:
-30 neighbours, `min_dist=0.2`, 200 epochs, and seed `20260918`. UMAP 2 is the
+30 neighbors, `min_dist=0.2`, 200 epochs, and seed `20260918`. UMAP 2 is the
 horizontal axis and UMAP 1 is vertical, so the high-alertness direction is shown
 left to right. The shared source-label palette is High Alertness red
 `#E31A1C` / RGB `(227, 26, 28)` and Low Alertness blue `#0072B2` / RGB
@@ -73,7 +73,7 @@ matched graph assignments below provide the more useful comparison.
 
 ### Three groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,755 | 10 | 755 | 1,000 | Broad mixed group containing every sampled Low Alertness second and 75.5% of sampled High Alertness seconds. |
 | 2 | 112 | 8 | 112 | 0 | Small High-Alertness-only extreme. |
@@ -83,7 +83,7 @@ matched graph assignments below provide the more useful comparison.
 
 ### Four groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,214 | 10 | 272 | 942 | Low-Alertness-associated broad group. |
 | 2 | 97 | 3 | 97 | 0 | Small High-Alertness-only extreme. |
@@ -101,7 +101,7 @@ by their integer label.
 
 ### Five groups
 
-| kNN-graph cluster | Seconds | Recordings | Source High | Source Low | Reading |
+| Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
 |---|---:|---:|---:|---:|---|
 | 1 | 1,218 | 10 | 271 | 947 | Low-Alertness-associated broad group. |
 | 2 | 95 | 3 | 95 | 0 | Rare High-Alertness-only extreme. |

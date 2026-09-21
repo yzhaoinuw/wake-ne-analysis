@@ -11,6 +11,7 @@ import argparse
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
+import shutil
 import sys
 
 import matplotlib.pyplot as plt
@@ -23,7 +24,7 @@ from wake_ne_analysis.cluster_features import FEATURE_COLUMNS, FEATURE_SET_NAME
 from wake_ne_analysis.stages import LABEL_NAMES, STAGE_COLORS, STATE_LABELS
 
 
-ALL_STAGES_NO_MA = ("nrem", "rem", "active_wake", "quiet_wake")
+ALL_STAGES_NO_MA = ("nrem", "rem", "high_alertness", "low_alertness")
 WAKE_ONLY = "wake"
 WAKE_COLOR = "#4D4D4D"
 
@@ -95,10 +96,10 @@ def _prepare_scope(features: pd.DataFrame, scope: str) -> tuple[pd.DataFrame, di
         result = features.loc[features.state.isin(ALL_STAGES_NO_MA)].copy()
         return result, {state: STATE_LABELS[state] for state in ALL_STAGES_NO_MA}
     if scope == "wake_only":
-        result = features.loc[features.state.isin(("active_wake", "quiet_wake"))].copy()
+        result = features.loc[features.state.isin(("high_alertness", "low_alertness"))].copy()
         result["source_state"] = result["state"]
         result["state"] = WAKE_ONLY
-        return result, {WAKE_ONLY: "Wake (Active + Quiet)"}
+        return result, {WAKE_ONLY: "Wake (High + Low Alertness)"}
     raise ValueError(f"Unknown analysis scope: {scope}.")
 
 
@@ -194,6 +195,14 @@ def _state_summary(points: pd.DataFrame, columns: tuple[str, ...]) -> pd.DataFra
     )
 
 
+def _prepare_output_directory(path: Path, *, overwrite: bool) -> None:
+    if path.exists() and any(path.iterdir()):
+        if not overwrite:
+            raise ValueError("Figures directory must be new or empty; use --overwrite to replace it.")
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feature-dir", type=Path, required=True)
@@ -208,11 +217,17 @@ def main(argv=None):
     parser.add_argument("--n-neighbors", type=int, default=30)
     parser.add_argument("--min-dist", type=float, default=0.2)
     parser.add_argument("--n-epochs", type=int, default=200)
+    parser.add_argument(
+        "--render-only",
+        action="store_true",
+        help="Regenerate figures from saved coordinates without refitting t-SNE or UMAP.",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace an existing non-empty figures directory named explicitly above.",
+    )
     args = parser.parse_args(argv)
-    if args.results_dir.exists() and any(args.results_dir.iterdir()):
-        raise ValueError("Results directory must be new or empty.")
-    if args.figures_dir.exists() and any(args.figures_dir.iterdir()):
-        raise ValueError("Figures directory must be new or empty.")
     config = EmbeddingConfig(
         random_seed=args.seed,
         max_points_per_label_per_recording=args.max_points_per_label_per_recording,
@@ -222,6 +237,25 @@ def main(argv=None):
         min_dist=args.min_dist,
         n_epochs=args.n_epochs,
     )
+    if args.render_only:
+        points_path = args.results_dir / "embedding_points.csv"
+        if not points_path.is_file():
+            raise ValueError("--render-only requires an existing embedding_points.csv result.")
+        points = pd.read_csv(points_path)
+        required = {"label", "tsne_1", "tsne_2", "umap_1", "umap_2"}
+        if missing := required.difference(points.columns):
+            raise ValueError(f"Saved points lack coordinates required for rendering: {sorted(missing)}.")
+        points["state"] = points.label.map(LABEL_NAMES)
+        if points.state.isna().any():
+            raise ValueError("Saved points contain an unsupported final score label.")
+        points, state_labels = _prepare_scope(points, args.analysis_scope)
+        _prepare_output_directory(args.figures_dir, overwrite=args.overwrite)
+        for method in ("tsne", "umap"):
+            _plot_embedding(points, method, args.figures_dir / f"{method}.png", args.feature_variant, state_labels)
+        print(f"Rerendered t-SNE and UMAP figures from {args.results_dir}")
+        return
+    if args.results_dir.exists() and any(args.results_dir.iterdir()):
+        raise ValueError("Results directory must be new or empty.")
     print("Loading saved robust-scaled expanded feature archives...", flush=True)
     features, archives = _load_expanded_archives(args.feature_dir)
     scoped, state_labels = _prepare_scope(features, args.analysis_scope)
@@ -246,13 +280,14 @@ def main(argv=None):
                 "feature_columns": columns,
                 "analysis_scope": args.analysis_scope,
                 "excluded_states_before_sampling": ["ma"] if args.analysis_scope == "all_stages_no_ma" else ["nrem", "rem", "ma"],
-                "wake_mapping": "active_wake and quiet_wake collapsed to wake before sampling and fitting" if args.analysis_scope == "wake_only" else None,
+                "wake_mapping": "high_alertness and low_alertness collapsed to wake before sampling and fitting" if args.analysis_scope == "wake_only" else None,
                 "figures_dir": str(args.figures_dir.resolve()),
             },
             indent=2,
         ),
         encoding="utf-8",
     )
+    _prepare_output_directory(args.figures_dir, overwrite=False)
     for method in ("tsne", "umap"):
         _plot_embedding(points, method, args.figures_dir / f"{method}.png", args.feature_variant, state_labels)
     print(f"Wrote {len(points):,} sampled embedding rows to {args.results_dir}")
