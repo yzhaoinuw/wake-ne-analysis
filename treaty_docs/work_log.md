@@ -4,22 +4,22 @@
 
 ### Compare withheld NE features across NE-excluded Wake partitions (Codex GPT-5; effort/tokens not reported)
 
-- Extended each 3-, 4-, and 5-cluster result in the NE-excluded Wake report with
-  per-recording robust-scaled `ne_mean` and `ne_slope_ols_per_second` summaries.
-  The two features were withheld from graph construction, so this is a
-  post-clustering feature characterization rather than a circular full-panel
-  comparison.
-- Two-sided paired Wilcoxon comparisons use one median per recording and cluster,
-  never adjacent seconds as independent observations. No eligible pair was
-  nominally significant at any resolution (smallest unadjusted p = 0.250, 0.109,
-  and 0.250 for 3, 4, and 5 groups, respectively; Holm-adjusted p = 1.000 in
-  each partition). Sparse groups remain descriptive because several occur in
-  only three recordings.
+- Replaced the prior recording-median screen with the requested pooled-seconds
+  characterization of withheld robust-scaled `ne_mean` and
+  `ne_slope_ols_per_second` across every 3-, 4-, and 5-cluster partition. The NE
+  features remain excluded from graph construction, so this is a post-clustering
+  feature characterization rather than a circular full-panel comparison.
+- Two-sided Mann–Whitney comparisons use all sampled seconds and correct the
+  two-feature, within-resolution pairwise families with Holm. `ne_mean` differs
+  after correction in all 3-group pairs, five of six 4-group pairs, and nine of
+  ten 5-group pairs; no slope pair differs. The report explicitly labels these
+  p-values as pseudoreplicated descriptive screens, not independent-animal
+  inference.
 - Verification:
   - Confirmed the current checkout was clean on `dev` before the edit.
-  - Recomputed all recording-by-cluster medians and eligible paired Wilcoxon
-    comparisons from the retained NE-excluded cluster CSVs using `ne_umap`.
-  - `git diff --check` passed.
+  - Recomputed pooled cluster summaries and Mann–Whitney/Holm comparisons from
+    the retained NE-excluded cluster CSVs using `ne_umap`.
+  - `git diff --check` and `treaty validate .` passed.
 
 ### Synchronize completed NE-excluded report work from dev to main (Codex GPT-5; effort/tokens not reported)
 

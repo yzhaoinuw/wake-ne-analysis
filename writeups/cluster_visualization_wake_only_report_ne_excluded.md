@@ -83,23 +83,23 @@ matched graph assignments below provide the more useful comparison.
 #### Withheld NE-feature check
 
 The two NE features were withheld from graph construction and clustering, then
-compared afterward.  For each recording and cluster, the analysis took the
-median of its sampled seconds' saved **within-recording robust-scaled** value;
-the table summarizes those recording medians as median (IQR).  Thus these are
-relative-to-recording NE positions, rather than pooled raw fluorescence values.
+compared afterward.  Each sampled second contributes its saved
+**within-recording robust-scaled** value; the table summarizes those seconds as
+median (IQR).  Thus these are relative-to-recording NE positions, rather than
+pooled raw fluorescence values.
 
-| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
-|---|---:|---:|---:|
-| 1 | 10 | 0.494 (0.340–0.625) | 0.058 (0.007–0.080) |
-| 2 | 8 | 0.820 (0.188–0.951) | 0.100 (−0.292–0.717) |
-| 3 | 5 | 0.342 (0.152–0.559) | 0.086 (−0.011–0.112) |
+| Spectral cluster | Seconds | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|---:|
+| 1 | 1,755 | 10 | 0.448 (−0.004–0.809) | 0.064 (−0.442–0.522) |
+| 2 | 112 | 8 | 0.981 (0.770–1.254) | 0.072 (−0.465–0.577) |
+| 3 | 133 | 5 | −0.011 (−0.318–0.509) | 0.093 (−0.262–0.467) |
 
-Two-sided paired Wilcoxon tests used only recordings containing both clusters,
-with [Holm correction](#appendix-why-use-holm-correction) over the two NE
-features and all eligible cluster pairs in
-this three-group partition.  No comparison was nominally significant (smallest
-unadjusted p = 0.250; all Holm-adjusted p = 1.000).  This includes 1 versus 2
-(eight matched recordings) and 1 versus 3 (five matched recordings).
+Two-sided Mann–Whitney tests use every sampled second in each cluster, with
+[Holm correction](#appendix-why-use-holm-correction) across the two NE features
+and three cluster pairs (six tests) in this partition.  `ne_mean` differs after
+correction in every pair: 1 versus 2, p = 5.52 × 10⁻¹⁹; 1 versus 3,
+p = 2.65 × 10⁻⁷; and 2 versus 3, p = 2.96 × 10⁻¹⁸.  No slope comparison differs
+(all adjusted p = 1.000).
 
 ### Four groups
 
@@ -121,23 +121,22 @@ by their integer label.
 
 #### Withheld NE-feature check
 
-These summaries use the same recording-level robust-scaled procedure as the
+These summaries use the same pooled-seconds robust-scaled procedure as the
 three-group check.
 
-| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
-|---|---:|---:|---:|
-| 1 | 10 | 0.429 (0.316–0.576) | 0.051 (0.033–0.069) |
-| 2 | 3 | 0.404 (0.067–0.563) | 0.079 (−0.229–0.111) |
-| 3 | 10 | 0.380 (0.201–0.506) | 0.107 (−0.011–0.123) |
-| 4 | 7 | 0.953 (0.117–1.192) | 0.128 (0.022–0.955) |
+| Spectral cluster | Seconds | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|---:|
+| 1 | 1,214 | 10 | 0.463 (0.024–0.807) | 0.069 (−0.436–0.542) |
+| 2 | 97 | 3 | −0.053 (−0.331–0.462) | 0.087 (−0.361–0.424) |
+| 3 | 592 | 10 | 0.407 (−0.033–0.812) | 0.047 (−0.465–0.486) |
+| 4 | 97 | 7 | 0.990 (0.776–1.264) | 0.116 (−0.369–0.614) |
 
-Two-sided paired Wilcoxon tests used only recordings containing both clusters;
-comparisons with fewer than three shared recordings were not tested.  Holm
-correction covered both NE features and all eligible cluster pairs in this
-four-group partition.  No comparison was nominally significant (smallest
-unadjusted p = 0.109; all Holm-adjusted p = 1.000).  In particular, the two
-broad groups recurring in all ten recordings, 1 and 3, had p = 0.375 for
-`ne_mean` and p = 1.000 for `ne_slope_ols_per_second` before correction.
+Two-sided Mann–Whitney tests use every sampled second, with Holm correction
+across 12 tests (two features × six cluster pairs).  `ne_mean` differs after
+correction for 1 versus 2 (p = 5.38 × 10⁻⁷), 1 versus 4 (2.90 × 10⁻¹⁸), 2 versus
+3 (5.14 × 10⁻⁶), 2 versus 4 (2.02 × 10⁻¹⁵), and 3 versus 4 (3.62 × 10⁻¹³), but
+not for the two broad groups 1 versus 3 (p = 1.000).  No slope comparison
+differs (all adjusted p = 1.000).
 
 ### Five groups
 
@@ -158,23 +157,21 @@ three-recording recurrence.
 
 #### Withheld NE-feature check
 
-These summaries again use one median per recording and cluster before the
-across-recording summary.
+These summaries again use every sampled second in each cluster.
 
-| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
-|---|---:|---:|---:|
-| 1 | 10 | 0.430 (0.315–0.576) | 0.045 (0.029–0.097) |
-| 2 | 3 | 0.451 (0.082–0.586) | 0.086 (−0.225–0.111) |
-| 3 | 3 | 1.007 (0.984–1.473) | 0.078 (−0.040–0.146) |
-| 4 | 10 | 0.412 (0.208–0.488) | 0.096 (0.015–0.151) |
-| 5 | 9 | 0.319 (0.209–0.764) | 0.148 (−0.036–0.223) |
+| Spectral cluster | Seconds | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|---:|
+| 1 | 1,218 | 10 | 0.480 (0.026–0.803) | 0.065 (−0.442–0.542) |
+| 2 | 95 | 3 | −0.048 (−0.335–0.480) | 0.087 (−0.382–0.427) |
+| 3 | 63 | 3 | 1.024 (0.851–1.257) | 0.129 (−0.325–0.487) |
+| 4 | 473 | 10 | 0.299 (−0.067–0.779) | 0.049 (−0.402–0.503) |
+| 5 | 151 | 9 | 0.764 (0.401–1.171) | 0.080 (−0.478–0.508) |
 
-Two-sided paired Wilcoxon tests used only pairs represented in at least three
-recordings, with Holm correction over both NE features and all eligible cluster
-pairs in this five-group partition.  No comparison was nominally significant
-(smallest unadjusted p = 0.250; all Holm-adjusted p = 1.000).  The two broad
-groups occurring in all ten recordings, 1 and 4, had p = 0.625 for `ne_mean`
-and p = 1.000 for `ne_slope_ols_per_second` before correction.
+Two-sided Mann–Whitney tests use every sampled second, with Holm correction
+across 20 tests (two features × ten cluster pairs).  `ne_mean` differs after
+correction in nine of ten pairs (adjusted p = 1.95 × 10⁻¹⁰ to 0.0142); the
+exception is 1 versus 4 (p = 0.190).  No slope comparison differs (all adjusted
+p = 1.000).
 
 ## Comparison with the full EEG+EMG+NE panel
 
@@ -202,6 +199,13 @@ they do not show complete High/Low separability without near-complete coverage a
 absence of cross-label contamination. Consecutive seconds and recordings are not
 independent observations, and neither UMAP appearance nor graph-cluster count is
 a biological cluster statistic.
+
+The withheld NE-feature comparisons intentionally use sampled **seconds** as
+their units to screen for possible NE patterns across the pooled cluster
+distributions. Their Mann–Whitney p-values are therefore pseudoreplicated:
+adjacent seconds are correlated, clusters have unequal sizes, and repeated
+recordings are not independent animals. They identify descriptive candidate
+patterns, not independent-mouse biological evidence.
 
 ## Fairer follow-up
 
@@ -232,7 +236,11 @@ the configuration, sampled point identities, graph audit, per-cluster source-lab
 and recording composition, and 27-feature median audit. The adjusted Rand values
 above compare the matched point identities in that directory with the existing
 full-feature result; they are descriptive agreement measures, not a held-out
-validation statistic.
+validation statistic. The withheld NE checks pool the saved robust-scaled
+`ne_mean` and `ne_slope_ols_per_second` columns of each resolution's
+`clustered_wake_points.csv`, summarize each cluster's seconds by median (IQR),
+and use two-sided Mann–Whitney tests with the stated within-resolution Holm
+family.
 
 ## Appendix: Why use Holm correction?
 
