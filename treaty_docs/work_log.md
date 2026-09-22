@@ -30,6 +30,16 @@
     with `0 3` left/right divergence before the fast-forward.
   - Pushed `main`, then returned the checkout to `dev`.
 
+### Synchronize pooled-seconds NE screen from dev to main (Codex GPT-5; effort/tokens not reported)
+
+- Fast-forwarded the requested pooled-seconds NE-screen revision from `dev` into
+  `main` at `ad38067b606d3774eca9390ebff2059480bb8463`; no release or tag was
+  created.
+- Verification:
+  - Fetched origin and confirmed `origin/main` was an ancestor of `origin/dev`
+    with `0 1` left/right divergence before the fast-forward.
+  - Pushed `main`, then returned the checkout to `dev`.
+
 ## 2026-09-21
 
 ### Standardize High/Low Alertness terminology and spectral-clustering language (Codex GPT-5; effort/tokens not reported)
