@@ -232,3 +232,21 @@ and recording composition, and 27-feature median audit. The adjusted Rand values
 above compare the matched point identities in that directory with the existing
 full-feature result; they are descriptive agreement measures, not a held-out
 validation statistic.
+
+## Appendix: Why use Holm correction?
+
+Each cluster resolution involves more than one statistical comparison: several
+cluster pairs and two withheld NE features.  If every p-value were interpreted
+at 0.05 on its own, the chance of at least one false-positive result rises as
+the number of comparisons rises.  Holm correction controls that family-wide
+false-positive risk while retaining more power than applying one identical,
+fully conservative Bonferroni threshold to every test.
+
+Holm's procedure orders the p-values from smallest to largest.  It first judges
+the smallest against the strictest threshold, then progressively relaxes the
+threshold for the remaining p-values only if the earlier comparisons pass.  The
+reported Holm-adjusted p-value is therefore the p-value after accounting for the
+other planned NE comparisons within that cluster resolution.  It does not make
+clusters more balanced, create independent recordings, or prove that a
+non-significant comparison represents biological equality; it only guards the
+significance screen against finding a chance result among several tests.
