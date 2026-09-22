@@ -21,6 +21,15 @@
     comparisons from the retained NE-excluded cluster CSVs using `ne_umap`.
   - `git diff --check` passed.
 
+### Synchronize completed NE-excluded report work from dev to main (Codex GPT-5; effort/tokens not reported)
+
+- Fast-forwarded the three completed NE-report commits from `dev` into `main` at
+  `77daa837bebb19c971ee6aaa31cb6e7009ebf847`; no release or tag was created.
+- Verification:
+  - Fetched origin and confirmed `origin/main` was an ancestor of `origin/dev`
+    with `0 3` left/right divergence before the fast-forward.
+  - Pushed `main`, then returned the checkout to `dev`.
+
 ## 2026-09-21
 
 ### Standardize High/Low Alertness terminology and spectral-clustering language (Codex GPT-5; effort/tokens not reported)
