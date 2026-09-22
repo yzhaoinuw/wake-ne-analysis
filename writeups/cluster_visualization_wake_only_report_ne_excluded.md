@@ -70,6 +70,11 @@ matched graph assignments below provide the more useful comparison.
 
 ![NE-excluded UMAP display colored by existing High/Low Alertness labels](assets/wake_knn_clusters_ne_excluded_20260921/umap_source_labels.png)
 
+**Figure 1.** Existing final High Alertness (red) and Low Alertness (blue)
+source labels on the UMAP display. These EMG-derived labels did not enter the
+graph or clustering; they are shown afterward for comparison and are not two
+machine-derived clusters.
+
 ### Three groups
 
 | Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
@@ -79,6 +84,11 @@ matched graph assignments below provide the more useful comparison.
 | 3 | 133 | 5 | 133 | 0 | Small High-Alertness-only extreme with limited recording recurrence. |
 
 ![NE-excluded three-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/3_clusters/umap_clusters.png)
+
+**Figure 2.** Three-group spectral partition of the symmetric nearest-neighbor
+graph built from the 27 NE-excluded EEG+EMG features. Colors identify arbitrary
+graph-group labels; UMAP is a display of those assignments, not the input to
+clustering.
 
 #### Withheld NE-feature check
 
@@ -119,6 +129,10 @@ by their integer label.
 
 ![NE-excluded four-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/4_clusters/umap_clusters.png)
 
+**Figure 3.** Four-group spectral partition of the same NE-excluded EEG+EMG
+feature graph. The graph-group colors are arbitrary and do not themselves encode
+High or Low Alertness.
+
 #### Withheld NE-feature check
 
 These summaries use the same pooled-seconds robust-scaled procedure as the
@@ -154,6 +168,10 @@ branch across nine recordings, and two rare high-alertness extremes with only
 three-recording recurrence.
 
 ![NE-excluded five-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/5_clusters/umap_clusters.png)
+
+**Figure 4.** Five-group spectral partition of the same NE-excluded EEG+EMG
+feature graph. Increasing the requested group count adds descriptive detail; it
+does not establish five validated biological Wake states.
 
 #### Withheld NE-feature check
 
