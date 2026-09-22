@@ -40,7 +40,11 @@
   full-feature graph partitions on the same 2,000 points (adjusted Rand 0.978,
   0.964, and 0.959 for 3, 4, and 5 groups). This is a feature-panel sensitivity
   result, not evidence that NE is biologically irrelevant or that the
-  EMG-associated alertness organization is independently validated.
+  EMG-associated alertness organization is independently validated. The withheld
+  robust-scaled NE mean and slope summaries are also null in every eligible
+  recording-level pairwise comparison within the 3/4/5 partitions (smallest
+  unadjusted p = 0.250/0.109/0.250; Holm-adjusted p = 1.000 within each
+  partition); sparse groups remain descriptive.
 - **Experimental NREM-baseline calibration:** `scripts/calibrate_nrem_baseline.py`
   reimplements the source-preserving NREM-envelope comparison locally and targets
   the three-partition's two High-Alertness-only groups (clusters 2 and 3), never t-SNE/UMAP

@@ -80,6 +80,26 @@ matched graph assignments below provide the more useful comparison.
 
 ![NE-excluded three-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/3_clusters/umap_clusters.png)
 
+#### Withheld NE-feature check
+
+The two NE features were withheld from graph construction and clustering, then
+compared afterward.  For each recording and cluster, the analysis took the
+median of its sampled seconds' saved **within-recording robust-scaled** value;
+the table summarizes those recording medians as median (IQR).  Thus these are
+relative-to-recording NE positions, rather than pooled raw fluorescence values.
+
+| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|
+| 1 | 10 | 0.494 (0.340–0.625) | 0.058 (0.007–0.080) |
+| 2 | 8 | 0.820 (0.188–0.951) | 0.100 (−0.292–0.717) |
+| 3 | 5 | 0.342 (0.152–0.559) | 0.086 (−0.011–0.112) |
+
+Two-sided paired Wilcoxon tests used only recordings containing both clusters,
+with Holm correction over the two NE features and all eligible cluster pairs in
+this three-group partition.  No comparison was nominally significant (smallest
+unadjusted p = 0.250; all Holm-adjusted p = 1.000).  This includes 1 versus 2
+(eight matched recordings) and 1 versus 3 (five matched recordings).
+
 ### Four groups
 
 | Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
@@ -98,6 +118,26 @@ by their integer label.
 
 ![NE-excluded four-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/4_clusters/umap_clusters.png)
 
+#### Withheld NE-feature check
+
+These summaries use the same recording-level robust-scaled procedure as the
+three-group check.
+
+| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|
+| 1 | 10 | 0.429 (0.316–0.576) | 0.051 (0.033–0.069) |
+| 2 | 3 | 0.404 (0.067–0.563) | 0.079 (−0.229–0.111) |
+| 3 | 10 | 0.380 (0.201–0.506) | 0.107 (−0.011–0.123) |
+| 4 | 7 | 0.953 (0.117–1.192) | 0.128 (0.022–0.955) |
+
+Two-sided paired Wilcoxon tests used only recordings containing both clusters;
+comparisons with fewer than three shared recordings were not tested.  Holm
+correction covered both NE features and all eligible cluster pairs in this
+four-group partition.  No comparison was nominally significant (smallest
+unadjusted p = 0.109; all Holm-adjusted p = 1.000).  In particular, the two
+broad groups recurring in all ten recordings, 1 and 3, had p = 0.375 for
+`ne_mean` and p = 1.000 for `ne_slope_ols_per_second` before correction.
+
 ### Five groups
 
 | Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
@@ -114,6 +154,26 @@ branch across nine recordings, and two rare high-alertness extremes with only
 three-recording recurrence.
 
 ![NE-excluded five-group UMAP display](assets/wake_knn_clusters_ne_excluded_20260921/5_clusters/umap_clusters.png)
+
+#### Withheld NE-feature check
+
+These summaries again use one median per recording and cluster before the
+across-recording summary.
+
+| Spectral cluster | Recordings | `ne_mean` | `ne_slope_ols_per_second` |
+|---|---:|---:|---:|
+| 1 | 10 | 0.430 (0.315–0.576) | 0.045 (0.029–0.097) |
+| 2 | 3 | 0.451 (0.082–0.586) | 0.086 (−0.225–0.111) |
+| 3 | 3 | 1.007 (0.984–1.473) | 0.078 (−0.040–0.146) |
+| 4 | 10 | 0.412 (0.208–0.488) | 0.096 (0.015–0.151) |
+| 5 | 9 | 0.319 (0.209–0.764) | 0.148 (−0.036–0.223) |
+
+Two-sided paired Wilcoxon tests used only pairs represented in at least three
+recordings, with Holm correction over both NE features and all eligible cluster
+pairs in this five-group partition.  No comparison was nominally significant
+(smallest unadjusted p = 0.250; all Holm-adjusted p = 1.000).  The two broad
+groups occurring in all ten recordings, 1 and 4, had p = 0.625 for `ne_mean`
+and p = 1.000 for `ne_slope_ols_per_second` before correction.
 
 ## Comparison with the full EEG+EMG+NE panel
 

@@ -1,5 +1,26 @@
 # Work Log
 
+## 2026-09-22
+
+### Compare withheld NE features across NE-excluded Wake partitions (Codex GPT-5; effort/tokens not reported)
+
+- Extended each 3-, 4-, and 5-cluster result in the NE-excluded Wake report with
+  per-recording robust-scaled `ne_mean` and `ne_slope_ols_per_second` summaries.
+  The two features were withheld from graph construction, so this is a
+  post-clustering feature characterization rather than a circular full-panel
+  comparison.
+- Two-sided paired Wilcoxon comparisons use one median per recording and cluster,
+  never adjacent seconds as independent observations. No eligible pair was
+  nominally significant at any resolution (smallest unadjusted p = 0.250, 0.109,
+  and 0.250 for 3, 4, and 5 groups, respectively; Holm-adjusted p = 1.000 in
+  each partition). Sparse groups remain descriptive because several occur in
+  only three recordings.
+- Verification:
+  - Confirmed the current checkout was clean on `dev` before the edit.
+  - Recomputed all recording-by-cluster medians and eligible paired Wilcoxon
+    comparisons from the retained NE-excluded cluster CSVs using `ne_umap`.
+  - `git diff --check` passed.
+
 ## 2026-09-21
 
 ### Standardize High/Low Alertness terminology and spectral-clustering language (Codex GPT-5; effort/tokens not reported)
