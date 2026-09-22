@@ -95,7 +95,8 @@ relative-to-recording NE positions, rather than pooled raw fluorescence values.
 | 3 | 5 | 0.342 (0.152–0.559) | 0.086 (−0.011–0.112) |
 
 Two-sided paired Wilcoxon tests used only recordings containing both clusters,
-with Holm correction over the two NE features and all eligible cluster pairs in
+with [Holm correction](#appendix-why-use-holm-correction) over the two NE
+features and all eligible cluster pairs in
 this three-group partition.  No comparison was nominally significant (smallest
 unadjusted p = 0.250; all Holm-adjusted p = 1.000).  This includes 1 versus 2
 (eight matched recordings) and 1 versus 3 (five matched recordings).
@@ -250,3 +251,13 @@ other planned NE comparisons within that cluster resolution.  It does not make
 clusters more balanced, create independent recordings, or prove that a
 non-significant comparison represents biological equality; it only guards the
 significance screen against finding a chance result among several tests.
+
+### How does this differ from Bonferroni correction?
+
+Bonferroni correction uses one fixed, stricter threshold for every comparison:
+with *m* planned tests, each is judged against 0.05 / *m* (or, equivalently, each
+p-value is multiplied by *m*).  It also controls the family-wide false-positive
+risk, but can be unnecessarily strict when the smallest p-value has already
+passed.  Holm starts with that same strict first threshold, then becomes less
+strict for the remaining tests only after earlier comparisons pass.  It therefore
+has the same error-control goal as Bonferroni while usually retaining more power.
