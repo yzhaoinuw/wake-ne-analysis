@@ -208,6 +208,8 @@ def test_pooling_weights_every_second_and_never_averages_recording_medians():
     assert result.n_low.tolist() == [1] * 4
     assert result.high_median.tolist() == [1] * 4
     assert result.low_median.tolist() == [10] * 4
+    assert result.high_mean.tolist() == pytest.approx([110 / 101] * 4)
+    assert result.low_mean.tolist() == [10] * 4
     assert result.u_statistic.tolist() == [0.5] * 4
     assert result.rank_biserial.tolist() == pytest.approx([-100 / 101] * 4)
     # Splitting the same rows among different source files leaves pooled results unchanged.
@@ -224,3 +226,5 @@ def test_pooled_missing_values_do_not_become_zero():
     assert result.n_high.tolist() == [1, 1, 0, 0]
     assert result.p_value.iloc[:2].tolist() == [1, 1]
     assert result.p_value.iloc[2:].isna().all()
+    assert result.high_mean.iloc[:2].tolist() == [0, 0]
+    assert result.high_mean.iloc[2:].isna().all()

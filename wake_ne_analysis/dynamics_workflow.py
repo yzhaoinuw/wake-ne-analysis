@@ -30,6 +30,31 @@ def source_digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def load_feature_records(analysis_dir):
+    """Read completed archives after checking source identity and feature contract."""
+    analysis_dir = Path(analysis_dir)
+    run = json.loads((analysis_dir / "run.json").read_text(encoding="utf-8"))
+    if run["status"] != "complete" or run["schema"] != SCHEMA:
+        raise ValueError("Expected a completed v2 pooled-seconds analysis.")
+    audit = pd.read_csv(analysis_dir / "source_audit.csv", converters={"recording_id": str})
+    audit = audit.loc[audit.status == "included"]
+    if audit.recording_id.duplicated().any() or len(audit) != run["n_included_files"]:
+        raise ValueError("Duplicate or incomplete source audit.")
+    records, hashes = {}, {}
+    for row in audit.itertuples():
+        path = Path(run["feature_dir"]) / f"{row.recording_id}.npz"
+        with np.load(path, allow_pickle=False) as archive:
+            metadata = json.loads(str(archive["metadata_json"]))
+            if (metadata["config"] != run["config"] or metadata["schema"] != run["schema"]
+                    or metadata["source_sha256"] != row.source_sha256
+                    or metadata["recording_id"] != row.recording_id
+                    or archive["feature_names"].tolist() != list(FEATURE_NAMES)):
+                raise ValueError(f"Archive provenance/configuration mismatch: {path}")
+            records[row.recording_id] = {key: archive[key] for key in ("X", "label")}
+        hashes[path.name] = source_digest(path)
+    return records, run, hashes
+
+
 def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), metadata_path=None):
     """Extract one NPZ per file over the common interval and pool eligible seconds.
 
@@ -141,20 +166,20 @@ def write_report(directory, comparisons, audits, run):
              f"All {run['n_included_files']} input recordings contributed. "
              "Every eligible second has equal weight, irrespective of recording. "
              "History windows may cross all score states. No additional normalization was applied.", "",
-             "| Feature | High seconds | Low seconds | High median (IQR) | Low median (IQR) | High-minus-Low median | Rank-biserial effect | Nominal p | Holm p |",
+             "| Feature | High seconds | Low seconds | High mean | Low mean | High-minus-Low mean | Rank-biserial effect | Nominal p | Holm p |",
              "|---|---:|---:|---|---|---:|---:|---:|---:|"]
     titles = dict(zip(FEATURE_NAMES, [title.replace("10-second", f"{config['history_seconds']:g}-second")
                                     for title in FEATURE_TITLES]))
     for row in comparisons.itertuples():
         lines.append(f"| {titles[row.feature]} | {row.n_high} | {row.n_low} | "
-                     f"{row.high_median:.5g} ({row.high_q25:.5g}–{row.high_q75:.5g}) | "
-                     f"{row.low_median:.5g} ({row.low_q25:.5g}–{row.low_q75:.5g}) | "
-                     f"{row.median_high_minus_low:.5g} | {row.rank_biserial:.5g} | "
+                     f"{row.high_mean:.5g} | "
+                     f"{row.low_mean:.5g} | "
+                     f"{row.mean_high_minus_low:.5g} | {row.rank_biserial:.5g} | "
                      f"{row.p_value:.5g} | {row.p_holm:.5g} |")
     lines += ["", "Slope units: percentage points/s. Variance units: percentage points squared.", "",
               "## Interpretation", "",
-              "Two-sided Mann–Whitney U compares pooled distributions; it is not solely a "
-              "median test. Holm correction covers the four features. The rank-biserial "
+              "Two-sided Mann–Whitney U compares pooled distributions; it is not a "
+              "test of means. Holm correction covers the four features. The rank-biserial "
               "effect is 2U/(nHigh*nLow)-1; positive means higher in High Alertness.", "",
               "The saved NE is normalized percentage delta-F/F, providing a common nominal "
               "scale, but normalization does not guarantee identical baselines, gains or "

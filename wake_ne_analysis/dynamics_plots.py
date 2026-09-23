@@ -6,16 +6,25 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .dynamics_workflow import require_empty
+from .dynamics_workflow import load_feature_records, require_empty, source_digest
+from .dynamics_summary import pooled_comparisons
 from .ne_dynamics import FEATURE_NAMES, FEATURE_TITLES, FEATURE_UNITS
 
 
-def build_figures(comparisons, history_seconds=10):
-    """Show pooled quartiles, medians and 5th/95th percentiles without subsampling.
+def mean_bar(result, state, name, color):
+    """A mean-only display; no independence-based error bars are implied."""
+    import plotly.graph_objects as go
 
-    The figure omits tail points for readability; every finite second, including
-    those tails, contributes to the numerical comparison and saved quantiles.
-    """
+    mean = result[f"{state}_mean"]
+    return go.Bar(
+        x=[name], y=[mean], name=name, marker_color=color,
+        text=[f"{mean:.4f}"], textposition="outside", showlegend=False,
+        hovertemplate="%{x}<br>Mean: %{y:.5g}<extra></extra>",
+    )
+
+
+def build_figures(comparisons, history_seconds=10):
+    """Show arithmetic means over all finite seconds, with feature coverage."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
@@ -31,14 +40,7 @@ def build_figures(comparisons, history_seconds=10):
         for state, name, color in (("low", "Low Alertness", "#0072B2"),
                                     ("high", "High Alertness", "#E31A1C")):
             n = int(result[f"n_{state}"])
-            fig.add_trace(go.Box(
-                x=[name], q1=[result[f"{state}_q25"]], median=[result[f"{state}_median"]],
-                q3=[result[f"{state}_q75"]], lowerfence=[result[f"{state}_q05"]],
-                upperfence=[result[f"{state}_q95"]], name=name, boxpoints=False,
-                line=dict(color=color, width=2),
-                fillcolor="rgba(0,114,178,0.18)" if state == "low" else "rgba(227,26,28,0.18)",
-                showlegend=False, width=0.45,
-            ), row=row, col=col)
+            fig.add_trace(mean_bar(result, state, name, color), row=row, col=col)
             total = n + int(result[f"n_{state}_missing"])
             coverage.add_trace(go.Bar(
                 x=[name], y=[100 * n / total if total else np.nan], marker_color=color,
@@ -53,7 +55,7 @@ def build_figures(comparisons, history_seconds=10):
                          zerolinecolor="#dddddd", row=row, col=col)
         coverage.update_yaxes(title_text="Valid state seconds (%)", range=[0, 112], row=row, col=col)
     fig.update_layout(
-        title="NE dynamics: all eligible seconds pooled<br><sup>Boxes: 25th–75th percentiles and median; whiskers: 5th–95th percentiles; tails omitted only from display</sup>",
+        title="NE dynamics: all eligible seconds pooled<br><sup>Arithmetic means of all finite values</sup>",
         template="plotly_white", width=1300, height=950,
         margin=dict(l=100, r=50, t=135, b=75), font=dict(size=14),
         annotations=list(fig.layout.annotations) + [dict(
@@ -76,12 +78,23 @@ def render_results(results_dir, output_dir, png=False):
     if run.get("comparison_unit") != "pooled_second":
         raise ValueError("This renderer expects the v2 pooled-seconds analysis.")
     require_empty(output_dir)
-    comparisons = pd.read_csv(results_dir / "pooled_comparisons.csv")
+    records, _, hashes = load_feature_records(results_dir)
+    comparisons = pooled_comparisons(records)
+    original = pd.read_csv(results_dir / "pooled_comparisons.csv")
+    pd.testing.assert_frame_equal(
+        comparisons[original.columns], original, check_exact=False, rtol=1e-12, atol=1e-15
+    )
     figures = build_figures(comparisons, run["config"]["history_seconds"])
     figures["variance_dynamics"] = build_variance_figure(
         comparisons, run["config"]["history_seconds"]
     )
     output_dir.mkdir(parents=True, exist_ok=True)
+    comparisons.to_csv(output_dir / "pooled_comparisons.csv", index=False)
+    provenance = {"analysis_dir": str(results_dir.resolve()), "archive_sha256": hashes,
+                  "summary": "arithmetic_mean_of_all_finite_seconds",
+                  "code_sha256": {name: source_digest(Path(__file__).with_name(name)) for name in
+                                  ("dynamics_plots.py", "dynamics_summary.py", "dynamics_workflow.py")}}
+    (output_dir / "provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
     for name, figure in figures.items():
         figure.write_html(output_dir / f"{name}.html", include_plotlyjs=True)
         if png:
@@ -90,7 +103,7 @@ def render_results(results_dir, output_dir, png=False):
 
 
 def build_variance_figure(comparisons, history_seconds=10):
-    """Focused variance panels from the existing pooled table; no new tests."""
+    """Focused mean variance panels; retain the original distribution tests."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
@@ -100,31 +113,25 @@ def build_variance_figure(comparisons, history_seconds=10):
     table = comparisons.set_index("feature")
     for column, feature in enumerate(features, start=1):
         row = table.loc[feature]
-        for state, name, color, fill in (
-            ("high", "High Alertness", "#E31A1C", "rgba(227,26,28,0.18)"),
-            ("low", "Low Alertness", "#0072B2", "rgba(0,114,178,0.18)"),
+        for state, name, color in (
+            ("high", "High Alertness", "#E31A1C"),
+            ("low", "Low Alertness", "#0072B2"),
         ):
-            figure.add_trace(go.Box(
-                x=[name], q1=[row[f"{state}_q25"]], median=[row[f"{state}_median"]],
-                q3=[row[f"{state}_q75"]], lowerfence=[row[f"{state}_q05"]],
-                upperfence=[row[f"{state}_q95"]], boxpoints=False, name=name,
-                line=dict(color=color, width=2), fillcolor=fill, width=.45,
-                showlegend=False,
-            ), row=1, col=column)
+            figure.add_trace(mean_bar(row, state, name, color), row=1, col=column)
         figure.layout.annotations[column - 1].text += (
             f"<br><sup>High n={int(row.n_high):,}; Low n={int(row.n_low):,}; "
             f"nominal Holm p={row.p_holm:.3g}</sup>"
         )
-        figure.update_yaxes(title_text="Variance (percentage points squared)",
+        figure.update_yaxes(title_text="Mean variance (percentage points squared)",
                             rangemode="tozero", row=1, col=column)
     figure.update_layout(
-        title=f"NE variability over the preceding {history_seconds:g} seconds<br><sup>All eligible seconds pooled; saved processed NE without the additional 0.1 Hz low-pass</sup>",
+        title=f"NE variability over the preceding {history_seconds:g} seconds<br><sup>All eligible seconds pooled</sup>",
         template="plotly_white", width=1250, height=650,
         margin=dict(l=100, r=55, t=135, b=120), font=dict(size=14),
     )
     figure.add_annotation(
         x=.5, y=-.23, xref="paper", yref="paper", xanchor="center", showarrow=False,
-        text="Boxes: median and IQR; whiskers: 5th–95th percentiles. All finite values enter the tests.",
+        text="Bars show means. Mann–Whitney tests compare distributions, not means.",
         font=dict(size=13),
     )
     return figure

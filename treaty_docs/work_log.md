@@ -2,6 +2,27 @@
 
 ## 2026-09-23
 
+### Use means and plain feature labels in the NE dynamics report (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested arithmetic means in place of medians and removal of distracting
+  wording. The report and its figures now use means, call the feature slope, and
+  explain filtering once in methods. The feature definitions and pooled-second
+  weighting are unchanged.
+- Recomputed summaries from the verified saved archives. The mean comparison
+  changes the interpretation: Low has greater rising and declining magnitudes
+  and ordinary variance, but lower detrended variance. The original distribution
+  tests are retained and explicitly distinguished from tests of means.
+- Shared archive loading checks provenance for both renderers. New mean summaries
+  and figures are in `results/ne_dynamics_means_reviewed_20260923/` and
+  `results/ne_slope_direction_means_20260923/`; prior outputs remain available.
+- Verification:
+  - `Get-Date -Format yyyy-MM-dd`: `2026-09-23`.
+  - Full pytest suite: 21 passed, 1 existing optional test skipped.
+  - Rendered and visually inspected both report figures. Original comparison
+    columns match the saved results; independently checked pooled means,
+    direction-weighted reconstruction, report values, wording, and local links.
+  - `treaty validate .` and `git diff --check` passed.
+
 ### Consolidate the NE dynamics reports for delivery (Codex GPT-6; effort/token budget not exposed)
 
 - The user requested one report and authorized commit/push on completion.

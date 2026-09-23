@@ -21,8 +21,8 @@ FEATURE_NAMES = (
     "ne_past_detrended_variance",
 )
 FEATURE_TITLES = (
-    "Signed slow NE slope",
-    "Absolute slow NE slope",
+    "Signed NE slope",
+    "Absolute NE slope",
     "Past 10-second NE variance",
     "Past 10-second detrended NE variance",
 )

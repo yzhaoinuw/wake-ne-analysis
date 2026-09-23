@@ -28,7 +28,7 @@ Each command refuses to overwrite a non-empty output directory. The cluster scri
 also supports `--feature-variant no_emg` and `--analysis-scope wake_only`; see the
 cluster report for the four reported combinations and interpretation limits.
 
-## Slow NE dynamics and trailing variability
+## NE dynamics and trailing variability
 
 The first-pass dynamics analysis compares signed and absolute slope after a
 0.1 Hz zero-phase low-pass, plus ordinary and linearly detrended variance over
@@ -50,7 +50,7 @@ Extraction and rendering run independently; neither needs UMAP or Matplotlib.
 Per-second features are stored in one source-stem NPZ per recording with feature
 names/units, local and absolute timestamps, unchanged labels, NaNs for unavailable
 values, and source/configuration provenance. Main tables contain pooled state
-medians, quartiles, valid/missing counts, and rank-biserial effects. Comparisons use
+means, retained quantiles, valid/missing counts, and rank-biserial effects. Comparisons use
 all available seconds, two-sided Mann-Whitney U, and four-feature Holm correction.
 P-values are nominal: correlated seconds and cross-recording scale differences
 remain caveats, not independent-animal evidence. Technical
@@ -58,7 +58,7 @@ definitions and boundary handling are documented in
 [`ne_dynamics.py`](wake_ne_analysis/ne_dynamics.py); statistical definitions are in
 [`dynamics_summary.py`](wake_ne_analysis/dynamics_summary.py).
 
-All ten aligned files are retained. Excess NE after the score interval is trimmed
+All ten files are retained. Excess NE after the score interval is trimmed
 in memory before filtering and listed in `source_audit.csv`; sources are unchanged.
 Where NE ends first, incomplete final score seconds stay missing.
 Optional descriptive mouse summaries can be requested using `--metadata` with columns
@@ -72,11 +72,14 @@ as superseded history, not mixed with the v2 archives.
 The same [NE dynamics report](writeups/ne_dynamics_report.md)
 separates the fraction of rising/declining seconds from slope magnitude within each
 direction and includes ordinary/detrended trailing variance. `render_ne_dynamics.py`
-also produces a focused `variance_dynamics` figure from the existing pooled table.
+also produces a focused `variance_dynamics` figure. Figures and the current report
+show arithmetic means. The renderer reads verified feature archives and saves a
+comparison table with means alongside the figures, checking that the original
+distribution tests are unchanged. Those tests are not tests of mean differences.
 Its descriptive table and figure can be regenerated from the completed archives:
 
 ```powershell
-python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_20260923_final --png
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_means_20260923 --png
 ```
 
 This follow-up adds no significance tests and uses a fresh output directory.

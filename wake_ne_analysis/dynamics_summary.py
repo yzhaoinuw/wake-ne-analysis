@@ -68,6 +68,7 @@ def pooled_comparisons(records):
             finite = values[np.isfinite(values)]
             groups.append(finite)
             row.update({f"n_{name}": len(finite), f"n_{name}_missing": len(values) - len(finite)})
+            row[f"{name}_mean"] = float(np.mean(finite)) if len(finite) else np.nan
             quantiles = np.quantile(finite, [.05, .25, .5, .75, .95]) if len(finite) else [np.nan] * 5
             for statistic, value in zip(("q05", "q25", "median", "q75", "q95"), quantiles):
                 row[f"{name}_{statistic}"] = value
@@ -78,6 +79,7 @@ def pooled_comparisons(records):
             row.update(p_value=float(test.pvalue), u_statistic=float(test.statistic),
                        rank_biserial=2 * float(test.statistic) / (len(high) * len(low)) - 1)
         row["median_high_minus_low"] = row["high_median"] - row["low_median"]
+        row["mean_high_minus_low"] = row["high_mean"] - row["low_mean"]
         rows.append(row)
     result = pd.DataFrame(rows)
     result["p_holm"] = holm_adjust(result.p_value)

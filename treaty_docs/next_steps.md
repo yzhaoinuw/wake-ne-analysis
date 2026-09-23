@@ -7,16 +7,18 @@
   features, the rising/declining breakdown, and variance details using the
   preliminary report's outline. Update this report in place; do not create a
   parallel slope-direction report. The duplicate was removed after consolidation.
-  All ten aligned files are retained, with excess NE tails trimmed in memory;
+  All ten files are retained, with excess NE tails trimmed in memory;
   all eligible seconds are pooled equally without further normalization or
   restrictions on states in the history window. Low has 55.2% declining seconds
-  versus 51.3% in High, approximately 19% greater median decline magnitude,
-  and 7.4%/3.8% higher ordinary/detrended variance medians. Mean slopes remain
-  positive in both labels. The original four-feature Holm family is unchanged;
+  versus 51.3% in High. Reported averages now use means: Low has 16.7% greater
+  decline magnitude, 19.9% greater rising slope, 11.9% greater ordinary variance,
+  and 14.1% lower detrended variance. Mean signed slopes are positive in both.
+  Use plain "slope" in reader-facing text and explain filtering once in methods.
+  The existing distribution tests do not test mean differences. The original four-feature Holm family is unchanged;
   retain the dependence and cross-recording comparability caveats.
   Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
-  summaries under `results/ne_slope_direction_20260923_final/`, and focused
-  variance figures under `results/ne_variance_report_20260923/`. The older
+  summaries under `results/ne_slope_direction_means_20260923/`, and focused
+  variance figures under `results/ne_dynamics_means_reviewed_20260923/`. The older
   eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused
