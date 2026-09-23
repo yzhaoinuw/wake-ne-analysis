@@ -9,6 +9,7 @@ comparison. It does not contain raw MAT files or saved feature matrices.
 | Recording-level High/Low Alertness report | `build_recording_report.py`, then `render_recording_report_figures.py` | `recording_report.py`, `io.py`, `spectra.py`, `config.py` |
 | EEG/EMG/NE cluster visualization | `extract_cluster_features.py`, then `plot_cluster_embeddings.py` | `cluster_features.py`, `stages.py` |
 | Experimental NREM-baseline Wake calibration | `calibrate_nrem_baseline.py` | `nrem_baseline.py` |
+| Pooled-second NE slopes and trailing variability | `analyze_ne_dynamics.py`, then `render_ne_dynamics.py` | `ne_dynamics.py` (signal features), `dynamics_summary.py` (pooled statistics), `dynamics_workflow.py` (archives and audits), `dynamics_plots.py` (figures) |
 
 `writeups/` contains the current reports and their static figures. Locally generated
 MAT files, CSV/JSON outputs, and feature archives remain ignored under `data/`,

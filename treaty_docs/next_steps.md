@@ -2,12 +2,41 @@
 
 ## Currently Hot
 
+- **Single current NE dynamics report:** `writeups/ne_dynamics_report.md` is the
+  only maintained report for this analysis. It combines all four original pooled
+  features, the rising/declining breakdown, and variance details using the
+  preliminary report's outline. Update this report in place; do not create a
+  parallel slope-direction report. The duplicate was removed after consolidation.
+  All ten files are retained, with excess NE tails trimmed in memory;
+  all eligible seconds are pooled equally without further normalization or
+  restrictions on states in the history window. Low has 55.2% declining seconds
+  versus 51.3% in High. Reported averages now use means: Low has 16.7% steeper
+  declines, 19.9% steeper rises, 11.9% greater ordinary variance,
+  and 14.1% lower detrended variance. Mean signed slopes are positive in both.
+  Use signed slopes consistently for rising and declining seconds, including
+  negative values for declines in Figure 1. Slope and variance plots use
+  quartile boxes, median lines, mean dots, and 5th–95th percentile whiskers;
+  the percentage bars remain. Tail values are omitted only from the display. Questions precede the executive summary.
+  Ordinary variance answers the primary variability question; local detrending is
+  an optional secondary check that removes within-window linear changes. Retain
+  both results and the original four-feature correction. Explain filtering once
+  in methods.
+  Explain rank-biserial effects using the observed 51.2–53.1% pairwise comparisons,
+  and state plainly why small pooled p-values do not establish strong separation
+  or replication across animals.
+  The existing distribution tests do not test mean differences. The original four-feature Holm family is unchanged;
+  retain the dependence and cross-recording comparability caveats.
+  Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
+  summaries under `results/ne_slope_direction_boxplots_20260923/`, and focused
+  variance figures under `results/ne_dynamics_boxplots_20260923/`. The older
+  eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused
   `writeups/cluster_visualization_wake_only_report.md` follow-up, its
   `writeups/cluster_visualization_wake_only_report_ne_excluded.md` NE-excluded
   sensitivity, and the
-  source-preserving `writeups/nrem_baseline_cluster_target_report.md` comparison.
+  source-preserving `writeups/nrem_baseline_cluster_target_report.md` comparison,
+  plus `writeups/ne_dynamics_report.md`.
   Their committed figures live in the adjacent `writeups/assets/` tree. Do not treat any
   descriptive screen as independent-mouse biological inference.
 - Local raw MAT files and regenerated products remain ignored: `data/` holds input
@@ -66,6 +95,10 @@
 
 ## Scientific follow-up
 
+- Keep the current dynamics report as the requested pooled-seconds exploratory
+  screen. Independent-animal confirmation would be a separate follow-up, not a
+  prerequisite for this report. Any new window/cutoff search should be declared
+  as a separate exploratory analysis; retain the current four feature definitions.
 - Inspect representative raw EMG/envelope traces and predeclare burst-threshold and
   feature-panel sensitivity work before interpreting EMG-associated Wake geometry.
 - Repeat the NREM-baseline calibration with recording-held-out target assignment;
@@ -77,8 +110,9 @@
   descriptive, not a cluster statistic.
 - Verify mouse, session, condition, and circadian metadata before making an
   independent-animal comparison. Do not pool repeated recordings as mice.
-- Keep the duration-mismatched `mouse5_day1.mat` excluded rather than trimming or
-  padding it. Add MAT v7.3 support only if a supplied file requires it.
+- Retain the confirmed aligned ten-file collection using the common-start interval;
+  trim excess NE tails in memory and audit them. Do not revive the superseded
+  `mouse5_day1.mat` exclusion. Add MAT v7.3 support only if a supplied file requires it.
 
 ## Historical material
 
