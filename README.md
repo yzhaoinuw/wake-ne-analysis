@@ -5,8 +5,7 @@ Reproducible analyses behind the current descriptive PI-facing writeups:
 - [Recording-level High/Low Alertness report](writeups/preliminary_recording_report.md)
 - [EEG/EMG/NE cluster visualization report](writeups/cluster_visualization_report.md)
 - [NREM-baseline Wake-labeling cluster-target follow-up](writeups/nrem_baseline_cluster_target_report.md)
-- [Slow NE dynamics and trailing variability](writeups/ne_dynamics_report.md)
-- [NE slope direction and variability during High and Low Alertness](writeups/ne_slope_direction_report.md)
+- [NE dynamics: slopes, rising/declining trends, and variability](writeups/ne_dynamics_report.md)
 
 Raw MATLAB files, derived feature archives, and CSV/JSON run outputs are deliberately
 local and ignored. Final one-second `sleep_scores` are read unchanged: High
@@ -70,7 +69,7 @@ The main comparison always pools all eligible seconds, independent of metadata.
 No recording-comparison test or plot is generated. Older v1 outputs are retained
 as superseded history, not mixed with the v2 archives.
 
-The focused [slope-direction and variability report](writeups/ne_slope_direction_report.md)
+The same [NE dynamics report](writeups/ne_dynamics_report.md)
 separates the fraction of rising/declining seconds from slope magnitude within each
 direction and includes ordinary/detrended trailing variance. `render_ne_dynamics.py`
 also produces a focused `variance_dynamics` figure from the existing pooled table.

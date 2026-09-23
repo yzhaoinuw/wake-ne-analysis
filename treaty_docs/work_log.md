@@ -2,6 +2,24 @@
 
 ## 2026-09-23
 
+### Consolidate the NE dynamics reports for delivery (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested one report and authorized commit/push on completion.
+  `writeups/ne_dynamics_report.md` now contains the expanded preliminary-style
+  narrative, all four pooled feature comparisons, slope direction breakdown,
+  variance details, figures, caveats, and complete reproduction commands.
+- Removed the duplicate `ne_slope_direction_report.md`; its content is merged
+  into the canonical report and its earlier version remains in Git history.
+  README, current handoff notes, and startup guidance now name only the one
+  current dynamics report. Historical work-log entries retain their original paths.
+- No analysis definitions, feature archives, or numerical results changed.
+- Verification:
+  - `Get-Date -Format yyyy-MM-dd`: `2026-09-23`.
+  - Existing pooled comparison table and slope-direction summaries were used to
+    retain all results; all four median/IQR rows match the saved comparison table.
+  - Current references and local Markdown links verified; `treaty validate .`
+    and `git diff --check` passed. No analysis code or calculations changed.
+
 ### Prepare the requested NE dynamics delivery (Codex GPT-6; effort/token budget not exposed)
 
 - The user authorized committing and pushing the completed pooled NE dynamics

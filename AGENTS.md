@@ -96,6 +96,9 @@ Preserve local guidance and resolve conflicts before committing. This machine ha
 - `README.md`: setup, inputs, CLI/API usage, output columns.
 - `project_overview.md`: architecture and module responsibilities.
 - `writeups/`: the current PI-facing reports and their committed figures.
+- `writeups/ne_dynamics_report.md`: the single current report for the pooled
+  NE dynamics analysis, including slopes, rising/declining trends, and variance.
+  Update it in place rather than maintaining parallel reports of that analysis.
 - `archive/`: historical reports, assets, examples, and superseded generic code.
 - `treaty_docs/next_steps.md`: concrete unfinished work.
 - `treaty_docs/work_log.md`: decisions and verified delivery state.

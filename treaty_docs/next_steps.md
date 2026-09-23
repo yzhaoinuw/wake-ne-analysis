@@ -2,41 +2,29 @@
 
 ## Currently Hot
 
-- **Focused slope-direction and variability report:** `writeups/ne_slope_direction_report.md`
-  follows the preliminary report's outline and describes pooled sign fractions
-  and conditional slope magnitudes. Low has 55.2% declining seconds versus 51.3%
-  in High, with approximately 19% greater median decline magnitude; rising
-  medians are similar. Mean slopes remain positive in both labels, so do not
-  describe this as a sustained fall or a transition-triggered response. No new
-  significance tests were added. `scripts/summarize_ne_slope_direction.py` reads
-  the verified v2 archives; final table/HTML/PNG and provenance are in
-  `results/ne_slope_direction_20260923_final/`. The report now also includes the
-  existing ordinary/detrended trailing variance results, with Low medians 7.4%
-  and 3.8% higher, respectively. Their p-values retain the original four-feature
-  Holm correction; no new tests were added. Focused variance HTML/PNG is in
-  `results/ne_variance_report_20260923/`.
-- **Current pooled-seconds NE dynamics:** `writeups/ne_dynamics_report.md` uses
-  all ten aligned files. The user reaffirmed that excess NE after the score
-  interval must be trimmed in memory, not used to exclude `mouse5_day1` or
-  `408_yfp`; the previous exclusion note was stale. All eligible seconds are
-  pooled equally, regardless of recording, with no further normalization.
-  Do not substitute recording comparisons for this explicitly requested screen.
-  Signed/absolute 0.1 Hz slopes and ordinary/detrended trailing 10-second variance
-  retain unrestricted state history. All four nominal pooled Mann-Whitney tests
-  remain below 0.05 after Holm; absolute rank-biserial effects are only 0.025–0.061.
-  Describe dependence and cross-recording scale comparability as report caveats.
-  Current archives/results are `data/derived_features/ne_dynamics_v2_pooled_20260923/`
-  and `results/ne_dynamics_v2_pooled_20260923/`. HTML/PNG rendering completed here;
-  visually reviewed figures are in the results folder's `figures_reviewed/`.
-  The prior eight-file recording comparison is superseded and preserved under
-  `archive/ne_dynamics_v1_recording/` and the ignored v1 run directories.
+- **Single current NE dynamics report:** `writeups/ne_dynamics_report.md` is the
+  only maintained report for this analysis. It combines all four original pooled
+  features, the rising/declining breakdown, and variance details using the
+  preliminary report's outline. Update this report in place; do not create a
+  parallel slope-direction report. The duplicate was removed after consolidation.
+  All ten aligned files are retained, with excess NE tails trimmed in memory;
+  all eligible seconds are pooled equally without further normalization or
+  restrictions on states in the history window. Low has 55.2% declining seconds
+  versus 51.3% in High, approximately 19% greater median decline magnitude,
+  and 7.4%/3.8% higher ordinary/detrended variance medians. Mean slopes remain
+  positive in both labels. The original four-feature Holm family is unchanged;
+  retain the dependence and cross-recording comparability caveats.
+  Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
+  summaries under `results/ne_slope_direction_20260923_final/`, and focused
+  variance figures under `results/ne_variance_report_20260923/`. The older
+  eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused
   `writeups/cluster_visualization_wake_only_report.md` follow-up, its
   `writeups/cluster_visualization_wake_only_report_ne_excluded.md` NE-excluded
   sensitivity, and the
   source-preserving `writeups/nrem_baseline_cluster_target_report.md` comparison,
-  plus `writeups/ne_dynamics_report.md` and `writeups/ne_slope_direction_report.md`.
+  plus `writeups/ne_dynamics_report.md`.
   Their committed figures live in the adjacent `writeups/assets/` tree. Do not treat any
   descriptive screen as independent-mouse biological inference.
 - Local raw MAT files and regenerated products remain ignored: `data/` holds input
