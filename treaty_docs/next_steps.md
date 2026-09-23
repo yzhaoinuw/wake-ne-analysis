@@ -10,14 +10,19 @@
   All ten files are retained, with excess NE tails trimmed in memory;
   all eligible seconds are pooled equally without further normalization or
   restrictions on states in the history window. Low has 55.2% declining seconds
-  versus 51.3% in High. Reported averages now use means: Low has 16.7% greater
-  decline magnitude, 19.9% greater rising slope, 11.9% greater ordinary variance,
+  versus 51.3% in High. Reported averages now use means: Low has 16.7% steeper
+  declines, 19.9% steeper rises, 11.9% greater ordinary variance,
   and 14.1% lower detrended variance. Mean signed slopes are positive in both.
-  Use plain "slope" in reader-facing text and explain filtering once in methods.
+  Use signed slopes consistently for rising and declining seconds, including
+  negative values for declines in Figure 1. Questions precede the executive summary.
+  Ordinary variance answers the primary variability question; local detrending is
+  an optional secondary check that removes within-window linear changes. Retain
+  both results and the original four-feature correction. Explain filtering once
+  in methods.
   The existing distribution tests do not test mean differences. The original four-feature Holm family is unchanged;
   retain the dependence and cross-recording comparability caveats.
   Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
-  summaries under `results/ne_slope_direction_means_20260923/`, and focused
+  summaries under `results/ne_slope_direction_signed_20260923/`, and focused
   variance figures under `results/ne_dynamics_means_reviewed_20260923/`. The older
   eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,

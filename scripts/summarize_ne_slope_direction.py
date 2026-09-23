@@ -62,15 +62,15 @@ def make_figure(summary):
             text=[f"{row.percent_rising:.1f}%", f"{row.percent_declining:.1f}%"],
             textposition="outside", marker_color=color, name=row.state, legendgroup=row.state,
         ), row=1, col=1)
-        means = [row.rising_mean, -row.declining_mean]
+        means = [row.rising_mean, row.declining_mean]
         fig.add_trace(go.Bar(
             x=["Rising", "Declining"], y=means, marker_color=color,
             text=[f"{value:.4f}" for value in means], textposition="outside",
-            hovertemplate="%{x}<br>Mean magnitude: %{y:.4f}<extra>%{fullData.name}</extra>",
+            hovertemplate="%{x}<br>Mean slope: %{y:.4f}<extra>%{fullData.name}</extra>",
             name=row.state, legendgroup=row.state, showlegend=False,
         ), row=1, col=2)
     fig.update_yaxes(title_text="Percentage of valid state seconds", range=[0, 100], row=1, col=1)
-    fig.update_yaxes(title_text="Mean slope magnitude (percentage points/s)", rangemode="tozero", row=1, col=2)
+    fig.update_yaxes(title_text="Mean slope (percentage points/s)", rangemode="tozero", row=1, col=2)
     fig.update_layout(
         title="Rising and declining NE during High and Low Alertness<br><sup>All eligible seconds pooled across ten files</sup>",
         template="plotly_white", barmode="group", width=1250, height=650,
@@ -78,7 +78,7 @@ def make_figure(summary):
         legend=dict(orientation="h", x=.5, xanchor="center", y=-.18),
     )
     fig.add_annotation(x=.5, y=-.34, xref="paper", yref="paper", xanchor="center",
-                       text="Right panel: means within each direction; declining slopes shown as positive magnitudes.",
+                       text="Right panel: mean slopes; positive for rising seconds, negative for declining seconds.",
                        showarrow=False, font=dict(size=12))
     return fig
 

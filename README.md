@@ -70,7 +70,7 @@ No recording-comparison test or plot is generated. Older v1 outputs are retained
 as superseded history, not mixed with the v2 archives.
 
 The same [NE dynamics report](writeups/ne_dynamics_report.md)
-separates the fraction of rising/declining seconds from slope magnitude within each
+separates the fraction of rising/declining seconds from signed slope within each
 direction and includes ordinary/detrended trailing variance. `render_ne_dynamics.py`
 also produces a focused `variance_dynamics` figure. Figures and the current report
 show arithmetic means. The renderer reads verified feature archives and saves a
@@ -79,7 +79,7 @@ distribution tests are unchanged. Those tests are not tests of mean differences.
 Its descriptive table and figure can be regenerated from the completed archives:
 
 ```powershell
-python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_means_20260923 --png
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_signed_20260923 --png
 ```
 
 This follow-up adds no significance tests and uses a fresh output directory.

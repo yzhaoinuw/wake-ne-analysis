@@ -2,6 +2,26 @@
 
 ## 2026-09-23
 
+### Clarify slope signs and the purpose of local detrending (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested consistent slope terminology, a Questions section, and an
+  explanation of local detrending after recording-level preprocessing. Report
+  direction-specific slopes with their signs in both text and Figure 1.
+- Ordinary variance addresses the original variability question. Local detrending
+  is an optional secondary measure that removes each window's fitted linear change,
+  potentially including NE changes of interest. Preserve both results and the
+  original four-feature correction; a reversal alone does not demonstrate randomness.
+- Verified equal valid masks for the two variance columns and nonnegative removed
+  variance in every eligible Wake window. Mean removed variance is 0.0839279 in
+  High and 0.1122390 in Low, explaining the reversal in the mean comparison.
+- Verification:
+  - Local date: `Get-Date -Format yyyy-MM-dd` returned `2026-09-23`.
+  - Reran the direction summary into `results/ne_slope_direction_signed_20260923/`;
+    its numerical summary matches the prior mean summary. Figure 1 was visually
+    inspected with negative declining slopes and checked against the saved means.
+  - Report wording, Questions placement, local links, and variance decomposition
+    checked; `treaty validate .` and `git diff --check` passed.
+
 ### Use means and plain feature labels in the NE dynamics report (Codex GPT-6; effort/token budget not exposed)
 
 - The user requested arithmetic means in place of medians and removal of distracting
