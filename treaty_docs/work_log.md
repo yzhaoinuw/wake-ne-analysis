@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-09-23
+
+### Match the source-label NE check to the NE-excluded cluster screen (Codex GPT-5; effort/tokens not reported)
+
+- The direct High/Low Alertness screen now uses the same fixed label-balanced
+  2,000-second sample and within-recording robust-scaled withheld NE values as
+  the NE-excluded cluster checks, rather than conflating that question with the
+  recording-level raw-fluorescence summary. Neither mean processed NE nor NE
+  slope differs in this matching descriptive screen (Holm-adjusted p = 1.000 for
+  each feature); correlated seconds remain the stated inference limitation.
+- The PI discussion draft was narrowed to the requested representative trace so
+  it does not duplicate report maps or juxtapose incompatible statistical units.
+  Its existing four-panel PNG is deliberately not committed because it must be
+  regenerated from the trace-only script in the user's interactive environment.
+- Verification:
+  - `Get-Date -Format yyyy-MM-dd` returned `2026-09-23`.
+  - `git diff --check` passed before the treaty-note update.
+
 ## 2026-09-22
 
 ### Compare withheld NE features across NE-excluded Wake partitions (Codex GPT-5; effort/tokens not reported)

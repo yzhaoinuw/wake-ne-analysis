@@ -45,7 +45,13 @@
   every 3-group pair, five of six 4-group pairs, and nine of ten 5-group pairs
   after within-resolution Holm correction; no `ne_slope_ols_per_second` pair
   differs. These are pseudoreplicated descriptive patterns, not independent-mouse
-  inference.
+  inference. On the matching label-balanced 1,000-High / 1,000-Low source-label
+  screen, neither withheld NE feature differs (Holm-adjusted p = 1.000 for both).
+- **PI discussion trace:** `scripts/render_pi_alertness_draft.py` is limited to a
+  representative 120-second Wake trace (processed NE, robust-scaled EMG RMS, and
+  the existing source labels). Re-render the PNG from the user's interactive
+  `ne_umap` terminal before adding it to a future commit; the agent-side Python
+  process cannot safely render Matplotlib figures on this host.
 - **Experimental NREM-baseline calibration:** `scripts/calibrate_nrem_baseline.py`
   reimplements the source-preserving NREM-envelope comparison locally and targets
   the three-partition's two High-Alertness-only groups (clusters 2 and 3), never t-SNE/UMAP

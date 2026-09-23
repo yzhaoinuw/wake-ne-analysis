@@ -75,6 +75,27 @@ source labels on the UMAP display. These EMG-derived labels did not enter the
 graph or clustering; they are shown afterward for comparison and are not two
 machine-derived clusters.
 
+#### Matched source-label NE-feature check
+
+For a direct comparison with the later graph-group checks, this screen uses the
+same fixed, label-balanced sample of 2,000 Wake seconds (1,000 High Alertness
+and 1,000 Low Alertness seconds).  It compares the two withheld NE features
+using their saved within-recording robust-scaled values, rather than raw
+fluorescence values or recording-level summaries.  Values are median (IQR);
+two-sided Mann–Whitney tests are adjusted together across the two features with
+Holm correction (see [Appendix: Why use Holm correction?](#appendix-why-use-holm-correction)).
+
+| Withheld NE feature | High Alertness (n = 1,000 seconds) | Low Alertness (n = 1,000 seconds) | Unadjusted p | Holm-adjusted p |
+|---|---:|---:|---:|---:|
+| Mean processed NE (within-recording robust units) | 0.424 (-0.009 to 0.876) | 0.500 (-0.012 to 0.823) | 0.920 | 1.000 |
+| NE slope (within-recording robust units/s) | 0.073 (-0.405 to 0.506) | 0.065 (-0.448 to 0.547) | 0.706 | 1.000 |
+
+On this matched pooled-seconds screen, neither withheld NE feature differs
+between the existing High- and Low-Alertness source labels.  As for the
+graph-group checks below, seconds from a recording are correlated; the
+pooled-seconds p-values are therefore descriptive and the recording-level
+comparison remains the recording-aware companion analysis.
+
 ### Three groups
 
 | Spectral cluster | Seconds | Recordings | Source High | Source Low | Reading |
