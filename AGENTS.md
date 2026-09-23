@@ -51,6 +51,15 @@ multiple requested changes need a body.
 
 - Final `sleep_scores`: 4 High Alertness, 5 Low Alertness; one label per second.
 - `ne` is processed percentage delta-F/F. Use its saved rate and `start_time`.
+- For the current ten-file collection, common-start alignment is confirmed.
+  Retain `mouse5_day1.mat` and `408_yfp.mat`: use the common labeled interval,
+  trimming only excess NE at the end in memory, with a source audit. A longer
+  NE tail alone is not a reason to exclude a file. Never rewrite source MAT files.
+- The current NE dynamics screen explicitly pools all eligible seconds across
+  files, with no additional normalization or state-history exclusions. Report
+  pooled tests as nominal exploratory results with temporal-dependence and
+  cross-recording-comparability caveats; do not replace this requested comparison
+  with recording-level tests. Per-file provenance and coverage remain audits.
 - Equal-length windows are for spectra only. NE signal elevation episodes retain natural boundaries.
 - Never join disjoint bouts or bridge invalid NE to manufacture usable duration.
 - No silent input rewriting, relabeling, normalization, or inverse filtering.

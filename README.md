@@ -1,10 +1,12 @@
 # Wake NE analysis
 
-Reproducible analyses behind two current descriptive PI-facing writeups:
+Reproducible analyses behind the current descriptive PI-facing writeups:
 
 - [Recording-level High/Low Alertness report](writeups/preliminary_recording_report.md)
 - [EEG/EMG/NE cluster visualization report](writeups/cluster_visualization_report.md)
 - [NREM-baseline Wake-labeling cluster-target follow-up](writeups/nrem_baseline_cluster_target_report.md)
+- [Slow NE dynamics and trailing variability](writeups/ne_dynamics_report.md)
+- [NE slope direction and variability during High and Low Alertness](writeups/ne_slope_direction_report.md)
 
 Raw MATLAB files, derived feature archives, and CSV/JSON run outputs are deliberately
 local and ignored. Final one-second `sleep_scores` are read unchanged: High
@@ -26,6 +28,59 @@ python scripts/plot_cluster_embeddings.py --feature-dir data/derived_features/fe
 Each command refuses to overwrite a non-empty output directory. The cluster script
 also supports `--feature-variant no_emg` and `--analysis-scope wake_only`; see the
 cluster report for the four reported combinations and interpretation limits.
+
+## Slow NE dynamics and trailing variability
+
+The first-pass dynamics analysis compares signed and absolute slope after a
+0.1 Hz zero-phase low-pass, plus ordinary and linearly detrended variance over
+the preceding 10 seconds of saved processed NE. History may cross **any** score
+state. All eligible seconds are pooled with equal weight, irrespective of recording.
+No label-history exclusions, relabeling, or additional normalization are applied.
+
+```powershell
+python scripts/analyze_ne_dynamics.py --input-dir data --feature-dir data/derived_features/ne_dynamics_v2_pooled --results-dir results/ne_dynamics_v2_pooled
+python scripts/render_ne_dynamics.py --results-dir results/ne_dynamics_v2_pooled
+```
+
+Use fresh directory names when rerunning; existing outputs are never overwritten.
+The completed September 23 run uses the suffix `ne_dynamics_v2_pooled_20260923` for both
+directories. The renderer creates standalone interactive HTML files. Add `--png`
+for static Plotly/Kaleido images and `--output-dir` to choose a fresh figure folder.
+Extraction and rendering run independently; neither needs UMAP or Matplotlib.
+
+Per-second features are stored in one source-stem NPZ per recording with feature
+names/units, local and absolute timestamps, unchanged labels, NaNs for unavailable
+values, and source/configuration provenance. Main tables contain pooled state
+medians, quartiles, valid/missing counts, and rank-biserial effects. Comparisons use
+all available seconds, two-sided Mann-Whitney U, and four-feature Holm correction.
+P-values are nominal: correlated seconds and cross-recording scale differences
+remain caveats, not independent-animal evidence. Technical
+definitions and boundary handling are documented in
+[`ne_dynamics.py`](wake_ne_analysis/ne_dynamics.py); statistical definitions are in
+[`dynamics_summary.py`](wake_ne_analysis/dynamics_summary.py).
+
+All ten aligned files are retained. Excess NE after the score interval is trimmed
+in memory before filtering and listed in `source_audit.csv`; sources are unchanged.
+Where NE ends first, incomplete final score seconds stay missing.
+Optional descriptive mouse summaries can be requested using `--metadata` with columns
+`recording_id,mouse_id,condition`, one row per included recording (recording IDs
+are MAT filename stems). Seconds are pooled within mouse and condition **before**
+medians; conditions are never pooled together in those optional mouse summaries.
+The main comparison always pools all eligible seconds, independent of metadata.
+No recording-comparison test or plot is generated. Older v1 outputs are retained
+as superseded history, not mixed with the v2 archives.
+
+The focused [slope-direction and variability report](writeups/ne_slope_direction_report.md)
+separates the fraction of rising/declining seconds from slope magnitude within each
+direction and includes ordinary/detrended trailing variance. `render_ne_dynamics.py`
+also produces a focused `variance_dynamics` figure from the existing pooled table.
+Its descriptive table and figure can be regenerated from the completed archives:
+
+```powershell
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_20260923_final --png
+```
+
+This follow-up adds no significance tests and uses a fresh output directory.
 
 ## Experimental NREM-baseline calibration
 
