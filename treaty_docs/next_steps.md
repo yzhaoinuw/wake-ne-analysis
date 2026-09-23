@@ -14,16 +14,21 @@
   declines, 19.9% steeper rises, 11.9% greater ordinary variance,
   and 14.1% lower detrended variance. Mean signed slopes are positive in both.
   Use signed slopes consistently for rising and declining seconds, including
-  negative values for declines in Figure 1. Questions precede the executive summary.
+  negative values for declines in Figure 1. Slope and variance plots use
+  quartile boxes, median lines, mean dots, and 5th–95th percentile whiskers;
+  the percentage bars remain. Tail values are omitted only from the display. Questions precede the executive summary.
   Ordinary variance answers the primary variability question; local detrending is
   an optional secondary check that removes within-window linear changes. Retain
   both results and the original four-feature correction. Explain filtering once
   in methods.
+  Explain rank-biserial effects using the observed 51.2–53.1% pairwise comparisons,
+  and state plainly why small pooled p-values do not establish strong separation
+  or replication across animals.
   The existing distribution tests do not test mean differences. The original four-feature Holm family is unchanged;
   retain the dependence and cross-recording comparability caveats.
   Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
-  summaries under `results/ne_slope_direction_signed_20260923/`, and focused
-  variance figures under `results/ne_dynamics_means_reviewed_20260923/`. The older
+  summaries under `results/ne_slope_direction_boxplots_20260923/`, and focused
+  variance figures under `results/ne_dynamics_boxplots_20260923/`. The older
   eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused

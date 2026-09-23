@@ -2,6 +2,40 @@
 
 ## 2026-09-23
 
+### Show distributions alongside means in the NE report (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested box plots with mean dots, retaining the rising/declining
+  percentage bars, then commit and push. Means remain the narrative/table summary;
+  distribution plots make overlap and the difference between means and medians visible.
+- The shared plot helper uses quartile boxes, median lines, black mean dots, and
+  5th–95th percentile whiskers. Captions identify the percentile convention and
+  clarify that omitted tail points still enter all statistics. Slopes retain signs.
+- The preceding plain-language effect-size explanation is included in this delivery.
+  Fresh renders are in `results/ne_dynamics_boxplots_20260923/` and
+  `results/ne_slope_direction_boxplots_20260923/`. Feature archives and original
+  test results are unchanged; the unrelated PI draft image remains untracked.
+- Verification:
+  - Local date checked: `2026-09-23`.
+  - Full pytest suite: 21 passed, 1 existing optional test skipped.
+  - Both report PNGs rendered and visually inspected. Saved comparisons match
+    the previous run; direction quantiles match archive values, and box/mean
+    traces and report links were checked.
+  - `treaty validate .` and `git diff --check` passed.
+
+### Explain the effect sizes and p-values in plain language (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested a self-contained interpretation for PI readers. Translate
+  the rank-biserial effects into pairwise percentages (53.0% High for signed slope;
+  53.1%, 52.3%, and 51.2% Low for the other features), counting ties as half.
+- Explain that the near-even comparisons indicate weak separation and that Holm
+  correction covers four tests, not dependence between seconds. Retain the exact
+  statistics and distinguish distribution tests from tests of mean differences.
+- Verification:
+  - Local date checked: `2026-09-23`.
+  - All four percentages calculated from the saved effects; all four adjusted
+    p-values verified below 0.001. No analysis or figure changes.
+  - `treaty validate .`, local report link check, and `git diff --check` passed.
+
 ### Clarify slope signs and the purpose of local detrending (Codex GPT-6; effort/token budget not exposed)
 
 - The user requested consistent slope terminology, a Questions section, and an

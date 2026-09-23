@@ -55,13 +55,35 @@ High and 7,606 Low seconds. Variance units are percentage points squared.
 | Ordinary trailing variance | 0.15431 | 0.17270 | −0.0457 | 6.78 × 10⁻¹⁰ | 1.36 × 10⁻⁹ |
 | Detrended trailing variance | 0.07038 | 0.06047 | −0.0248 | 0.000825 | 0.000825 |
 
-The Mann–Whitney tests and rank-biserial effects compare distributions, **not
-means**. Positive effects indicate a tendency toward higher values in High
-Alertness. All four nominal comparisons remain below 0.05 after Holm adjustment,
-with small effect sizes (0.025–0.061) and substantial overlap.
-For detrended variance, the negative rank effect and higher High mean reflect
-different aspects of the distribution: larger values in the upper tail can raise
-the mean without producing a positive rank effect.
+**How much do the groups differ?** Rank-biserial effect describes how often one
+label has the higher value when comparing a randomly selected High second with a
+randomly selected Low second. Positive scores favor High, negative scores favor
+Low, and zero means neither label has the higher value more often. For example,
++0.060 corresponds to a 53% versus 47% split; it does not mean a 6% difference in
+average slope. Counting ties as half a comparison for each label, the results are:
+
+- **Signed slope:** High has the higher value in **53.0%** of comparisons.
+- **Absolute slope:** Low has the higher value in **53.1%** of comparisons.
+- **Ordinary variance:** Low has the higher value in **52.3%** of comparisons.
+- **Detrended variance:** Low has the higher value in **51.2%** of comparisons.
+
+These are close to an even 50/50 split. Although the averages differ, a value
+from either label commonly exceeds one from the other. **The features show weak
+separation between High and Low Alertness seconds.** For detrended variance,
+High has the higher mean even though Low more often has the higher value in
+these comparisons: large values affect the mean by their size, whereas these
+comparisons count only which value is higher.
+
+**What do the small p-values establish?** All four p-values remain below 0.001,
+and therefore below the usual 0.05 cutoff, after the Holm correction accounts
+for testing four features. The Mann–Whitney tests compare the full sets of
+values, rather than testing the reported mean differences. They treat each
+second as an independent observation, but neighboring seconds and overlapping
+10-second windows are related. Here, “nominal” means the p-values are calculated
+under that independence assumption, which these data do not satisfy. Holm
+correction addresses the four tests; it does not fix this dependence.
+**The small p-values therefore do not establish a large difference or a result
+that reliably repeats across animals.**
 
 ## Methodology
 
@@ -124,8 +146,12 @@ steeper rises and 16.7% steeper declines.
 ![Frequency and slopes of rising and declining NE](assets/ne_slope_direction_20260923/slope_direction.png)
 
 **Figure 1.** Left: percentage of eligible state seconds classified as rising or
-declining. Right: mean slope within each direction, positive for rises and
-negative for declines.
+declining. Right: slope distributions within each direction, positive for rises
+and negative for declines. Boxes contain the middle 50% of values, the line
+inside each box marks the median, and black dots mark the means. Whiskers span
+the 5th–95th percentiles. Values beyond the whiskers are omitted from the display
+but retained in all summaries. These show the spread of seconds, not uncertainty
+in the mean.
 
 Mean signed slopes were positive in both labels despite the greater frequency
 of declining seconds. The rising slopes were large enough to outweigh the
@@ -143,9 +169,12 @@ This decomposition does not identify that component as artifact or biological si
 
 ![Ordinary and detrended trailing NE variance](assets/ne_slope_direction_20260923/variance_dynamics.png)
 
-**Figure 2.** Mean variance over the preceding 10 seconds, assigned to the current
-second's alertness label. All finite values contribute to the means. The displayed
-p-values are from the original distribution comparisons, not tests of the means.
+**Figure 2.** Distributions of variance over the preceding 10 seconds, assigned
+to the current second's alertness label. Boxes contain the middle 50% of values,
+lines mark medians, black dots mark means, and whiskers span the 5th–95th
+percentiles. Values beyond the whiskers are omitted from the display; all finite
+values contribute to the means and tests. The displayed p-values compare the
+distributions, not the means. The boxes show substantial overlap between labels.
 
 ## Interpretation for the proposal
 
@@ -176,14 +205,14 @@ samples, so slopes cannot establish that NE changes precede an alertness transit
 
 ## Reproducibility
 
-The workflow extracts the four features, renders their pooled means, and summarizes
+The workflow extracts the four features, renders their pooled distributions with mean dots, and summarizes
 rising/declining seconds from the same archives:
 
 ```powershell
 conda activate sleep_scoring_dash3.0
 python scripts/analyze_ne_dynamics.py --input-dir data --feature-dir data/derived_features/ne_dynamics_v2_pooled_20260923 --results-dir results/ne_dynamics_v2_pooled_20260923
-python scripts/render_ne_dynamics.py --results-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_dynamics_means_reviewed_20260923 --png
-python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_signed_20260923 --png
+python scripts/render_ne_dynamics.py --results-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_dynamics_boxplots_20260923 --png
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_boxplots_20260923 --png
 ```
 
 Use fresh output names when rerunning. This update reused the existing feature

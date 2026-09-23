@@ -72,14 +72,15 @@ as superseded history, not mixed with the v2 archives.
 The same [NE dynamics report](writeups/ne_dynamics_report.md)
 separates the fraction of rising/declining seconds from signed slope within each
 direction and includes ordinary/detrended trailing variance. `render_ne_dynamics.py`
-also produces a focused `variance_dynamics` figure. Figures and the current report
-show arithmetic means. The renderer reads verified feature archives and saves a
+also produces a focused `variance_dynamics` figure. Figures show boxes for the middle 50% of values, median lines, mean dots,
+and 5th–95th percentile whiskers; tail points are omitted only from the display.
+Tables and narrative continue to report arithmetic means. The renderer reads verified feature archives and saves a
 comparison table with means alongside the figures, checking that the original
 distribution tests are unchanged. Those tests are not tests of mean differences.
 Its descriptive table and figure can be regenerated from the completed archives:
 
 ```powershell
-python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_signed_20260923 --png
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_boxplots_20260923 --png
 ```
 
 This follow-up adds no significance tests and uses a fresh output directory.

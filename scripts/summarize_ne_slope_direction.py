@@ -16,6 +16,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from wake_ne_analysis.dynamics_workflow import load_feature_records, require_empty, source_digest
 from wake_ne_analysis.dynamics_summary import pool_records
+from wake_ne_analysis.dynamics_plots import box_and_mean_traces, prefixed_box_stats
 
 
 def load_slopes(analysis_dir):
@@ -41,8 +42,8 @@ def summarize(slopes):
             row[f"n_{direction}"] = len(chosen)
             row[f"percent_{direction}"] = 100 * len(chosen) / len(values) if len(values) else np.nan
             row[f"{direction}_mean"] = float(np.mean(chosen)) if len(chosen) else np.nan
-            quantiles = np.quantile(chosen, [.25, .5, .75]) if len(chosen) else [np.nan] * 3
-            for field, value in zip(("q25", "median", "q75"), quantiles):
+            quantiles = np.quantile(chosen, [.05, .25, .5, .75, .95]) if len(chosen) else [np.nan] * 5
+            for field, value in zip(("q05", "q25", "median", "q75", "q95"), quantiles):
                 row[f"{direction}_{field}"] = value
         rows.append(row)
     return pd.DataFrame(rows)
@@ -56,29 +57,28 @@ def make_figure(summary):
         "How often was NE rising or declining?",
         "How steep were those rises and declines?",
     ])
-    for row, color in zip(summary.itertuples(), ("#E31A1C", "#0072B2")):
+    for row, color, offset in zip(summary.itertuples(), ("#E31A1C", "#0072B2"), (-.14, .14)):
         fig.add_trace(go.Bar(
             x=["Rising", "Declining"], y=[row.percent_rising, row.percent_declining],
             text=[f"{row.percent_rising:.1f}%", f"{row.percent_declining:.1f}%"],
             textposition="outside", marker_color=color, name=row.state, legendgroup=row.state,
         ), row=1, col=1)
-        means = [row.rising_mean, row.declining_mean]
-        fig.add_trace(go.Bar(
-            x=["Rising", "Declining"], y=means, marker_color=color,
-            text=[f"{value:.4f}" for value in means], textposition="outside",
-            hovertemplate="%{x}<br>Mean slope: %{y:.4f}<extra>%{fullData.name}</extra>",
-            name=row.state, legendgroup=row.state, showlegend=False,
-        ), row=1, col=2)
+        for index, direction in enumerate(("rising", "declining")):
+            stats = prefixed_box_stats(row._asdict(), direction)
+            for trace in box_and_mean_traces(stats, index + offset, row.state, color, width=.22):
+                fig.add_trace(trace, row=1, col=2)
+    fig.update_xaxes(tickvals=[0, 1], ticktext=["Rising", "Declining"],
+                     range=[-.5, 1.5], row=1, col=2)
     fig.update_yaxes(title_text="Percentage of valid state seconds", range=[0, 100], row=1, col=1)
-    fig.update_yaxes(title_text="Mean slope (percentage points/s)", rangemode="tozero", row=1, col=2)
+    fig.update_yaxes(title_text="Slope (percentage points/s)", rangemode="tozero", row=1, col=2)
     fig.update_layout(
         title="Rising and declining NE during High and Low Alertness<br><sup>All eligible seconds pooled across ten files</sup>",
         template="plotly_white", barmode="group", width=1250, height=650,
-        margin=dict(l=90, r=55, t=125, b=150), font=dict(size=14),
+        margin=dict(l=90, r=55, t=125, b=165), font=dict(size=14),
         legend=dict(orientation="h", x=.5, xanchor="center", y=-.18),
     )
     fig.add_annotation(x=.5, y=-.34, xref="paper", yref="paper", xanchor="center",
-                       text="Right panel: mean slopes; positive for rising seconds, negative for declining seconds.",
+                       text="Right: boxes show middle 50%; line: median; black dot: mean; whiskers: 5th–95th percentiles.<br>Tail points omitted from display; all values enter the summaries.",
                        showarrow=False, font=dict(size=12))
     return fig
 
@@ -101,7 +101,9 @@ def main(argv=None):
     summary.to_csv(args.output_dir / "slope_direction_summary.csv", index=False)
     provenance = {"analysis_dir": str(args.analysis_dir.resolve()), "config": run["config"],
                   "n_files": len(hashes), "archive_sha256": hashes,
-                  "script_sha256": source_digest(__file__), "new_significance_tests": False}
+                  "script_sha256": source_digest(__file__),
+                  "plot_helper_sha256": source_digest(Path(__file__).resolve().parents[1] / "wake_ne_analysis/dynamics_plots.py"),
+                  "new_significance_tests": False}
     (args.output_dir / "provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
     figure = make_figure(summary)
     figure.write_html(args.output_dir / "slope_direction.html", include_plotlyjs=True)

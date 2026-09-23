@@ -11,20 +11,33 @@ from .dynamics_summary import pooled_comparisons
 from .ne_dynamics import FEATURE_NAMES, FEATURE_TITLES, FEATURE_UNITS
 
 
-def mean_bar(result, state, name, color):
-    """A mean-only display; no independence-based error bars are implied."""
+def box_and_mean_traces(stats, position, name, color, width=.4):
+    """Quartile box, 5th/95th percentile whiskers, and the all-values mean."""
     import plotly.graph_objects as go
 
-    mean = result[f"{state}_mean"]
-    return go.Bar(
-        x=[name], y=[mean], name=name, marker_color=color,
-        text=[f"{mean:.4f}"], textposition="outside", showlegend=False,
-        hovertemplate="%{x}<br>Mean: %{y:.5g}<extra></extra>",
+    rgb = ",".join(str(int(color[i:i + 2], 16)) for i in (1, 3, 5))
+    box = go.Box(
+        x=[position], q1=[stats["q25"]], median=[stats["median"]], q3=[stats["q75"]],
+        lowerfence=[stats["q05"]], upperfence=[stats["q95"]],
+        name=name, legendgroup=name, showlegend=False, width=width, boxpoints=False,
+        line=dict(color=color, width=2), fillcolor=f"rgba({rgb},0.20)",
     )
+    mean = go.Scatter(
+        x=[position], y=[stats["mean"]], mode="markers", name=name,
+        legendgroup=name, showlegend=False,
+        marker=dict(color="black", size=9, line=dict(color="white", width=1)),
+        hovertemplate="Mean: %{y:.5g}<extra>%{fullData.name}</extra>",
+    )
+    return box, mean
+
+
+def prefixed_box_stats(result, prefix):
+    return {key: result[f"{prefix}_{key}"] for key in
+            ("q05", "q25", "median", "q75", "q95", "mean")}
 
 
 def build_figures(comparisons, history_seconds=10):
-    """Show arithmetic means over all finite seconds, with feature coverage."""
+    """Show pooled distributions with mean dots and feature coverage."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
@@ -40,7 +53,8 @@ def build_figures(comparisons, history_seconds=10):
         for state, name, color in (("low", "Low Alertness", "#0072B2"),
                                     ("high", "High Alertness", "#E31A1C")):
             n = int(result[f"n_{state}"])
-            fig.add_trace(mean_bar(result, state, name, color), row=row, col=col)
+            for trace in box_and_mean_traces(prefixed_box_stats(result, state), name, name, color):
+                fig.add_trace(trace, row=row, col=col)
             total = n + int(result[f"n_{state}_missing"])
             coverage.add_trace(go.Bar(
                 x=[name], y=[100 * n / total if total else np.nan], marker_color=color,
@@ -55,7 +69,7 @@ def build_figures(comparisons, history_seconds=10):
                          zerolinecolor="#dddddd", row=row, col=col)
         coverage.update_yaxes(title_text="Valid state seconds (%)", range=[0, 112], row=row, col=col)
     fig.update_layout(
-        title="NE dynamics: all eligible seconds pooled<br><sup>Arithmetic means of all finite values</sup>",
+        title="NE dynamics: all eligible seconds pooled<br><sup>Boxes: middle 50%; line: median; black dot: mean; whiskers: 5th–95th percentiles</sup>",
         template="plotly_white", width=1300, height=950,
         margin=dict(l=100, r=50, t=135, b=75), font=dict(size=14),
         annotations=list(fig.layout.annotations) + [dict(
@@ -91,7 +105,8 @@ def render_results(results_dir, output_dir, png=False):
     output_dir.mkdir(parents=True, exist_ok=True)
     comparisons.to_csv(output_dir / "pooled_comparisons.csv", index=False)
     provenance = {"analysis_dir": str(results_dir.resolve()), "archive_sha256": hashes,
-                  "summary": "arithmetic_mean_of_all_finite_seconds",
+                  "summary": "all_finite_seconds",
+                  "display": "quartile_box_with_mean_dot_and_5th_95th_percentile_whiskers",
                   "code_sha256": {name: source_digest(Path(__file__).with_name(name)) for name in
                                   ("dynamics_plots.py", "dynamics_summary.py", "dynamics_workflow.py")}}
     (output_dir / "provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
@@ -103,7 +118,7 @@ def render_results(results_dir, output_dir, png=False):
 
 
 def build_variance_figure(comparisons, history_seconds=10):
-    """Focused mean variance panels; retain the original distribution tests."""
+    """Focused variance distributions; retain the original distribution tests."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
@@ -117,21 +132,22 @@ def build_variance_figure(comparisons, history_seconds=10):
             ("high", "High Alertness", "#E31A1C"),
             ("low", "Low Alertness", "#0072B2"),
         ):
-            figure.add_trace(mean_bar(row, state, name, color), row=1, col=column)
+            for trace in box_and_mean_traces(prefixed_box_stats(row, state), name, name, color):
+                figure.add_trace(trace, row=1, col=column)
         figure.layout.annotations[column - 1].text += (
             f"<br><sup>High n={int(row.n_high):,}; Low n={int(row.n_low):,}; "
             f"nominal Holm p={row.p_holm:.3g}</sup>"
         )
-        figure.update_yaxes(title_text="Mean variance (percentage points squared)",
+        figure.update_yaxes(title_text="Variance (percentage points squared)",
                             rangemode="tozero", row=1, col=column)
     figure.update_layout(
         title=f"NE variability over the preceding {history_seconds:g} seconds<br><sup>All eligible seconds pooled</sup>",
         template="plotly_white", width=1250, height=650,
-        margin=dict(l=100, r=55, t=135, b=120), font=dict(size=14),
+        margin=dict(l=100, r=55, t=135, b=145), font=dict(size=14),
     )
     figure.add_annotation(
         x=.5, y=-.23, xref="paper", yref="paper", xanchor="center", showarrow=False,
-        text="Bars show means. Mann–Whitney tests compare distributions, not means.",
+        text="Boxes: middle 50%; line: median; black dot: mean; whiskers: 5th–95th percentiles.<br>Tail points omitted from display; all values enter means and tests.",
         font=dict(size=13),
     )
     return figure
