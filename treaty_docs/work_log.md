@@ -2,6 +2,18 @@
 
 ## 2026-09-23
 
+### Hand off startup-QC results to main (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested merging the completed work into main. Fetched remote history
+  and preserved its existing report merge before synchronizing dev and main.
+- The startup-QC implementation, single report, and both figures are included.
+  The unrelated untracked PI draft image remains outside the delivery.
+- Verification:
+  - Local date checked: `2026-09-23`.
+  - Remote main's merge tree exactly matched `0d6f618`; merging it into dev
+    introduced no content changes or conflicts. Prior validation remains applicable:
+    23 tests passed and 1 optional test skipped.
+
 ### Refresh the report with startup-excluded results (Codex GPT-6; effort/token budget not exposed)
 
 - The user requested the quality-checked results in the single NE dynamics report,

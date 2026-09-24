@@ -2,6 +2,9 @@
 
 ## Currently Hot
 
+- **Main handoff (2026-09-23):** the startup-QC analysis and report are included
+  in the requested `dev`/`main` synchronization, preserving the existing main merge.
+
 - **Current NE dynamics report includes startup QC:** `writeups/ne_dynamics_report.md`
   remains the single report. All tables and figures now use
   `data/derived_features/ne_dynamics_v3_startup5_20260923/` and
