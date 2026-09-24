@@ -108,6 +108,45 @@ def test_long_ne_tail_trimmed_before_filtering_without_changing_source():
     assert source.ne[-1] == 1000000
 
 
+def test_startup_exclusion_precedes_filter_and_preserves_clock_and_history():
+    fs = 10.1725
+    t = np.arange(int(150 * fs)) / fs
+    values = np.sin(t)
+    contaminated = values.copy()
+    contaminated[t < 5] = 1e8
+    labels = np.resize([4, 5, 1], 150)
+    config = DynamicsConfig(startup_exclusion_seconds=5)
+    source = recording(contaminated, labels, fs, start=123)
+    actual, audit = extract_dynamics(source, config)
+    expected, _ = extract_dynamics(recording(values, labels, fs, start=123), config)
+    np.testing.assert_allclose(actual["X"], expected["X"], equal_nan=True)
+    assert np.isnan(actual["X"][:15, 2:]).all()
+    window = values[(t >= 5) & (t < 15)]
+    assert actual["X"][15, 2] == pytest.approx(np.var(window))
+    assert np.isnan(actual["X"][:35, :2]).all()
+    assert np.isfinite(actual["X"][35, :2]).all()
+    assert audit["startup_excluded_samples"] == (t < 5).sum()
+    np.testing.assert_array_equal(actual["label"], labels)
+    np.testing.assert_array_equal(actual["time_seconds"], 123 + np.arange(150))
+    np.testing.assert_array_equal(source.ne, contaminated)
+    for invalid in (-1, np.nan, np.inf):
+        with pytest.raises(ValueError):
+            DynamicsConfig(startup_exclusion_seconds=invalid)
+
+
+def test_numbers_only_analysis_does_not_write_report(tmp_path):
+    inputs = tmp_path / "input"
+    inputs.mkdir()
+    savemat(inputs / "a.mat", {"ne": np.ones(1200), "ne_frequency": 10,
+                               "sleep_scores": [4, 5] * 60})
+    output = tmp_path / "results"
+    run_analysis(inputs, tmp_path / "features", output,
+                 config=DynamicsConfig(startup_exclusion_seconds=5), write_report_output=False)
+    assert not (output / "report.md").exists()
+    assert (output / "pooled_comparisons.csv").exists()
+    assert json.loads((output / "run.json").read_text())["config"]["startup_exclusion_seconds"] == 5
+
+
 def test_short_ne_retains_missing_seconds_and_bad_config_rejected():
     arrays, audit = extract_dynamics(recording(np.ones(1000), [4] * 120))
     assert audit["label_tail_seconds_without_ne"] == 20

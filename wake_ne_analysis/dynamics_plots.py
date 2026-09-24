@@ -140,6 +140,9 @@ def build_variance_figure(comparisons, history_seconds=10):
         )
         figure.update_yaxes(title_text="Variance (percentage points squared)",
                             rangemode="tozero", row=1, col=column)
+        figure.update_xaxes(type="category", categoryorder="array",
+                            categoryarray=["High Alertness", "Low Alertness"],
+                            range=[-.5, 1.5], tickangle=0, row=1, col=column)
     figure.update_layout(
         title=f"NE variability over the preceding {history_seconds:g} seconds<br><sup>All eligible seconds pooled</sup>",
         template="plotly_white", width=1250, height=650,

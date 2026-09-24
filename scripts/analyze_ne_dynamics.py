@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from wake_ne_analysis.dynamics_workflow import run_analysis
+from wake_ne_analysis.ne_dynamics import DynamicsConfig
 
 
 def main(argv=None):
@@ -14,11 +15,15 @@ def main(argv=None):
     parser.add_argument("--feature-dir", type=Path, default=Path("data/derived_features/ne_dynamics_v2_pooled"))
     parser.add_argument("--results-dir", type=Path, default=Path("results/ne_dynamics_v2_pooled"))
     parser.add_argument("--metadata", type=Path, help="Optional verified recording_id,mouse_id,condition CSV.")
+    parser.add_argument("--startup-exclusion-seconds", type=float, default=0,
+                        help="Exclude this initial duration in every file before filtering/history extraction.")
+    parser.add_argument("--no-report", action="store_true", help="Save features and tables without a report.")
     args = parser.parse_args(argv)
     results = run_analysis(args.input_dir, args.feature_dir, args.results_dir,
-                           metadata_path=args.metadata)
-    print(results[["feature", "n_high", "n_low", "median_high_minus_low", "rank_biserial", "p_value", "p_holm"]].to_string(index=False))
-    print(f"Report: {args.results_dir / 'report.md'}")
+                           config=DynamicsConfig(startup_exclusion_seconds=args.startup_exclusion_seconds),
+                           metadata_path=args.metadata, write_report_output=not args.no_report)
+    print(results[["feature", "n_high", "n_low", "high_mean", "low_mean", "rank_biserial", "p_value", "p_holm"]].to_string(index=False))
+    print(f"Results: {args.results_dir}")
 
 
 if __name__ == "__main__":

@@ -35,6 +35,7 @@ class DynamicsConfig:
     filter_order: int = 4
     history_seconds: float = 10.0
     edge_guard_seconds: float = 30.0
+    startup_exclusion_seconds: float = 0.0
 
     def __post_init__(self):
         for name in ("cutoff_hz", "history_seconds", "edge_guard_seconds"):
@@ -43,6 +44,8 @@ class DynamicsConfig:
                 raise ValueError(f"{name} must be finite and positive.")
         if not isinstance(self.filter_order, int) or self.filter_order < 1:
             raise ValueError("filter_order must be a positive integer.")
+        if not np.isfinite(self.startup_exclusion_seconds) or self.startup_exclusion_seconds < 0:
+            raise ValueError("startup_exclusion_seconds must be finite and nonnegative.")
 
 
 def lowpass_sos(fs, config):
@@ -110,8 +113,10 @@ def extract_dynamics(recording: Recording, config=DynamicsConfig()):
     seconds = np.arange(len(recording.labels), dtype=int)
     times = np.arange(len(recording.ne)) / fs
     common_samples = int(np.searchsorted(times, len(seconds), side="left"))
-    ne = recording.ne[:common_samples]
+    ne = recording.ne[:common_samples].copy()
     times = times[:common_samples]
+    startup_mask = times < config.startup_exclusion_seconds
+    ne[startup_mask] = np.nan  # Keep timestamps; exclude before filtering and history extraction.
     common_duration = min(duration, len(seconds))
     starts = np.searchsorted(times, seconds, side="left")
     stops = np.searchsorted(times, seconds + 1, side="left")
@@ -151,6 +156,8 @@ def extract_dynamics(recording: Recording, config=DynamicsConfig()):
         "label_tail_seconds_without_ne": max(0.0, -mismatch),
         "incomplete_score_seconds": int((~complete).sum()),
         "nonfinite_ne_samples": int((~np.isfinite(recording.ne)).sum()),
+        "startup_exclusion_seconds": config.startup_exclusion_seconds,
+        "startup_excluded_samples": int(startup_mask.sum()),
         "finite_ne_segments": len(runs(np.isfinite(recording.ne))),
         "config": asdict(config),
     }

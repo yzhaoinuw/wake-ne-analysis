@@ -55,7 +55,8 @@ def load_feature_records(analysis_dir):
     return records, run, hashes
 
 
-def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), metadata_path=None):
+def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), metadata_path=None,
+                 write_report_output=True):
     """Extract one NPZ per file over the common interval and pool eligible seconds.
 
     Common-start alignment is confirmed by the user. Excess NE tail is trimmed
@@ -96,6 +97,7 @@ def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), m
                         ("ne_dynamics.py", "dynamics_summary.py", "dynamics_workflow.py", "io.py")},
         "metadata_path": str(Path(metadata_path).resolve()) if metadata_path else None,
         "metadata_sha256": source_digest(metadata_path) if metadata_path else None,
+        "write_report_output": write_report_output,
     }
     run_path = results_dir / "run.json"
     run_path.write_text(json.dumps(run, indent=2), encoding="utf-8")
@@ -148,6 +150,9 @@ def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), m
         "`metadata_json` includes source SHA256, rates, timing and configuration.\n\n"
         "Excess NE beyond the label interval is dropped in memory before filtering. "
         "Sources are unchanged; trimming and incomplete seconds are audited.\n\n"
+        f"The first {config.startup_exclusion_seconds:g} seconds are excluded in memory before "
+        "filtering and history extraction. Timestamps and labels are preserved; histories "
+        "must contain only finite retained samples, and filter guards restart after this exclusion.\n\n"
         "Slopes use each current second after zero-phase filtering; absolute slope "
         "is the magnitude of that signed slope. Both variances use the preceding "
         f"{config.history_seconds:g} seconds ending at the start of the current second, irrespective of states. "
@@ -155,7 +160,8 @@ def run_analysis(input_dir, feature_dir, results_dir, config=DynamicsConfig(), m
         f"Run provenance and audits: {results_dir.resolve()}\n",
         encoding="utf-8",
     )
-    write_report(results_dir, comparisons, audits, run)
+    if write_report_output:
+        write_report(results_dir, comparisons, audits, run)
     return comparisons
 
 

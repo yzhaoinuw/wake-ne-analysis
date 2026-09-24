@@ -2,6 +2,81 @@
 
 ## 2026-09-23
 
+### Refresh the report with startup-excluded results (Codex GPT-6; effort/token budget not exposed)
+
+- The user requested the quality-checked results in the single NE dynamics report,
+  a brief reason for startup exclusion, and concise explicit interpretation in
+  Executive Summary and Results. This supersedes the prior numbers-only deferral.
+- All tables and both figures now use the startup-5-second run. Explain that High's
+  more positive overall mean combines direction frequency and conditional slopes;
+  Low has steeper rises, but its more frequent and steeper declines offset more of
+  that positive contribution. Both variance means are now higher in Low.
+- Removed superseded numbers and the old opposite-variance conclusion. Updated
+  nominal p-values, sample counts, reproduction commands, and current run pointers;
+  retained the plain-language effect-size explanation and inference limits.
+- Variance figure category positions are explicit to keep labels centered under
+  their boxes. Original analysis results were reused without another extraction.
+- Verification:
+  - Local date checked: `2026-09-23`.
+  - Reran both renderers against the new archives and visually inspected report PNGs.
+  - All four table rows, p-values, pairwise percentages, state counts, weighted-mean
+    equations, local links, and absence of obsolete results checked against saved
+    tables. Rendered comparison table matches the startup-QC run exactly.
+  - `treaty validate .` and `git diff --check` passed.
+
+### Apply uniform startup exclusion and rerun numbers only (Codex GPT-6; effort/token budget not exposed)
+
+- The user authorized a signal-quality-based recording-start rule and rerun, with
+  numbers first and no report update. Reviewed all ten first-15-second traces without
+  labels; three share a roughly -100 percent excursion followed by a rebound that
+  settles by about 2 seconds. Chose a conservative 5-second exclusion in every file
+  before calculating revised outcomes. This is exploratory QC informed by these
+  starts, not a validated instrument settling time or an outcome-optimized cutoff.
+- `startup_exclusion_seconds` marks the prefix unavailable in memory before filtering
+  or history extraction. Histories require 10 seconds of retained data; existing
+  30-second filter guards restart after the exclusion. Sources/timestamps/labels,
+  final-tail handling, and pooled weighting remain unchanged. Default zero preserves
+  legacy calls; this run explicitly passes `--startup-exclusion-seconds 5`.
+- Added `--no-report`, and saved new versioned archives plus results under
+  `ne_dynamics_v3_startup5_20260923`. Source inspection and the rule frozen before
+  the rerun are in `results/ne_startup_quality_inspection_20260923/`; the rule is
+  also copied to the run output. Report files and figures were not touched this turn.
+- High/Low means: signed slope 0.008901/0.005191; absolute slope 0.068742/0.080412;
+  ordinary variance 0.140726/0.172681; detrended variance 0.057446/0.060392.
+  Detrended variance is now 5.13% higher in Low. Existing four-feature Holm
+  comparisons remain nominal; no test of mean differences was added.
+- Verification:
+  - `Get-Date -Format yyyy-MM-dd`: `2026-09-23`.
+  - Full pytest: 23 passed, 1 optional test skipped. New checks establish that
+    startup contamination cannot enter filtering, histories are clean, clocks
+    and source arrays stay intact, and numbers-only mode produces no report.
+  - Real-data audit: all ten source hashes and labels match the prior run;
+    51 startup samples excluded per file. Retained variance values match the
+    original archives exactly; every window touching the prefix is unavailable.
+  - Signed-slope summaries saved from verified new archives. `treaty validate .`
+    and `git diff --check` passed.
+
+### Audit the proposed detrended-variance grant claim (Codex GPT-6; effort/token budget not exposed)
+
+- The PI questioned greater NE activity in Low and proposed using the detrended
+  variance mean instead. Variability is distinct from signal level; the direction
+  of this particular mean difference also proved sensitive to recording starts.
+- The two largest detrended variances are High seconds at t=10 in `mouse1_day2`
+  (198.0472) and `part1_mouse3_day2` (193.1961). Direct MAT reads confirmed the
+  histories include startup excursions near -99 and -102 percentage delta-F/F.
+- Omitting those two values only as a post hoc sensitivity audit changes High mean
+  from 0.070385 to 0.057534; Low remains 0.060465. The 14.1% lower Low mean is
+  therefore unsuitable as supporting evidence without resolving startup handling.
+  The original feature set, tables, figures, and source data remain unchanged.
+- Added a prominent report qualification and a pending uniform startup-QC decision.
+  Saved the audit and archive hashes under `results/ne_dynamics_startup_audit_20260923/`.
+- Verification:
+  - Local date checked: `2026-09-23`.
+  - Loaded verified feature archives, identified the extreme windows by source and
+    score second, and reproduced their variances directly from the MAT NE samples.
+  - Verified full and sensitivity means. No new significance tests or exclusions.
+  - `treaty validate .` and `git diff --check` passed.
+
 ### Show distributions alongside means in the NE report (Codex GPT-6; effort/token budget not exposed)
 
 - The user requested box plots with mean dots, retaining the rising/declining

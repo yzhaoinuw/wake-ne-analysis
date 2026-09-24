@@ -2,34 +2,27 @@
 
 ## Currently Hot
 
-- **Single current NE dynamics report:** `writeups/ne_dynamics_report.md` is the
-  only maintained report for this analysis. It combines all four original pooled
-  features, the rising/declining breakdown, and variance details using the
-  preliminary report's outline. Update this report in place; do not create a
-  parallel slope-direction report. The duplicate was removed after consolidation.
-  All ten files are retained, with excess NE tails trimmed in memory;
-  all eligible seconds are pooled equally without further normalization or
-  restrictions on states in the history window. Low has 55.2% declining seconds
-  versus 51.3% in High. Reported averages now use means: Low has 16.7% steeper
-  declines, 19.9% steeper rises, 11.9% greater ordinary variance,
-  and 14.1% lower detrended variance. Mean signed slopes are positive in both.
-  Use signed slopes consistently for rising and declining seconds, including
-  negative values for declines in Figure 1. Slope and variance plots use
-  quartile boxes, median lines, mean dots, and 5th–95th percentile whiskers;
-  the percentage bars remain. Tail values are omitted only from the display. Questions precede the executive summary.
-  Ordinary variance answers the primary variability question; local detrending is
-  an optional secondary check that removes within-window linear changes. Retain
-  both results and the original four-feature correction. Explain filtering once
-  in methods.
-  Explain rank-biserial effects using the observed 51.2–53.1% pairwise comparisons,
-  and state plainly why small pooled p-values do not establish strong separation
-  or replication across animals.
-  The existing distribution tests do not test mean differences. The original four-feature Holm family is unchanged;
-  retain the dependence and cross-recording comparability caveats.
-  Archives/results remain under `ne_dynamics_v2_pooled_20260923`, direction
-  summaries under `results/ne_slope_direction_boxplots_20260923/`, and focused
-  variance figures under `results/ne_dynamics_boxplots_20260923/`. The older
-  eight-file comparison remains superseded history in `archive/ne_dynamics_v1_recording/`.
+- **Current NE dynamics report includes startup QC:** `writeups/ne_dynamics_report.md`
+  remains the single report. All tables and figures now use
+  `data/derived_features/ne_dynamics_v3_startup5_20260923/` and
+  `results/ne_dynamics_v3_startup5_20260923/`. Every file excludes `[0,5)` before
+  filtering and histories, preserving clocks, labels, ten-file inclusion, unrestricted
+  state history, and pooled weighting. The 30-second filter guard restarts after
+  the excluded prefix. This cohort-specific rule was fixed after signal inspection
+  and before the rerun; original runs remain intact.
+  Means (High/Low): signed slope 0.008901/0.005191; absolute slope
+  0.068742/0.080412; ordinary variance 0.140726/0.172681; detrended variance
+  0.057446/0.060392. Explain explicitly: High has a more positive overall slope,
+  but Low has steeper rises and declines and greater variability. Low declines
+  more often and more steeply, offsetting more of its positive contribution.
+  The old High detrended-variance advantage is superseded. Keep the concise
+  startup rationale, Questions, mean summaries, distribution plots, plain-language
+  effect sizes, and pooled-test caveats. Holm still covers the four features;
+  the largest adjusted nominal p is now 0.00103, not below 0.001.
+  Current figures: `results/ne_dynamics_startup5_figures_final_20260923/` and
+  `results/ne_slope_direction_startup5_20260923/`. Source audits and the frozen rule
+  remain in the run directories. Do not create a parallel report for this analysis.
+
 - The PI-facing material is limited to `writeups/preliminary_recording_report.md`,
   `writeups/cluster_visualization_report.md`, its focused
   `writeups/cluster_visualization_wake_only_report.md` follow-up, its

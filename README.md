@@ -42,7 +42,11 @@ python scripts/render_ne_dynamics.py --results-dir results/ne_dynamics_v2_pooled
 ```
 
 Use fresh directory names when rerunning; existing outputs are never overwritten.
-The completed September 23 run uses the suffix `ne_dynamics_v2_pooled_20260923` for both
+For the startup-QC rerun, add `--startup-exclusion-seconds 5 --no-report` to
+`analyze_ne_dynamics.py` and use fresh feature/results directories. This excludes
+the prefix before filtering and history extraction, preserves the source clock,
+and saves numerical results without generating a report. Default exclusion is zero.
+The current September 23 run uses the suffix `ne_dynamics_v3_startup5_20260923` for both
 directories. The renderer creates standalone interactive HTML files. Add `--png`
 for static Plotly/Kaleido images and `--output-dir` to choose a fresh figure folder.
 Extraction and rendering run independently; neither needs UMAP or Matplotlib.
@@ -80,7 +84,7 @@ distribution tests are unchanged. Those tests are not tests of mean differences.
 Its descriptive table and figure can be regenerated from the completed archives:
 
 ```powershell
-python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v2_pooled_20260923 --output-dir results/ne_slope_direction_boxplots_20260923 --png
+python scripts/summarize_ne_slope_direction.py --analysis-dir results/ne_dynamics_v3_startup5_20260923 --output-dir results/ne_slope_direction_startup5_20260923 --png
 ```
 
 This follow-up adds no significance tests and uses a fresh output directory.
