@@ -2,6 +2,22 @@
 
 ## 2026-09-25
 
+### Deliver approved collage on dev and main (Codex GPT-6; effort/token budget not exposed)
+
+- The user approved the revised collage and explicitly requested a commit,
+  push, and merge to `main`. The six intended figure/source/handoff files were
+  committed as `2bd1699` on `dev`, pushed to `origin/dev`, then fast-forwarded
+  onto `main` and pushed to `origin/main`. The unrelated untracked
+  `writeups/assets/pi_alertness_draft_20260922.png` was left untouched.
+- Verification:
+  - Before branch work, fetched `origin/main` and `origin/dev`, confirmed their
+    tracked refs matched local refs, and confirmed `main` was an ancestor of
+    `dev`.
+  - Python compilation, `treaty validate .`, and staged `git diff --check`
+    passed before the figure commit.
+  - `git ls-remote --heads origin dev main` showed both remote branches at
+    `2bd1699` after the fast-forward and pushes.
+
 ### Separate collage rows and move UMAP keys inside (Codex GPT-6; effort/token budget not exposed)
 
 - Revised the same 7.5-inch proposal collage after layout feedback: a light

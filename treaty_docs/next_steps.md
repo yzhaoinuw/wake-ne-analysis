@@ -2,7 +2,7 @@
 
 ## Currently Hot
 
-- **Proposal collage draft (2026-09-24):**
+- **Proposal collage delivered (2026-09-25):**
   `scripts/render_proposal_alertness_collage.py` produces a 7.5-inch-wide
   two-row figure in `writeups/assets/proposal_alertness_collage_20260924`
   (`.pdf`, `.svg`, `.png`). The top reproduces the saved 120-second four-row
@@ -11,8 +11,9 @@
   exchanged for display. The 2026-09-25 layout revision adds a clear row
   divider, puts each UMAP legend inside its map, makes the lower panels taller,
   and removes the detached box-plot key. The user approved this layout on
-  2026-09-25. The figure uses 7.875-point text at print width; no new embedding
-  is fitted.
+  2026-09-25; figure commit `2bd1699` was pushed to `dev` and fast-forwarded
+  to `main`. The figure uses 7.875-point text at print width; no new embedding
+  was fitted.
 
 - **Main handoff (2026-09-23):** the startup-QC analysis and report are included
   in the requested `dev`/`main` synchronization, preserving the existing main merge.
