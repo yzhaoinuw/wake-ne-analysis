@@ -1,5 +1,100 @@
 # Work Log
 
+## 2026-09-24
+
+### Deliver locked proposal figure on dev (Codex GPT-6; effort/token budget not exposed)
+
+- The user approved the centered-title, right-side horizontal color scale, and
+  retained-time-tick version for commit and push to `dev` only. The earlier
+  untracked `pi_alertness_draft_20260922.png` is unrelated and stays unstaged.
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - `dev`, `main`, and remote `dev` started at the same commit; the remote `dev`
+    head was checked before switching branches.
+  - 23 tests passed, 1 optional test skipped; Python compilation,
+    `treaty validate .`, and `git diff --check` passed.
+
+### Restore original title and time ticks (Codex GPT-6; effort/token budget not exposed)
+
+- The user clarified that the original centered figure title and every numeric
+  20-second time tick must remain. The horizontal EEG color scale now fits to the
+  right of the title, with its text directly beside the bar. High and Low names
+  sit within matching bottom-row segments at approximately 233 and 270 seconds,
+  in the open spaces between the retained numeric ticks.
+- The prior left-shifted title and replacement of 240/260-second tick labels were
+  superseded. The current PNG preserves the original canvas dimensions and
+  underlying traces; the source renderer was updated to the same placement.
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - Current PNG rendered and visually inspected: original title centered, all
+    seven numeric ticks visible, colored names clear, and horizontal scale inside
+    the original top margin.
+  - Saved-coordinate validation without figure rendering, Python compilation,
+    `treaty validate .`, and `git diff --check` passed.
+
+### Compact proposal figure annotations (Codex GPT-6; effort/token budget not exposed)
+
+- The user preferred the EEG color scale across the existing title margin and
+  the High/Low names as custom time-axis tick labels. The revised preview uses a
+  horizontal color scale without extending the canvas, and centers the colored
+  names under their longest matching bottom-row segments. Nearby 240- and
+  260-second numeric labels are omitted to avoid overlap; other time ticks and
+  the time-axis title remain.
+- The source renderer was revised to the same layout. The agent-side Matplotlib
+  save failure persists, so its updated native output remains pending an
+  interactive rerender; the current proposal PNG was produced from the saved
+  user-rendered figure and per-second predictions.
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - Current PNG rendered and visually inspected at full layout: color scale fits
+    in the top margin, state names align with matching segments, and time labels
+    do not overlap.
+
+### Refine proposal figure legend and state labels (Codex GPT-6; effort/token budget not exposed)
+
+- The user's interactive UMAP run completed. Its refitted sampled coordinates
+  match the saved map within 4.7e-7 coordinate units. The 120-second draft has
+  60 High and 60 Low source labels; the UMAP cut gives 26 High and 94 Low, with
+  71.7% agreement on this interval. These are descriptive, in-sample labels.
+- The user asked for the spectrogram's color scale in place of a clipped
+  High/Low legend, and colored state names under example bottom-row segments.
+  The saved preview now shows those labels on a separate line below numeric time
+  ticks. The source renderer selects each label's longest contiguous segment so
+  the text remains attached to the matching color on rerender.
+- The agent terminal still exits with code 1 and no error text during Matplotlib
+  PNG saving. The current preview was polished from the user-rendered figure
+  using the saved projection, without refitting UMAP. The revised Matplotlib
+  source layout remains to be checked in the user's interactive terminal.
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - Projection audit and saved per-second labels inspected; revised preview PNG
+    rendered and visually inspected for colorbar and label/tick clearance.
+  - Saved-coordinate validation without figure rendering, Python compilation,
+    `treaty validate .`, and `git diff --check` passed.
+
+### Prepare proposal alertness trace and UMAP cut (Codex GPT-6; effort/token budget not exposed)
+
+- The requested vertical boundary is defined by maximum agreement with existing
+  High/Low source labels on the fixed, label-balanced NE-excluded UMAP display.
+  The maximizing cut is UMAP 2 = 2.7705487, with 1,700/2,000 (85.0%) agreement;
+  two intervals tie on count, so the wider gap between adjacent saved points
+  determines the boundary. This is an in-sample descriptive rule, not a
+  recording-held-out accuracy estimate.
+- Only 19 of the representative `408_yfp` seconds `[180,300)` have saved map
+  coordinates, and the fitted UMAP object was not retained. The reproducible
+  path is to refit the identical saved input and settings in the user's
+  interactive `ne_umap` terminal, verify fitted coordinates against the saved
+  map, and transform all 120 seconds. The vertical boundary preview was drawn
+  on the original Figure 1 PNG. The four-row figure remains pending that
+  interactive fit; source MAT labels and archives remain unchanged.
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - The boundary-only numeric run found the cut and 85.0% agreement.
+  - Representative 120-second archive coverage, source-label agreement, and
+    5-second EEG spectrogram array shapes checked without rendering or UMAP fitting.
+  - Boundary preview rendered and visually inspected; Python compilation,
+    `treaty validate .`, and `git diff --check` passed.
+
 ## 2026-09-23
 
 ### Hand off startup-QC results to main (Codex GPT-6; effort/token budget not exposed)

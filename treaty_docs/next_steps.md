@@ -72,11 +72,26 @@
   differs. These are pseudoreplicated descriptive patterns, not independent-mouse
   inference. On the matching label-balanced 1,000-High / 1,000-Low source-label
   screen, neither withheld NE feature differs (Holm-adjusted p = 1.000 for both).
-- **PI discussion trace:** `scripts/render_pi_alertness_draft.py` is limited to a
-  representative 120-second Wake trace (processed NE, robust-scaled EMG RMS, and
-  the existing source labels). Re-render the PNG from the user's interactive
-  `ne_umap` terminal before adding it to a future commit; the agent-side Python
-  process cannot safely render Matplotlib figures on this host.
+- **PI alertness proposal draft (2026-09-24):**
+  `scripts/render_pi_alertness_boundary.py` selects the most accurate vertical
+  UMAP 2 cut on the saved, balanced NE-excluded 2,000-second display sample:
+  2.7705487, with 1,700/2,000 (85.0%) in-sample source-label agreement. It uses
+  `408_yfp` seconds `[180,300)` for a four-row EEG spectrogram, raw EMG, source
+  labels, and UMAP-cut labels. The user ran the full fit in interactive `ne_umap`;
+  the refit matched saved coordinates within 4.7e-7 and transformed all 120
+  seconds. The draft figure at
+  `writeups/assets/pi_alertness_four_row_draft_20260924.png` now has a horizontal
+  EEG power color scale on the right side of the original centered title. The
+  color-scale title sits directly beside the bar. Colored state names sit in
+  spaces between numeric time ticks, and all original 20-second tick labels are
+  retained. The boundary image
+  is `writeups/assets/pi_alertness_umap_boundary_20260924.png`. The agent terminal
+  still exits silently when saving Matplotlib, so the current figure preview was
+  polished from the saved user-rendered PNG; the source renderer has the matching
+  layout change but its new native output awaits an interactive rerender. Use
+  `python scripts/render_pi_alertness_boundary.py --render-from-saved` to avoid a
+  new UMAP fit. The earlier processed-NE/EMG-RMS discussion image remains an
+  untracked user asset. The cut is exploratory and in-sample.
 - **Experimental NREM-baseline calibration:** `scripts/calibrate_nrem_baseline.py`
   reimplements the source-preserving NREM-envelope comparison locally and targets
   the three-partition's two High-Alertness-only groups (clusters 2 and 3), never t-SNE/UMAP
