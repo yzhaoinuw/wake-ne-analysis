@@ -2,6 +2,18 @@
 
 ## Currently Hot
 
+- **Proposal collage draft (2026-09-24):**
+  `scripts/render_proposal_alertness_collage.py` produces a 7.5-inch-wide
+  two-row figure in `writeups/assets/proposal_alertness_collage_20260924`
+  (`.pdf`, `.svg`, `.png`). The top reproduces the saved 120-second four-row
+  trace; the bottom uses saved all-stage and Wake-only UMAP coordinates and the
+  startup-QC pooled signed NE slope summary. The all-stage UMAP axes are
+  exchanged for display. The 2026-09-25 layout revision adds a clear row
+  divider, puts each UMAP legend inside its map, makes the lower panels taller,
+  and removes the detached box-plot key. The user approved this layout on
+  2026-09-25. The figure uses 7.875-point text at print width; no new embedding
+  is fitted.
+
 - **Main handoff (2026-09-23):** the startup-QC analysis and report are included
   in the requested `dev`/`main` synchronization, preserving the existing main merge.
 

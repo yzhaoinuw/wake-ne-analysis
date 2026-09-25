@@ -1,6 +1,41 @@
 # Work Log
 
+## 2026-09-25
+
+### Separate collage rows and move UMAP keys inside (Codex GPT-6; effort/token budget not exposed)
+
+- Revised the same 7.5-inch proposal collage after layout feedback: a light
+  divider and more space separate the rows, lower titles sit nearer their
+  plots, the UMAP panels are taller with state keys inside their upper-left
+  corners, and the Wake UMAP/box-plot gap is narrower. Removed the detached
+  box-plot marker explanation. Data, orientation, color palette, and upper
+  trace content are unchanged.
+- Verification:
+  - Local date checked: `2026-09-25`.
+  - Rerendered PDF, SVG, and PNG from saved inputs and visually inspected the
+    7.5-inch layout at print width.
+  - Python compilation, `git diff --check`, and `treaty validate .` passed;
+    the PDF remains 540 points wide and all SVG text remains 10.5 px.
+
 ## 2026-09-24
+
+### Draft print-width proposal collage (Codex GPT-6; effort/token budget not exposed)
+
+- Built a 7.5-inch-wide, two-row figure from the saved 120-second Wake trace,
+  both requested saved UMAP coordinate tables, and the startup-QC pooled signed
+  NE slope summary. The all-stage map exchanges UMAP 1 and UMAP 2 for display;
+  the Wake-only map retains its existing orientation. The slope boxes show
+  pooled-second interquartile ranges, medians, mean dots, and 5th–95th
+  percentile whiskers. No source data, labels, or embeddings were changed.
+- The renderer exports PDF, SVG, and PNG under
+  `writeups/assets/proposal_alertness_collage_20260924`. All figure text is
+  10.5 Plotly pixels (7.875 points at the PDF's 7.5-inch page width).
+- Verification:
+  - Local date checked: `2026-09-24`.
+  - Rendered and visually inspected the full figure; confirmed the original
+    title, all seven time labels, both UMAP orientations, legend, and visible
+    mean/median markers.
+  - PDF media box width is 540 points (7.5 inches); PNG is 2250 pixels wide.
 
 ### Deliver locked proposal figure on dev (Codex GPT-6; effort/token budget not exposed)
 
